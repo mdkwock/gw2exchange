@@ -1,0 +1,19 @@
+{
+    "require": {
+      "propel/propel": "~2.0@dev",
+      "monolog/monolog": "1.12.0",
+      "slim/slim": "2.*",
+      "flynsarmy/slim-monolog": "1.0.0",
+      "guzzlehttp/guzzle": "~5.0"
+    },
+    "require-dev": {
+      "raveren/kint": "0.9.1",
+      "phpunit/phpunit": "4.5.*"
+    },
+    "autoload": {
+      "classmap": ["database/generated-classes/"],
+      "psr-4" : {
+        "GW2ledger\\" : "src/"
+      }
+    }
+}
