@@ -1,6 +1,6 @@
 /.sublime-text-git-autocommit
 /vendor/
 *.lock
-/database/generated-classes
-/database/generated-conf
-/home/mechrabbit/Vagrant/snowflake-www/GW2ledger/database/generated-sql*/
+/database/generated-classes/
+/database/generated-conf/
+/database/generated-sql/
