@@ -19,5 +19,5 @@ interface ItemParserInterface
    * @param  string $json the json string sent by the server, which is being processed
    * @return array  a mixed array which contains all the parts necessary to making an item
    */
-  public static function parseJson($json);
+  public function parseJson($json);
 }

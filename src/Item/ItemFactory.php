@@ -20,7 +20,7 @@ class ItemFactory
    * @param   string  $json           a json string representing the Item
    * @return  GW2ItemInterface       the created object
    */
-  public static function createFromJson($json)
+  public function createFromJson($json)
   {
 
   }

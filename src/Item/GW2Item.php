@@ -8,5 +8,13 @@ use GW2ledger\Signature\Item\GW2ItemInterface;
  */
 class GW2Item implements GW2ItemInterface
 {
-
+  /**
+   * saves the item to a data store
+   * @throws Exception   if save failed
+   * @return 
+   */
+  public function save()
+  {
+    
+  }
 }

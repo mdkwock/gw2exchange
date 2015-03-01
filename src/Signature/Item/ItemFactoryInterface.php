@@ -7,7 +7,7 @@ namespace GW2ledger\Signature\Item;
 interface ItemFactoryInterface
 {
   /**
-   * default constructor, creates an item with nothing in it to start
+   * constructor, supplies the factory with the classes it needs to create
    */
   public function __construct();
 
@@ -17,12 +17,5 @@ interface ItemFactoryInterface
    * @param   string  $json           a json string representing the Item
    * @return  GW2ItemInterface       the created object
    */
-  public static function createFromJson($json);
-
-  /**
-   * saves the item to a data store
-   * @throws Exception   if save failed
-   * @return 
-   */
-  public function save();
+  public function createFromJson($json);
 }
