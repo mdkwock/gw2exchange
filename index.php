@@ -20,22 +20,6 @@ $item_info = array(
   "item_game_types"=>,
   "item_restrictions"=>,
 );
-  <table name="item_info">
-    <!-- setting primary key to true, makes propel treat it as a 1-1 relation -->
-    <column name="item_id" type="integer" required="required" primaryKey="true" />
-    <column name="item_description" type="LONGVARCHAR" />
-    <column name="item_type" type="varchar" size="255" required="true" />
-    <column name="item_rarity" type="varchar" size="255" required="true" />
-    <column name="item_level" type="integer" required="true" />
-    <column name="item_vendor_value" type="integer" required="true" />
-    <column name="item_default_skin" type="integer" />
-    <column name="item_flags" type="varchar" size="255" required="true" />
-    <column name="item_game_types" type="varchar" size="255" required="true" />
-    <column name="item_restrictions" type="varchar" size="255" required="true" />
-    <foreign-key foreignTable="item">
-      <reference local="item_id" foreign="id"/>
-    </foreign-key>
-  </table>
 
   <!--
     A table which links the item to the item detail
