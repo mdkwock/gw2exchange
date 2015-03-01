@@ -10,7 +10,7 @@ use GW2ledger\Signature\Item\ItemParserInterface;
  * This class was made so that there is a intermediate class surrounding the GW2 endpoint
  * in case there is a change at the end point
  */
-class ItemParser
+class ItemParser implements ItemParserInterface
 {
   /**
    * takes a json string and finds the variables which are used in the item object.

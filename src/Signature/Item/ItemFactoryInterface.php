@@ -2,9 +2,9 @@
 namespace GW2ledger\Signature\Item;
 
 /**
- * This interface assembles a GW2Item
+ * This interface is the Item object class facade
  */
-interface GW2ItemInterface
+interface ItemFactoryInterface
 {
   /**
    * default constructor, creates an item with nothing in it to start
