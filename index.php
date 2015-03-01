@@ -37,8 +37,8 @@ array (
       'attributes' => array ( ),
     ),
     'secondary_suffix_item_id' => '', 
-    ),
-  );
+  ),
+);
 die();
 d(__DIR__);
 var_dump(class_exists('Monolog\Handler\AmqpHandler'));
