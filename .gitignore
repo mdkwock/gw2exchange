@@ -1,4 +1,4 @@
 /.sublime-text-git-autocommit
 /vendor/
 *.lock
-/database/*
+/database/
