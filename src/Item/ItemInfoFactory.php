@@ -2,13 +2,13 @@
 namespace GW2ledger\Item;
 
 use GW2ledger\Signature\Item\ItemParserInterface;
-use GW2ledger\Database\Item;
-use GW2ledger\Signature\Item\ItemFactoryInterface;
+use GW2ledger\Database\ItemInfo;
+use GW2ledger\Signature\Item\ItemInfoFactoryInterface;
 
 /**
  * This class assembles a GW2Item
  */
-class ItemFactory implements ItemFactoryInterface
+class ItemInfoFactory implements ItemInfoFactoryInterface
 {
   protected $itemParser;
 
@@ -29,7 +29,7 @@ class ItemFactory implements ItemFactoryInterface
   public function createFromJson($json)
   {
     $attributes = $this->itemParser->parseJson($json); //take the string and make it into a formatted array
-    $item = Item::create($attributes);
-    return $item;
+    $itemInfo = ItemInfo::create($attributes);
+    return $itemInfo;
   }
 }

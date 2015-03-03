@@ -1,11 +1,11 @@
 <?php
 
-namespace Base;
+namespace GW2ledger\Database\Base;
 
-use \ListingQuery as ChildListingQuery;
 use \Exception;
 use \PDO;
-use Map\ListingTableMap;
+use GW2ledger\Database\ListingQuery as ChildListingQuery;
+use GW2ledger\Database\Map\ListingTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -23,14 +23,14 @@ use Propel\Runtime\Parser\AbstractParser;
  *
  *
  *
-* @package    propel.generator..Base
+* @package    propel.generator.GW2ledger.Database.Base
 */
 abstract class Listing implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Map\\ListingTableMap';
+    const TABLE_MAP = '\\GW2ledger\\Database\\Map\\ListingTableMap';
 
 
     /**
@@ -98,7 +98,7 @@ abstract class Listing implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Initializes internal state of Base\Listing object.
+     * Initializes internal state of GW2ledger\Database\Base\Listing object.
      */
     public function __construct()
     {
@@ -368,7 +368,7 @@ abstract class Listing implements ActiveRecordInterface
      * Set the value of [id] column.
      *
      * @param int $v new value
-     * @return $this|\Listing The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\Listing The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -388,7 +388,7 @@ abstract class Listing implements ActiveRecordInterface
      * Set the value of [type] column.
      *
      * @param string $v new value
-     * @return $this|\Listing The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\Listing The current object (for fluent API support)
      */
     public function setType($v)
     {
@@ -408,7 +408,7 @@ abstract class Listing implements ActiveRecordInterface
      * Set the value of [orders] column.
      *
      * @param int $v new value
-     * @return $this|\Listing The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\Listing The current object (for fluent API support)
      */
     public function setOrders($v)
     {
@@ -428,7 +428,7 @@ abstract class Listing implements ActiveRecordInterface
      * Set the value of [unit_price] column.
      *
      * @param int $v new value
-     * @return $this|\Listing The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\Listing The current object (for fluent API support)
      */
     public function setUnitPrice($v)
     {
@@ -448,7 +448,7 @@ abstract class Listing implements ActiveRecordInterface
      * Set the value of [quantity] column.
      *
      * @param int $v new value
-     * @return $this|\Listing The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\Listing The current object (for fluent API support)
      */
     public function setQuantity($v)
     {
@@ -525,7 +525,7 @@ abstract class Listing implements ActiveRecordInterface
             return $startcol + 5; // 5 = ListingTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\Listing'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\GW2ledger\\Database\\Listing'), 0, $e);
         }
     }
 
@@ -713,6 +713,10 @@ abstract class Listing implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
+        $this->modifiedColumns[ListingTableMap::COL_ID] = true;
+        if (null !== $this->id) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . ListingTableMap::COL_ID . ')');
+        }
 
          // check the columns in natural order for more readable SQL queries
         if ($this->isColumnModified(ListingTableMap::COL_ID)) {
@@ -763,6 +767,13 @@ abstract class Listing implements ActiveRecordInterface
             Propel::log($e->getMessage(), Propel::LOG_ERR);
             throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
         }
+
+        try {
+            $pk = $con->lastInsertId();
+        } catch (Exception $e) {
+            throw new PropelException('Unable to get autoincrement id.', 0, $e);
+        }
+        $this->setId($pk);
 
         $this->setNew(false);
     }
@@ -879,7 +890,7 @@ abstract class Listing implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\Listing
+     * @return $this|\GW2ledger\Database\Listing
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
@@ -894,7 +905,7 @@ abstract class Listing implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\Listing
+     * @return $this|\GW2ledger\Database\Listing
      */
     public function setByPosition($pos, $value)
     {
@@ -974,7 +985,7 @@ abstract class Listing implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\Listing The current object, for fluid interface
+     * @return $this|\GW2ledger\Database\Listing The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1090,20 +1101,20 @@ abstract class Listing implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \Listing (or compatible) type.
+     * @param      object $copyObj An object of \GW2ledger\Database\Listing (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setId($this->getId());
         $copyObj->setType($this->getType());
         $copyObj->setOrders($this->getOrders());
         $copyObj->setUnitPrice($this->getUnitPrice());
         $copyObj->setQuantity($this->getQuantity());
         if ($makeNew) {
             $copyObj->setNew(true);
+            $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
         }
     }
 
@@ -1116,7 +1127,7 @@ abstract class Listing implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \Listing Clone of current object.
+     * @return \GW2ledger\Database\Listing Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)

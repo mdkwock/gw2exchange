@@ -1,6 +1,7 @@
 <?php
+namespace GW2ledger\Database;
 
-use GW2ledger\Database\Base\ItemSummaryQuery as BaseItemSummaryQuery;
+use Base\ItemSummaryQuery as BaseItemSummaryQuery;
 
 /**
  * Skeleton subclass for performing query and update operations on the 'item_summary' table.

@@ -1,6 +1,7 @@
 <?php
+namespace GW2ledger\Database;
 
-use GW2ledger\Database\Base\ListingQuery as BaseListingQuery;
+use Base\ListingQuery as BaseListingQuery;
 
 /**
  * Skeleton subclass for performing query and update operations on the 'listing' table.

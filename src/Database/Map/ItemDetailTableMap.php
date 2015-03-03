@@ -1,9 +1,9 @@
 <?php
 
-namespace Map;
+namespace GW2ledger\Database\Map;
 
-use \ItemDetail;
-use \ItemDetailQuery;
+use GW2ledger\Database\ItemDetail;
+use GW2ledger\Database\ItemDetailQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -34,7 +34,7 @@ class ItemDetailTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = '.Map.ItemDetailTableMap';
+    const CLASS_NAME = 'GW2ledger.Database.Map.ItemDetailTableMap';
 
     /**
      * The default database name for this class
@@ -49,12 +49,12 @@ class ItemDetailTableMap extends TableMap
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\ItemDetail';
+    const OM_CLASS = '\\GW2ledger\\Database\\ItemDetail';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'ItemDetail';
+    const CLASS_DEFAULT = 'GW2ledger.Database.ItemDetail';
 
     /**
      * The total number of columns
@@ -137,9 +137,9 @@ class ItemDetailTableMap extends TableMap
         $this->setName('item_detail');
         $this->setPhpName('ItemDetail');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\ItemDetail');
-        $this->setPackage('');
-        $this->setUseIdGenerator(false);
+        $this->setClassName('\\GW2ledger\\Database\\ItemDetail');
+        $this->setPackage('GW2ledger.Database');
+        $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('item_type', 'ItemType', 'VARCHAR', true, 255, null);
@@ -152,14 +152,14 @@ class ItemDetailTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('ItemItemDetail', '\\ItemItemDetail', RelationMap::ONE_TO_MANY, array (
+        $this->addRelation('ItemItemDetail', '\\GW2ledger\\Database\\ItemItemDetail', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
     0 => ':item_detail_id',
     1 => ':id',
   ),
 ), null, null, 'ItemItemDetails', false);
-        $this->addRelation('Item', '\\Item', RelationMap::MANY_TO_MANY, array(), null, null, 'Items');
+        $this->addRelation('Item', '\\GW2ledger\\Database\\Item', RelationMap::MANY_TO_MANY, array(), null, null, 'Items');
     } // buildRelations()
 
     /**
@@ -358,7 +358,7 @@ class ItemDetailTableMap extends TableMap
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \ItemDetail) { // it's a model object
+        } elseif ($values instanceof \GW2ledger\Database\ItemDetail) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
@@ -409,6 +409,10 @@ class ItemDetailTableMap extends TableMap
             $criteria = clone $criteria; // rename for clarity
         } else {
             $criteria = $criteria->buildCriteria(); // build Criteria from ItemDetail object
+        }
+
+        if ($criteria->containsKey(ItemDetailTableMap::COL_ID) && $criteria->keyContainsValue(ItemDetailTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.ItemDetailTableMap::COL_ID.')');
         }
 
 

@@ -1,12 +1,12 @@
 <?php
 
-namespace Base;
+namespace GW2ledger\Database\Base;
 
-use \Listing as ChildListing;
-use \ListingQuery as ChildListingQuery;
 use \Exception;
 use \PDO;
-use Map\ListingTableMap;
+use GW2ledger\Database\Listing as ChildListing;
+use GW2ledger\Database\ListingQuery as ChildListingQuery;
+use GW2ledger\Database\Map\ListingTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -67,13 +67,13 @@ abstract class ListingQuery extends ModelCriteria
     protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityNotFoundException';
 
     /**
-     * Initializes internal state of \Base\ListingQuery object.
+     * Initializes internal state of \GW2ledger\Database\Base\ListingQuery object.
      *
      * @param     string $dbName The database name
      * @param     string $modelName The phpName of a model, e.g. 'Book'
      * @param     string $modelAlias The alias for the model in this query, e.g. 'b'
      */
-    public function __construct($dbName = 'gw2ledger', $modelName = '\\Listing', $modelAlias = null)
+    public function __construct($dbName = 'gw2ledger', $modelName = '\\GW2ledger\\Database\\Listing', $modelAlias = null)
     {
         parent::__construct($dbName, $modelName, $modelAlias);
     }

@@ -1,12 +1,12 @@
 <?php
 
-namespace Base;
+namespace GW2ledger\Database\Base;
 
-use \ItemInfo as ChildItemInfo;
-use \ItemInfoQuery as ChildItemInfoQuery;
 use \Exception;
 use \PDO;
-use Map\ItemInfoTableMap;
+use GW2ledger\Database\ItemInfo as ChildItemInfo;
+use GW2ledger\Database\ItemInfoQuery as ChildItemInfoQuery;
+use GW2ledger\Database\Map\ItemInfoTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -21,26 +21,26 @@ use Propel\Runtime\Exception\PropelException;
  *
  *
  * @method     ChildItemInfoQuery orderByItemId($order = Criteria::ASC) Order by the item_id column
- * @method     ChildItemInfoQuery orderByItemDescription($order = Criteria::ASC) Order by the item_description column
- * @method     ChildItemInfoQuery orderByItemType($order = Criteria::ASC) Order by the item_type column
- * @method     ChildItemInfoQuery orderByItemRarity($order = Criteria::ASC) Order by the item_rarity column
- * @method     ChildItemInfoQuery orderByItemLevel($order = Criteria::ASC) Order by the item_level column
- * @method     ChildItemInfoQuery orderByItemVendorValue($order = Criteria::ASC) Order by the item_vendor_value column
- * @method     ChildItemInfoQuery orderByItemDefaultSkin($order = Criteria::ASC) Order by the item_default_skin column
- * @method     ChildItemInfoQuery orderByItemFlags($order = Criteria::ASC) Order by the item_flags column
- * @method     ChildItemInfoQuery orderByItemGameTypes($order = Criteria::ASC) Order by the item_game_types column
- * @method     ChildItemInfoQuery orderByItemRestrictions($order = Criteria::ASC) Order by the item_restrictions column
+ * @method     ChildItemInfoQuery orderByDescription($order = Criteria::ASC) Order by the description column
+ * @method     ChildItemInfoQuery orderByType($order = Criteria::ASC) Order by the type column
+ * @method     ChildItemInfoQuery orderByRarity($order = Criteria::ASC) Order by the rarity column
+ * @method     ChildItemInfoQuery orderByLevel($order = Criteria::ASC) Order by the level column
+ * @method     ChildItemInfoQuery orderByVendorValue($order = Criteria::ASC) Order by the vendor_value column
+ * @method     ChildItemInfoQuery orderByDefaultSkin($order = Criteria::ASC) Order by the default_skin column
+ * @method     ChildItemInfoQuery orderByFlags($order = Criteria::ASC) Order by the flags column
+ * @method     ChildItemInfoQuery orderByGameTypes($order = Criteria::ASC) Order by the game_types column
+ * @method     ChildItemInfoQuery orderByRestrictions($order = Criteria::ASC) Order by the restrictions column
  *
  * @method     ChildItemInfoQuery groupByItemId() Group by the item_id column
- * @method     ChildItemInfoQuery groupByItemDescription() Group by the item_description column
- * @method     ChildItemInfoQuery groupByItemType() Group by the item_type column
- * @method     ChildItemInfoQuery groupByItemRarity() Group by the item_rarity column
- * @method     ChildItemInfoQuery groupByItemLevel() Group by the item_level column
- * @method     ChildItemInfoQuery groupByItemVendorValue() Group by the item_vendor_value column
- * @method     ChildItemInfoQuery groupByItemDefaultSkin() Group by the item_default_skin column
- * @method     ChildItemInfoQuery groupByItemFlags() Group by the item_flags column
- * @method     ChildItemInfoQuery groupByItemGameTypes() Group by the item_game_types column
- * @method     ChildItemInfoQuery groupByItemRestrictions() Group by the item_restrictions column
+ * @method     ChildItemInfoQuery groupByDescription() Group by the description column
+ * @method     ChildItemInfoQuery groupByType() Group by the type column
+ * @method     ChildItemInfoQuery groupByRarity() Group by the rarity column
+ * @method     ChildItemInfoQuery groupByLevel() Group by the level column
+ * @method     ChildItemInfoQuery groupByVendorValue() Group by the vendor_value column
+ * @method     ChildItemInfoQuery groupByDefaultSkin() Group by the default_skin column
+ * @method     ChildItemInfoQuery groupByFlags() Group by the flags column
+ * @method     ChildItemInfoQuery groupByGameTypes() Group by the game_types column
+ * @method     ChildItemInfoQuery groupByRestrictions() Group by the restrictions column
  *
  * @method     ChildItemInfoQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildItemInfoQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -50,47 +50,47 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItemInfoQuery rightJoinItem($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Item relation
  * @method     ChildItemInfoQuery innerJoinItem($relationAlias = null) Adds a INNER JOIN clause to the query using the Item relation
  *
- * @method     \ItemQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \GW2ledger\Database\ItemQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildItemInfo findOne(ConnectionInterface $con = null) Return the first ChildItemInfo matching the query
  * @method     ChildItemInfo findOneOrCreate(ConnectionInterface $con = null) Return the first ChildItemInfo matching the query, or a new ChildItemInfo object populated from the query conditions when no match is found
  *
  * @method     ChildItemInfo findOneByItemId(int $item_id) Return the first ChildItemInfo filtered by the item_id column
- * @method     ChildItemInfo findOneByItemDescription(string $item_description) Return the first ChildItemInfo filtered by the item_description column
- * @method     ChildItemInfo findOneByItemType(string $item_type) Return the first ChildItemInfo filtered by the item_type column
- * @method     ChildItemInfo findOneByItemRarity(string $item_rarity) Return the first ChildItemInfo filtered by the item_rarity column
- * @method     ChildItemInfo findOneByItemLevel(int $item_level) Return the first ChildItemInfo filtered by the item_level column
- * @method     ChildItemInfo findOneByItemVendorValue(int $item_vendor_value) Return the first ChildItemInfo filtered by the item_vendor_value column
- * @method     ChildItemInfo findOneByItemDefaultSkin(int $item_default_skin) Return the first ChildItemInfo filtered by the item_default_skin column
- * @method     ChildItemInfo findOneByItemFlags(string $item_flags) Return the first ChildItemInfo filtered by the item_flags column
- * @method     ChildItemInfo findOneByItemGameTypes(string $item_game_types) Return the first ChildItemInfo filtered by the item_game_types column
- * @method     ChildItemInfo findOneByItemRestrictions(string $item_restrictions) Return the first ChildItemInfo filtered by the item_restrictions column *
+ * @method     ChildItemInfo findOneByDescription(string $description) Return the first ChildItemInfo filtered by the description column
+ * @method     ChildItemInfo findOneByType(string $type) Return the first ChildItemInfo filtered by the type column
+ * @method     ChildItemInfo findOneByRarity(string $rarity) Return the first ChildItemInfo filtered by the rarity column
+ * @method     ChildItemInfo findOneByLevel(int $level) Return the first ChildItemInfo filtered by the level column
+ * @method     ChildItemInfo findOneByVendorValue(int $vendor_value) Return the first ChildItemInfo filtered by the vendor_value column
+ * @method     ChildItemInfo findOneByDefaultSkin(int $default_skin) Return the first ChildItemInfo filtered by the default_skin column
+ * @method     ChildItemInfo findOneByFlags(string $flags) Return the first ChildItemInfo filtered by the flags column
+ * @method     ChildItemInfo findOneByGameTypes(string $game_types) Return the first ChildItemInfo filtered by the game_types column
+ * @method     ChildItemInfo findOneByRestrictions(string $restrictions) Return the first ChildItemInfo filtered by the restrictions column *
 
  * @method     ChildItemInfo requirePk($key, ConnectionInterface $con = null) Return the ChildItemInfo by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildItemInfo requireOne(ConnectionInterface $con = null) Return the first ChildItemInfo matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildItemInfo requireOneByItemId(int $item_id) Return the first ChildItemInfo filtered by the item_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildItemInfo requireOneByItemDescription(string $item_description) Return the first ChildItemInfo filtered by the item_description column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildItemInfo requireOneByItemType(string $item_type) Return the first ChildItemInfo filtered by the item_type column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildItemInfo requireOneByItemRarity(string $item_rarity) Return the first ChildItemInfo filtered by the item_rarity column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildItemInfo requireOneByItemLevel(int $item_level) Return the first ChildItemInfo filtered by the item_level column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildItemInfo requireOneByItemVendorValue(int $item_vendor_value) Return the first ChildItemInfo filtered by the item_vendor_value column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildItemInfo requireOneByItemDefaultSkin(int $item_default_skin) Return the first ChildItemInfo filtered by the item_default_skin column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildItemInfo requireOneByItemFlags(string $item_flags) Return the first ChildItemInfo filtered by the item_flags column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildItemInfo requireOneByItemGameTypes(string $item_game_types) Return the first ChildItemInfo filtered by the item_game_types column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildItemInfo requireOneByItemRestrictions(string $item_restrictions) Return the first ChildItemInfo filtered by the item_restrictions column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildItemInfo requireOneByDescription(string $description) Return the first ChildItemInfo filtered by the description column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildItemInfo requireOneByType(string $type) Return the first ChildItemInfo filtered by the type column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildItemInfo requireOneByRarity(string $rarity) Return the first ChildItemInfo filtered by the rarity column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildItemInfo requireOneByLevel(int $level) Return the first ChildItemInfo filtered by the level column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildItemInfo requireOneByVendorValue(int $vendor_value) Return the first ChildItemInfo filtered by the vendor_value column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildItemInfo requireOneByDefaultSkin(int $default_skin) Return the first ChildItemInfo filtered by the default_skin column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildItemInfo requireOneByFlags(string $flags) Return the first ChildItemInfo filtered by the flags column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildItemInfo requireOneByGameTypes(string $game_types) Return the first ChildItemInfo filtered by the game_types column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildItemInfo requireOneByRestrictions(string $restrictions) Return the first ChildItemInfo filtered by the restrictions column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildItemInfo[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildItemInfo objects based on current ModelCriteria
  * @method     ChildItemInfo[]|ObjectCollection findByItemId(int $item_id) Return ChildItemInfo objects filtered by the item_id column
- * @method     ChildItemInfo[]|ObjectCollection findByItemDescription(string $item_description) Return ChildItemInfo objects filtered by the item_description column
- * @method     ChildItemInfo[]|ObjectCollection findByItemType(string $item_type) Return ChildItemInfo objects filtered by the item_type column
- * @method     ChildItemInfo[]|ObjectCollection findByItemRarity(string $item_rarity) Return ChildItemInfo objects filtered by the item_rarity column
- * @method     ChildItemInfo[]|ObjectCollection findByItemLevel(int $item_level) Return ChildItemInfo objects filtered by the item_level column
- * @method     ChildItemInfo[]|ObjectCollection findByItemVendorValue(int $item_vendor_value) Return ChildItemInfo objects filtered by the item_vendor_value column
- * @method     ChildItemInfo[]|ObjectCollection findByItemDefaultSkin(int $item_default_skin) Return ChildItemInfo objects filtered by the item_default_skin column
- * @method     ChildItemInfo[]|ObjectCollection findByItemFlags(string $item_flags) Return ChildItemInfo objects filtered by the item_flags column
- * @method     ChildItemInfo[]|ObjectCollection findByItemGameTypes(string $item_game_types) Return ChildItemInfo objects filtered by the item_game_types column
- * @method     ChildItemInfo[]|ObjectCollection findByItemRestrictions(string $item_restrictions) Return ChildItemInfo objects filtered by the item_restrictions column
+ * @method     ChildItemInfo[]|ObjectCollection findByDescription(string $description) Return ChildItemInfo objects filtered by the description column
+ * @method     ChildItemInfo[]|ObjectCollection findByType(string $type) Return ChildItemInfo objects filtered by the type column
+ * @method     ChildItemInfo[]|ObjectCollection findByRarity(string $rarity) Return ChildItemInfo objects filtered by the rarity column
+ * @method     ChildItemInfo[]|ObjectCollection findByLevel(int $level) Return ChildItemInfo objects filtered by the level column
+ * @method     ChildItemInfo[]|ObjectCollection findByVendorValue(int $vendor_value) Return ChildItemInfo objects filtered by the vendor_value column
+ * @method     ChildItemInfo[]|ObjectCollection findByDefaultSkin(int $default_skin) Return ChildItemInfo objects filtered by the default_skin column
+ * @method     ChildItemInfo[]|ObjectCollection findByFlags(string $flags) Return ChildItemInfo objects filtered by the flags column
+ * @method     ChildItemInfo[]|ObjectCollection findByGameTypes(string $game_types) Return ChildItemInfo objects filtered by the game_types column
+ * @method     ChildItemInfo[]|ObjectCollection findByRestrictions(string $restrictions) Return ChildItemInfo objects filtered by the restrictions column
  * @method     ChildItemInfo[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -99,13 +99,13 @@ abstract class ItemInfoQuery extends ModelCriteria
     protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityNotFoundException';
 
     /**
-     * Initializes internal state of \Base\ItemInfoQuery object.
+     * Initializes internal state of \GW2ledger\Database\Base\ItemInfoQuery object.
      *
      * @param     string $dbName The database name
      * @param     string $modelName The phpName of a model, e.g. 'Book'
      * @param     string $modelAlias The alias for the model in this query, e.g. 'b'
      */
-    public function __construct($dbName = 'gw2ledger', $modelName = '\\ItemInfo', $modelAlias = null)
+    public function __construct($dbName = 'gw2ledger', $modelName = '\\GW2ledger\\Database\\ItemInfo', $modelAlias = null)
     {
         parent::__construct($dbName, $modelName, $modelAlias);
     }
@@ -183,7 +183,7 @@ abstract class ItemInfoQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT item_id, item_description, item_type, item_rarity, item_level, item_vendor_value, item_default_skin, item_flags, item_game_types, item_restrictions FROM item_info WHERE item_id = :p0';
+        $sql = 'SELECT item_id, description, type, rarity, level, vendor_value, default_skin, flags, game_types, restrictions FROM item_info WHERE item_id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -317,103 +317,103 @@ abstract class ItemInfoQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the item_description column
+     * Filter the query on the description column
      *
      * Example usage:
      * <code>
-     * $query->filterByItemDescription('fooValue');   // WHERE item_description = 'fooValue'
-     * $query->filterByItemDescription('%fooValue%'); // WHERE item_description LIKE '%fooValue%'
+     * $query->filterByDescription('fooValue');   // WHERE description = 'fooValue'
+     * $query->filterByDescription('%fooValue%'); // WHERE description LIKE '%fooValue%'
      * </code>
      *
-     * @param     string $itemDescription The value to use as filter.
+     * @param     string $description The value to use as filter.
      *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildItemInfoQuery The current query, for fluid interface
      */
-    public function filterByItemDescription($itemDescription = null, $comparison = null)
+    public function filterByDescription($description = null, $comparison = null)
     {
         if (null === $comparison) {
-            if (is_array($itemDescription)) {
+            if (is_array($description)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $itemDescription)) {
-                $itemDescription = str_replace('*', '%', $itemDescription);
+            } elseif (preg_match('/[\%\*]/', $description)) {
+                $description = str_replace('*', '%', $description);
                 $comparison = Criteria::LIKE;
             }
         }
 
-        return $this->addUsingAlias(ItemInfoTableMap::COL_ITEM_DESCRIPTION, $itemDescription, $comparison);
+        return $this->addUsingAlias(ItemInfoTableMap::COL_DESCRIPTION, $description, $comparison);
     }
 
     /**
-     * Filter the query on the item_type column
+     * Filter the query on the type column
      *
      * Example usage:
      * <code>
-     * $query->filterByItemType('fooValue');   // WHERE item_type = 'fooValue'
-     * $query->filterByItemType('%fooValue%'); // WHERE item_type LIKE '%fooValue%'
+     * $query->filterByType('fooValue');   // WHERE type = 'fooValue'
+     * $query->filterByType('%fooValue%'); // WHERE type LIKE '%fooValue%'
      * </code>
      *
-     * @param     string $itemType The value to use as filter.
+     * @param     string $type The value to use as filter.
      *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildItemInfoQuery The current query, for fluid interface
      */
-    public function filterByItemType($itemType = null, $comparison = null)
+    public function filterByType($type = null, $comparison = null)
     {
         if (null === $comparison) {
-            if (is_array($itemType)) {
+            if (is_array($type)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $itemType)) {
-                $itemType = str_replace('*', '%', $itemType);
+            } elseif (preg_match('/[\%\*]/', $type)) {
+                $type = str_replace('*', '%', $type);
                 $comparison = Criteria::LIKE;
             }
         }
 
-        return $this->addUsingAlias(ItemInfoTableMap::COL_ITEM_TYPE, $itemType, $comparison);
+        return $this->addUsingAlias(ItemInfoTableMap::COL_TYPE, $type, $comparison);
     }
 
     /**
-     * Filter the query on the item_rarity column
+     * Filter the query on the rarity column
      *
      * Example usage:
      * <code>
-     * $query->filterByItemRarity('fooValue');   // WHERE item_rarity = 'fooValue'
-     * $query->filterByItemRarity('%fooValue%'); // WHERE item_rarity LIKE '%fooValue%'
+     * $query->filterByRarity('fooValue');   // WHERE rarity = 'fooValue'
+     * $query->filterByRarity('%fooValue%'); // WHERE rarity LIKE '%fooValue%'
      * </code>
      *
-     * @param     string $itemRarity The value to use as filter.
+     * @param     string $rarity The value to use as filter.
      *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildItemInfoQuery The current query, for fluid interface
      */
-    public function filterByItemRarity($itemRarity = null, $comparison = null)
+    public function filterByRarity($rarity = null, $comparison = null)
     {
         if (null === $comparison) {
-            if (is_array($itemRarity)) {
+            if (is_array($rarity)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $itemRarity)) {
-                $itemRarity = str_replace('*', '%', $itemRarity);
+            } elseif (preg_match('/[\%\*]/', $rarity)) {
+                $rarity = str_replace('*', '%', $rarity);
                 $comparison = Criteria::LIKE;
             }
         }
 
-        return $this->addUsingAlias(ItemInfoTableMap::COL_ITEM_RARITY, $itemRarity, $comparison);
+        return $this->addUsingAlias(ItemInfoTableMap::COL_RARITY, $rarity, $comparison);
     }
 
     /**
-     * Filter the query on the item_level column
+     * Filter the query on the level column
      *
      * Example usage:
      * <code>
-     * $query->filterByItemLevel(1234); // WHERE item_level = 1234
-     * $query->filterByItemLevel(array(12, 34)); // WHERE item_level IN (12, 34)
-     * $query->filterByItemLevel(array('min' => 12)); // WHERE item_level > 12
+     * $query->filterByLevel(1234); // WHERE level = 1234
+     * $query->filterByLevel(array(12, 34)); // WHERE level IN (12, 34)
+     * $query->filterByLevel(array('min' => 12)); // WHERE level > 12
      * </code>
      *
-     * @param     mixed $itemLevel The value to use as filter.
+     * @param     mixed $level The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -421,16 +421,16 @@ abstract class ItemInfoQuery extends ModelCriteria
      *
      * @return $this|ChildItemInfoQuery The current query, for fluid interface
      */
-    public function filterByItemLevel($itemLevel = null, $comparison = null)
+    public function filterByLevel($level = null, $comparison = null)
     {
-        if (is_array($itemLevel)) {
+        if (is_array($level)) {
             $useMinMax = false;
-            if (isset($itemLevel['min'])) {
-                $this->addUsingAlias(ItemInfoTableMap::COL_ITEM_LEVEL, $itemLevel['min'], Criteria::GREATER_EQUAL);
+            if (isset($level['min'])) {
+                $this->addUsingAlias(ItemInfoTableMap::COL_LEVEL, $level['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($itemLevel['max'])) {
-                $this->addUsingAlias(ItemInfoTableMap::COL_ITEM_LEVEL, $itemLevel['max'], Criteria::LESS_EQUAL);
+            if (isset($level['max'])) {
+                $this->addUsingAlias(ItemInfoTableMap::COL_LEVEL, $level['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -441,20 +441,20 @@ abstract class ItemInfoQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(ItemInfoTableMap::COL_ITEM_LEVEL, $itemLevel, $comparison);
+        return $this->addUsingAlias(ItemInfoTableMap::COL_LEVEL, $level, $comparison);
     }
 
     /**
-     * Filter the query on the item_vendor_value column
+     * Filter the query on the vendor_value column
      *
      * Example usage:
      * <code>
-     * $query->filterByItemVendorValue(1234); // WHERE item_vendor_value = 1234
-     * $query->filterByItemVendorValue(array(12, 34)); // WHERE item_vendor_value IN (12, 34)
-     * $query->filterByItemVendorValue(array('min' => 12)); // WHERE item_vendor_value > 12
+     * $query->filterByVendorValue(1234); // WHERE vendor_value = 1234
+     * $query->filterByVendorValue(array(12, 34)); // WHERE vendor_value IN (12, 34)
+     * $query->filterByVendorValue(array('min' => 12)); // WHERE vendor_value > 12
      * </code>
      *
-     * @param     mixed $itemVendorValue The value to use as filter.
+     * @param     mixed $vendorValue The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -462,16 +462,16 @@ abstract class ItemInfoQuery extends ModelCriteria
      *
      * @return $this|ChildItemInfoQuery The current query, for fluid interface
      */
-    public function filterByItemVendorValue($itemVendorValue = null, $comparison = null)
+    public function filterByVendorValue($vendorValue = null, $comparison = null)
     {
-        if (is_array($itemVendorValue)) {
+        if (is_array($vendorValue)) {
             $useMinMax = false;
-            if (isset($itemVendorValue['min'])) {
-                $this->addUsingAlias(ItemInfoTableMap::COL_ITEM_VENDOR_VALUE, $itemVendorValue['min'], Criteria::GREATER_EQUAL);
+            if (isset($vendorValue['min'])) {
+                $this->addUsingAlias(ItemInfoTableMap::COL_VENDOR_VALUE, $vendorValue['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($itemVendorValue['max'])) {
-                $this->addUsingAlias(ItemInfoTableMap::COL_ITEM_VENDOR_VALUE, $itemVendorValue['max'], Criteria::LESS_EQUAL);
+            if (isset($vendorValue['max'])) {
+                $this->addUsingAlias(ItemInfoTableMap::COL_VENDOR_VALUE, $vendorValue['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -482,20 +482,20 @@ abstract class ItemInfoQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(ItemInfoTableMap::COL_ITEM_VENDOR_VALUE, $itemVendorValue, $comparison);
+        return $this->addUsingAlias(ItemInfoTableMap::COL_VENDOR_VALUE, $vendorValue, $comparison);
     }
 
     /**
-     * Filter the query on the item_default_skin column
+     * Filter the query on the default_skin column
      *
      * Example usage:
      * <code>
-     * $query->filterByItemDefaultSkin(1234); // WHERE item_default_skin = 1234
-     * $query->filterByItemDefaultSkin(array(12, 34)); // WHERE item_default_skin IN (12, 34)
-     * $query->filterByItemDefaultSkin(array('min' => 12)); // WHERE item_default_skin > 12
+     * $query->filterByDefaultSkin(1234); // WHERE default_skin = 1234
+     * $query->filterByDefaultSkin(array(12, 34)); // WHERE default_skin IN (12, 34)
+     * $query->filterByDefaultSkin(array('min' => 12)); // WHERE default_skin > 12
      * </code>
      *
-     * @param     mixed $itemDefaultSkin The value to use as filter.
+     * @param     mixed $defaultSkin The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -503,16 +503,16 @@ abstract class ItemInfoQuery extends ModelCriteria
      *
      * @return $this|ChildItemInfoQuery The current query, for fluid interface
      */
-    public function filterByItemDefaultSkin($itemDefaultSkin = null, $comparison = null)
+    public function filterByDefaultSkin($defaultSkin = null, $comparison = null)
     {
-        if (is_array($itemDefaultSkin)) {
+        if (is_array($defaultSkin)) {
             $useMinMax = false;
-            if (isset($itemDefaultSkin['min'])) {
-                $this->addUsingAlias(ItemInfoTableMap::COL_ITEM_DEFAULT_SKIN, $itemDefaultSkin['min'], Criteria::GREATER_EQUAL);
+            if (isset($defaultSkin['min'])) {
+                $this->addUsingAlias(ItemInfoTableMap::COL_DEFAULT_SKIN, $defaultSkin['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($itemDefaultSkin['max'])) {
-                $this->addUsingAlias(ItemInfoTableMap::COL_ITEM_DEFAULT_SKIN, $itemDefaultSkin['max'], Criteria::LESS_EQUAL);
+            if (isset($defaultSkin['max'])) {
+                $this->addUsingAlias(ItemInfoTableMap::COL_DEFAULT_SKIN, $defaultSkin['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -523,100 +523,100 @@ abstract class ItemInfoQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(ItemInfoTableMap::COL_ITEM_DEFAULT_SKIN, $itemDefaultSkin, $comparison);
+        return $this->addUsingAlias(ItemInfoTableMap::COL_DEFAULT_SKIN, $defaultSkin, $comparison);
     }
 
     /**
-     * Filter the query on the item_flags column
+     * Filter the query on the flags column
      *
      * Example usage:
      * <code>
-     * $query->filterByItemFlags('fooValue');   // WHERE item_flags = 'fooValue'
-     * $query->filterByItemFlags('%fooValue%'); // WHERE item_flags LIKE '%fooValue%'
+     * $query->filterByFlags('fooValue');   // WHERE flags = 'fooValue'
+     * $query->filterByFlags('%fooValue%'); // WHERE flags LIKE '%fooValue%'
      * </code>
      *
-     * @param     string $itemFlags The value to use as filter.
+     * @param     string $flags The value to use as filter.
      *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildItemInfoQuery The current query, for fluid interface
      */
-    public function filterByItemFlags($itemFlags = null, $comparison = null)
+    public function filterByFlags($flags = null, $comparison = null)
     {
         if (null === $comparison) {
-            if (is_array($itemFlags)) {
+            if (is_array($flags)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $itemFlags)) {
-                $itemFlags = str_replace('*', '%', $itemFlags);
+            } elseif (preg_match('/[\%\*]/', $flags)) {
+                $flags = str_replace('*', '%', $flags);
                 $comparison = Criteria::LIKE;
             }
         }
 
-        return $this->addUsingAlias(ItemInfoTableMap::COL_ITEM_FLAGS, $itemFlags, $comparison);
+        return $this->addUsingAlias(ItemInfoTableMap::COL_FLAGS, $flags, $comparison);
     }
 
     /**
-     * Filter the query on the item_game_types column
+     * Filter the query on the game_types column
      *
      * Example usage:
      * <code>
-     * $query->filterByItemGameTypes('fooValue');   // WHERE item_game_types = 'fooValue'
-     * $query->filterByItemGameTypes('%fooValue%'); // WHERE item_game_types LIKE '%fooValue%'
+     * $query->filterByGameTypes('fooValue');   // WHERE game_types = 'fooValue'
+     * $query->filterByGameTypes('%fooValue%'); // WHERE game_types LIKE '%fooValue%'
      * </code>
      *
-     * @param     string $itemGameTypes The value to use as filter.
+     * @param     string $gameTypes The value to use as filter.
      *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildItemInfoQuery The current query, for fluid interface
      */
-    public function filterByItemGameTypes($itemGameTypes = null, $comparison = null)
+    public function filterByGameTypes($gameTypes = null, $comparison = null)
     {
         if (null === $comparison) {
-            if (is_array($itemGameTypes)) {
+            if (is_array($gameTypes)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $itemGameTypes)) {
-                $itemGameTypes = str_replace('*', '%', $itemGameTypes);
+            } elseif (preg_match('/[\%\*]/', $gameTypes)) {
+                $gameTypes = str_replace('*', '%', $gameTypes);
                 $comparison = Criteria::LIKE;
             }
         }
 
-        return $this->addUsingAlias(ItemInfoTableMap::COL_ITEM_GAME_TYPES, $itemGameTypes, $comparison);
+        return $this->addUsingAlias(ItemInfoTableMap::COL_GAME_TYPES, $gameTypes, $comparison);
     }
 
     /**
-     * Filter the query on the item_restrictions column
+     * Filter the query on the restrictions column
      *
      * Example usage:
      * <code>
-     * $query->filterByItemRestrictions('fooValue');   // WHERE item_restrictions = 'fooValue'
-     * $query->filterByItemRestrictions('%fooValue%'); // WHERE item_restrictions LIKE '%fooValue%'
+     * $query->filterByRestrictions('fooValue');   // WHERE restrictions = 'fooValue'
+     * $query->filterByRestrictions('%fooValue%'); // WHERE restrictions LIKE '%fooValue%'
      * </code>
      *
-     * @param     string $itemRestrictions The value to use as filter.
+     * @param     string $restrictions The value to use as filter.
      *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildItemInfoQuery The current query, for fluid interface
      */
-    public function filterByItemRestrictions($itemRestrictions = null, $comparison = null)
+    public function filterByRestrictions($restrictions = null, $comparison = null)
     {
         if (null === $comparison) {
-            if (is_array($itemRestrictions)) {
+            if (is_array($restrictions)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $itemRestrictions)) {
-                $itemRestrictions = str_replace('*', '%', $itemRestrictions);
+            } elseif (preg_match('/[\%\*]/', $restrictions)) {
+                $restrictions = str_replace('*', '%', $restrictions);
                 $comparison = Criteria::LIKE;
             }
         }
 
-        return $this->addUsingAlias(ItemInfoTableMap::COL_ITEM_RESTRICTIONS, $itemRestrictions, $comparison);
+        return $this->addUsingAlias(ItemInfoTableMap::COL_RESTRICTIONS, $restrictions, $comparison);
     }
 
     /**
-     * Filter the query by a related \Item object
+     * Filter the query by a related \GW2ledger\Database\Item object
      *
-     * @param \Item|ObjectCollection $item The related object(s) to use as filter
+     * @param \GW2ledger\Database\Item|ObjectCollection $item The related object(s) to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @throws \Propel\Runtime\Exception\PropelException
@@ -625,7 +625,7 @@ abstract class ItemInfoQuery extends ModelCriteria
      */
     public function filterByItem($item, $comparison = null)
     {
-        if ($item instanceof \Item) {
+        if ($item instanceof \GW2ledger\Database\Item) {
             return $this
                 ->addUsingAlias(ItemInfoTableMap::COL_ITEM_ID, $item->getId(), $comparison);
         } elseif ($item instanceof ObjectCollection) {
@@ -636,7 +636,7 @@ abstract class ItemInfoQuery extends ModelCriteria
             return $this
                 ->addUsingAlias(ItemInfoTableMap::COL_ITEM_ID, $item->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByItem() only accepts arguments of type \Item or Collection');
+            throw new PropelException('filterByItem() only accepts arguments of type \GW2ledger\Database\Item or Collection');
         }
     }
 
@@ -681,13 +681,13 @@ abstract class ItemInfoQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \ItemQuery A secondary query class using the current class as primary query
+     * @return \GW2ledger\Database\ItemQuery A secondary query class using the current class as primary query
      */
     public function useItemQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinItem($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'Item', '\ItemQuery');
+            ->useQuery($relationAlias ? $relationAlias : 'Item', '\GW2ledger\Database\ItemQuery');
     }
 
     /**

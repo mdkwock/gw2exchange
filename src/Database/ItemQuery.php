@@ -1,6 +1,7 @@
 <?php
+namespace GW2ledger\Database;
 
-use GW2ledger\Database\Base\ItemQuery as BaseItemQuery;
+use Base\ItemQuery as BaseItemQuery;
 
 /**
  * Skeleton subclass for performing query and update operations on the 'item' table.

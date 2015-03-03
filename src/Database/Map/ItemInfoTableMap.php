@@ -1,9 +1,9 @@
 <?php
 
-namespace Map;
+namespace GW2ledger\Database\Map;
 
-use \ItemInfo;
-use \ItemInfoQuery;
+use GW2ledger\Database\ItemInfo;
+use GW2ledger\Database\ItemInfoQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -34,7 +34,7 @@ class ItemInfoTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = '.Map.ItemInfoTableMap';
+    const CLASS_NAME = 'GW2ledger.Database.Map.ItemInfoTableMap';
 
     /**
      * The default database name for this class
@@ -49,12 +49,12 @@ class ItemInfoTableMap extends TableMap
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\ItemInfo';
+    const OM_CLASS = '\\GW2ledger\\Database\\ItemInfo';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'ItemInfo';
+    const CLASS_DEFAULT = 'GW2ledger.Database.ItemInfo';
 
     /**
      * The total number of columns
@@ -77,49 +77,49 @@ class ItemInfoTableMap extends TableMap
     const COL_ITEM_ID = 'item_info.item_id';
 
     /**
-     * the column name for the item_description field
+     * the column name for the description field
      */
-    const COL_ITEM_DESCRIPTION = 'item_info.item_description';
+    const COL_DESCRIPTION = 'item_info.description';
 
     /**
-     * the column name for the item_type field
+     * the column name for the type field
      */
-    const COL_ITEM_TYPE = 'item_info.item_type';
+    const COL_TYPE = 'item_info.type';
 
     /**
-     * the column name for the item_rarity field
+     * the column name for the rarity field
      */
-    const COL_ITEM_RARITY = 'item_info.item_rarity';
+    const COL_RARITY = 'item_info.rarity';
 
     /**
-     * the column name for the item_level field
+     * the column name for the level field
      */
-    const COL_ITEM_LEVEL = 'item_info.item_level';
+    const COL_LEVEL = 'item_info.level';
 
     /**
-     * the column name for the item_vendor_value field
+     * the column name for the vendor_value field
      */
-    const COL_ITEM_VENDOR_VALUE = 'item_info.item_vendor_value';
+    const COL_VENDOR_VALUE = 'item_info.vendor_value';
 
     /**
-     * the column name for the item_default_skin field
+     * the column name for the default_skin field
      */
-    const COL_ITEM_DEFAULT_SKIN = 'item_info.item_default_skin';
+    const COL_DEFAULT_SKIN = 'item_info.default_skin';
 
     /**
-     * the column name for the item_flags field
+     * the column name for the flags field
      */
-    const COL_ITEM_FLAGS = 'item_info.item_flags';
+    const COL_FLAGS = 'item_info.flags';
 
     /**
-     * the column name for the item_game_types field
+     * the column name for the game_types field
      */
-    const COL_ITEM_GAME_TYPES = 'item_info.item_game_types';
+    const COL_GAME_TYPES = 'item_info.game_types';
 
     /**
-     * the column name for the item_restrictions field
+     * the column name for the restrictions field
      */
-    const COL_ITEM_RESTRICTIONS = 'item_info.item_restrictions';
+    const COL_RESTRICTIONS = 'item_info.restrictions';
 
     /**
      * The default string format for model objects of the related table
@@ -133,10 +133,10 @@ class ItemInfoTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('ItemId', 'ItemDescription', 'ItemType', 'ItemRarity', 'ItemLevel', 'ItemVendorValue', 'ItemDefaultSkin', 'ItemFlags', 'ItemGameTypes', 'ItemRestrictions', ),
-        self::TYPE_CAMELNAME     => array('itemId', 'itemDescription', 'itemType', 'itemRarity', 'itemLevel', 'itemVendorValue', 'itemDefaultSkin', 'itemFlags', 'itemGameTypes', 'itemRestrictions', ),
-        self::TYPE_COLNAME       => array(ItemInfoTableMap::COL_ITEM_ID, ItemInfoTableMap::COL_ITEM_DESCRIPTION, ItemInfoTableMap::COL_ITEM_TYPE, ItemInfoTableMap::COL_ITEM_RARITY, ItemInfoTableMap::COL_ITEM_LEVEL, ItemInfoTableMap::COL_ITEM_VENDOR_VALUE, ItemInfoTableMap::COL_ITEM_DEFAULT_SKIN, ItemInfoTableMap::COL_ITEM_FLAGS, ItemInfoTableMap::COL_ITEM_GAME_TYPES, ItemInfoTableMap::COL_ITEM_RESTRICTIONS, ),
-        self::TYPE_FIELDNAME     => array('item_id', 'item_description', 'item_type', 'item_rarity', 'item_level', 'item_vendor_value', 'item_default_skin', 'item_flags', 'item_game_types', 'item_restrictions', ),
+        self::TYPE_PHPNAME       => array('ItemId', 'Description', 'Type', 'Rarity', 'Level', 'VendorValue', 'DefaultSkin', 'Flags', 'GameTypes', 'Restrictions', ),
+        self::TYPE_CAMELNAME     => array('itemId', 'description', 'type', 'rarity', 'level', 'vendorValue', 'defaultSkin', 'flags', 'gameTypes', 'restrictions', ),
+        self::TYPE_COLNAME       => array(ItemInfoTableMap::COL_ITEM_ID, ItemInfoTableMap::COL_DESCRIPTION, ItemInfoTableMap::COL_TYPE, ItemInfoTableMap::COL_RARITY, ItemInfoTableMap::COL_LEVEL, ItemInfoTableMap::COL_VENDOR_VALUE, ItemInfoTableMap::COL_DEFAULT_SKIN, ItemInfoTableMap::COL_FLAGS, ItemInfoTableMap::COL_GAME_TYPES, ItemInfoTableMap::COL_RESTRICTIONS, ),
+        self::TYPE_FIELDNAME     => array('item_id', 'description', 'type', 'rarity', 'level', 'vendor_value', 'default_skin', 'flags', 'game_types', 'restrictions', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
@@ -147,10 +147,10 @@ class ItemInfoTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('ItemId' => 0, 'ItemDescription' => 1, 'ItemType' => 2, 'ItemRarity' => 3, 'ItemLevel' => 4, 'ItemVendorValue' => 5, 'ItemDefaultSkin' => 6, 'ItemFlags' => 7, 'ItemGameTypes' => 8, 'ItemRestrictions' => 9, ),
-        self::TYPE_CAMELNAME     => array('itemId' => 0, 'itemDescription' => 1, 'itemType' => 2, 'itemRarity' => 3, 'itemLevel' => 4, 'itemVendorValue' => 5, 'itemDefaultSkin' => 6, 'itemFlags' => 7, 'itemGameTypes' => 8, 'itemRestrictions' => 9, ),
-        self::TYPE_COLNAME       => array(ItemInfoTableMap::COL_ITEM_ID => 0, ItemInfoTableMap::COL_ITEM_DESCRIPTION => 1, ItemInfoTableMap::COL_ITEM_TYPE => 2, ItemInfoTableMap::COL_ITEM_RARITY => 3, ItemInfoTableMap::COL_ITEM_LEVEL => 4, ItemInfoTableMap::COL_ITEM_VENDOR_VALUE => 5, ItemInfoTableMap::COL_ITEM_DEFAULT_SKIN => 6, ItemInfoTableMap::COL_ITEM_FLAGS => 7, ItemInfoTableMap::COL_ITEM_GAME_TYPES => 8, ItemInfoTableMap::COL_ITEM_RESTRICTIONS => 9, ),
-        self::TYPE_FIELDNAME     => array('item_id' => 0, 'item_description' => 1, 'item_type' => 2, 'item_rarity' => 3, 'item_level' => 4, 'item_vendor_value' => 5, 'item_default_skin' => 6, 'item_flags' => 7, 'item_game_types' => 8, 'item_restrictions' => 9, ),
+        self::TYPE_PHPNAME       => array('ItemId' => 0, 'Description' => 1, 'Type' => 2, 'Rarity' => 3, 'Level' => 4, 'VendorValue' => 5, 'DefaultSkin' => 6, 'Flags' => 7, 'GameTypes' => 8, 'Restrictions' => 9, ),
+        self::TYPE_CAMELNAME     => array('itemId' => 0, 'description' => 1, 'type' => 2, 'rarity' => 3, 'level' => 4, 'vendorValue' => 5, 'defaultSkin' => 6, 'flags' => 7, 'gameTypes' => 8, 'restrictions' => 9, ),
+        self::TYPE_COLNAME       => array(ItemInfoTableMap::COL_ITEM_ID => 0, ItemInfoTableMap::COL_DESCRIPTION => 1, ItemInfoTableMap::COL_TYPE => 2, ItemInfoTableMap::COL_RARITY => 3, ItemInfoTableMap::COL_LEVEL => 4, ItemInfoTableMap::COL_VENDOR_VALUE => 5, ItemInfoTableMap::COL_DEFAULT_SKIN => 6, ItemInfoTableMap::COL_FLAGS => 7, ItemInfoTableMap::COL_GAME_TYPES => 8, ItemInfoTableMap::COL_RESTRICTIONS => 9, ),
+        self::TYPE_FIELDNAME     => array('item_id' => 0, 'description' => 1, 'type' => 2, 'rarity' => 3, 'level' => 4, 'vendor_value' => 5, 'default_skin' => 6, 'flags' => 7, 'game_types' => 8, 'restrictions' => 9, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
@@ -167,20 +167,20 @@ class ItemInfoTableMap extends TableMap
         $this->setName('item_info');
         $this->setPhpName('ItemInfo');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\ItemInfo');
-        $this->setPackage('');
+        $this->setClassName('\\GW2ledger\\Database\\ItemInfo');
+        $this->setPackage('GW2ledger.Database');
         $this->setUseIdGenerator(false);
         // columns
         $this->addForeignPrimaryKey('item_id', 'ItemId', 'INTEGER' , 'item', 'id', true, null, null);
-        $this->addColumn('item_description', 'ItemDescription', 'LONGVARCHAR', false, null, null);
-        $this->addColumn('item_type', 'ItemType', 'VARCHAR', true, 255, null);
-        $this->addColumn('item_rarity', 'ItemRarity', 'VARCHAR', true, 255, null);
-        $this->addColumn('item_level', 'ItemLevel', 'INTEGER', true, null, null);
-        $this->addColumn('item_vendor_value', 'ItemVendorValue', 'INTEGER', true, null, null);
-        $this->addColumn('item_default_skin', 'ItemDefaultSkin', 'INTEGER', false, null, null);
-        $this->addColumn('item_flags', 'ItemFlags', 'VARCHAR', true, 255, null);
-        $this->addColumn('item_game_types', 'ItemGameTypes', 'VARCHAR', true, 255, null);
-        $this->addColumn('item_restrictions', 'ItemRestrictions', 'VARCHAR', true, 255, null);
+        $this->addColumn('description', 'Description', 'LONGVARCHAR', false, null, null);
+        $this->addColumn('type', 'Type', 'VARCHAR', true, 255, null);
+        $this->addColumn('rarity', 'Rarity', 'VARCHAR', true, 255, null);
+        $this->addColumn('level', 'Level', 'INTEGER', true, null, null);
+        $this->addColumn('vendor_value', 'VendorValue', 'INTEGER', true, null, null);
+        $this->addColumn('default_skin', 'DefaultSkin', 'INTEGER', false, null, null);
+        $this->addColumn('flags', 'Flags', 'VARCHAR', true, 255, null);
+        $this->addColumn('game_types', 'GameTypes', 'VARCHAR', true, 255, null);
+        $this->addColumn('restrictions', 'Restrictions', 'VARCHAR', true, 255, null);
     } // initialize()
 
     /**
@@ -188,7 +188,7 @@ class ItemInfoTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Item', '\\Item', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Item', '\\GW2ledger\\Database\\Item', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':item_id',
@@ -339,26 +339,26 @@ class ItemInfoTableMap extends TableMap
     {
         if (null === $alias) {
             $criteria->addSelectColumn(ItemInfoTableMap::COL_ITEM_ID);
-            $criteria->addSelectColumn(ItemInfoTableMap::COL_ITEM_DESCRIPTION);
-            $criteria->addSelectColumn(ItemInfoTableMap::COL_ITEM_TYPE);
-            $criteria->addSelectColumn(ItemInfoTableMap::COL_ITEM_RARITY);
-            $criteria->addSelectColumn(ItemInfoTableMap::COL_ITEM_LEVEL);
-            $criteria->addSelectColumn(ItemInfoTableMap::COL_ITEM_VENDOR_VALUE);
-            $criteria->addSelectColumn(ItemInfoTableMap::COL_ITEM_DEFAULT_SKIN);
-            $criteria->addSelectColumn(ItemInfoTableMap::COL_ITEM_FLAGS);
-            $criteria->addSelectColumn(ItemInfoTableMap::COL_ITEM_GAME_TYPES);
-            $criteria->addSelectColumn(ItemInfoTableMap::COL_ITEM_RESTRICTIONS);
+            $criteria->addSelectColumn(ItemInfoTableMap::COL_DESCRIPTION);
+            $criteria->addSelectColumn(ItemInfoTableMap::COL_TYPE);
+            $criteria->addSelectColumn(ItemInfoTableMap::COL_RARITY);
+            $criteria->addSelectColumn(ItemInfoTableMap::COL_LEVEL);
+            $criteria->addSelectColumn(ItemInfoTableMap::COL_VENDOR_VALUE);
+            $criteria->addSelectColumn(ItemInfoTableMap::COL_DEFAULT_SKIN);
+            $criteria->addSelectColumn(ItemInfoTableMap::COL_FLAGS);
+            $criteria->addSelectColumn(ItemInfoTableMap::COL_GAME_TYPES);
+            $criteria->addSelectColumn(ItemInfoTableMap::COL_RESTRICTIONS);
         } else {
             $criteria->addSelectColumn($alias . '.item_id');
-            $criteria->addSelectColumn($alias . '.item_description');
-            $criteria->addSelectColumn($alias . '.item_type');
-            $criteria->addSelectColumn($alias . '.item_rarity');
-            $criteria->addSelectColumn($alias . '.item_level');
-            $criteria->addSelectColumn($alias . '.item_vendor_value');
-            $criteria->addSelectColumn($alias . '.item_default_skin');
-            $criteria->addSelectColumn($alias . '.item_flags');
-            $criteria->addSelectColumn($alias . '.item_game_types');
-            $criteria->addSelectColumn($alias . '.item_restrictions');
+            $criteria->addSelectColumn($alias . '.description');
+            $criteria->addSelectColumn($alias . '.type');
+            $criteria->addSelectColumn($alias . '.rarity');
+            $criteria->addSelectColumn($alias . '.level');
+            $criteria->addSelectColumn($alias . '.vendor_value');
+            $criteria->addSelectColumn($alias . '.default_skin');
+            $criteria->addSelectColumn($alias . '.flags');
+            $criteria->addSelectColumn($alias . '.game_types');
+            $criteria->addSelectColumn($alias . '.restrictions');
         }
     }
 
@@ -405,7 +405,7 @@ class ItemInfoTableMap extends TableMap
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \ItemInfo) { // it's a model object
+        } elseif ($values instanceof \GW2ledger\Database\ItemInfo) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks

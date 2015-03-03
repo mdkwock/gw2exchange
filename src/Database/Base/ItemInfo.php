@@ -1,13 +1,13 @@
 <?php
 
-namespace Base;
+namespace GW2ledger\Database\Base;
 
-use \Item as ChildItem;
-use \ItemInfoQuery as ChildItemInfoQuery;
-use \ItemQuery as ChildItemQuery;
 use \Exception;
 use \PDO;
-use Map\ItemInfoTableMap;
+use GW2ledger\Database\Item as ChildItem;
+use GW2ledger\Database\ItemInfoQuery as ChildItemInfoQuery;
+use GW2ledger\Database\ItemQuery as ChildItemQuery;
+use GW2ledger\Database\Map\ItemInfoTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -25,14 +25,14 @@ use Propel\Runtime\Parser\AbstractParser;
  *
  *
  *
-* @package    propel.generator..Base
+* @package    propel.generator.GW2ledger.Database.Base
 */
 abstract class ItemInfo implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Map\\ItemInfoTableMap';
+    const TABLE_MAP = '\\GW2ledger\\Database\\Map\\ItemInfoTableMap';
 
 
     /**
@@ -68,58 +68,58 @@ abstract class ItemInfo implements ActiveRecordInterface
     protected $item_id;
 
     /**
-     * The value for the item_description field.
+     * The value for the description field.
      * @var        string
      */
-    protected $item_description;
+    protected $description;
 
     /**
-     * The value for the item_type field.
+     * The value for the type field.
      * @var        string
      */
-    protected $item_type;
+    protected $type;
 
     /**
-     * The value for the item_rarity field.
+     * The value for the rarity field.
      * @var        string
      */
-    protected $item_rarity;
+    protected $rarity;
 
     /**
-     * The value for the item_level field.
+     * The value for the level field.
      * @var        int
      */
-    protected $item_level;
+    protected $level;
 
     /**
-     * The value for the item_vendor_value field.
+     * The value for the vendor_value field.
      * @var        int
      */
-    protected $item_vendor_value;
+    protected $vendor_value;
 
     /**
-     * The value for the item_default_skin field.
+     * The value for the default_skin field.
      * @var        int
      */
-    protected $item_default_skin;
+    protected $default_skin;
 
     /**
-     * The value for the item_flags field.
+     * The value for the flags field.
      * @var        string
      */
-    protected $item_flags;
+    protected $flags;
 
     /**
-     * The value for the item_game_types field.
+     * The value for the game_types field.
      * @var        string
      */
-    protected $item_game_types;
+    protected $game_types;
 
     /**
-     * The value for the item_restrictions field.
+     * The value for the restrictions field.
      * @var        string
      */
-    protected $item_restrictions;
+    protected $restrictions;
 
     /**
      * @var        ChildItem
@@ -135,7 +135,7 @@ abstract class ItemInfo implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Initializes internal state of Base\ItemInfo object.
+     * Initializes internal state of GW2ledger\Database\Base\ItemInfo object.
      */
     public function __construct()
     {
@@ -362,100 +362,100 @@ abstract class ItemInfo implements ActiveRecordInterface
     }
 
     /**
-     * Get the [item_description] column value.
+     * Get the [description] column value.
      *
      * @return string
      */
-    public function getItemDescription()
+    public function getDescription()
     {
-        return $this->item_description;
+        return $this->description;
     }
 
     /**
-     * Get the [item_type] column value.
+     * Get the [type] column value.
      *
      * @return string
      */
-    public function getItemType()
+    public function getType()
     {
-        return $this->item_type;
+        return $this->type;
     }
 
     /**
-     * Get the [item_rarity] column value.
+     * Get the [rarity] column value.
      *
      * @return string
      */
-    public function getItemRarity()
+    public function getRarity()
     {
-        return $this->item_rarity;
+        return $this->rarity;
     }
 
     /**
-     * Get the [item_level] column value.
+     * Get the [level] column value.
      *
      * @return int
      */
-    public function getItemLevel()
+    public function getLevel()
     {
-        return $this->item_level;
+        return $this->level;
     }
 
     /**
-     * Get the [item_vendor_value] column value.
+     * Get the [vendor_value] column value.
      *
      * @return int
      */
-    public function getItemVendorValue()
+    public function getVendorValue()
     {
-        return $this->item_vendor_value;
+        return $this->vendor_value;
     }
 
     /**
-     * Get the [item_default_skin] column value.
+     * Get the [default_skin] column value.
      *
      * @return int
      */
-    public function getItemDefaultSkin()
+    public function getDefaultSkin()
     {
-        return $this->item_default_skin;
+        return $this->default_skin;
     }
 
     /**
-     * Get the [item_flags] column value.
+     * Get the [flags] column value.
      *
      * @return string
      */
-    public function getItemFlags()
+    public function getFlags()
     {
-        return $this->item_flags;
+        return $this->flags;
     }
 
     /**
-     * Get the [item_game_types] column value.
+     * Get the [game_types] column value.
      *
      * @return string
      */
-    public function getItemGameTypes()
+    public function getGameTypes()
     {
-        return $this->item_game_types;
+        return $this->game_types;
     }
 
     /**
-     * Get the [item_restrictions] column value.
+     * Get the [restrictions] column value.
      *
      * @return string
      */
-    public function getItemRestrictions()
+    public function getRestrictions()
     {
-        return $this->item_restrictions;
+        return $this->restrictions;
     }
 
     /**
      * Set the value of [item_id] column.
      *
      * @param int $v new value
-     * @return $this|\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
      */
     public function setItemId($v)
     {
@@ -476,184 +476,184 @@ abstract class ItemInfo implements ActiveRecordInterface
     } // setItemId()
 
     /**
-     * Set the value of [item_description] column.
+     * Set the value of [description] column.
      *
      * @param string $v new value
-     * @return $this|\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
      */
-    public function setItemDescription($v)
+    public function setDescription($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->item_description !== $v) {
-            $this->item_description = $v;
-            $this->modifiedColumns[ItemInfoTableMap::COL_ITEM_DESCRIPTION] = true;
+        if ($this->description !== $v) {
+            $this->description = $v;
+            $this->modifiedColumns[ItemInfoTableMap::COL_DESCRIPTION] = true;
         }
 
         return $this;
-    } // setItemDescription()
+    } // setDescription()
 
     /**
-     * Set the value of [item_type] column.
+     * Set the value of [type] column.
      *
      * @param string $v new value
-     * @return $this|\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
      */
-    public function setItemType($v)
+    public function setType($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->item_type !== $v) {
-            $this->item_type = $v;
-            $this->modifiedColumns[ItemInfoTableMap::COL_ITEM_TYPE] = true;
+        if ($this->type !== $v) {
+            $this->type = $v;
+            $this->modifiedColumns[ItemInfoTableMap::COL_TYPE] = true;
         }
 
         return $this;
-    } // setItemType()
+    } // setType()
 
     /**
-     * Set the value of [item_rarity] column.
+     * Set the value of [rarity] column.
      *
      * @param string $v new value
-     * @return $this|\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
      */
-    public function setItemRarity($v)
+    public function setRarity($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->item_rarity !== $v) {
-            $this->item_rarity = $v;
-            $this->modifiedColumns[ItemInfoTableMap::COL_ITEM_RARITY] = true;
+        if ($this->rarity !== $v) {
+            $this->rarity = $v;
+            $this->modifiedColumns[ItemInfoTableMap::COL_RARITY] = true;
         }
 
         return $this;
-    } // setItemRarity()
+    } // setRarity()
 
     /**
-     * Set the value of [item_level] column.
+     * Set the value of [level] column.
      *
      * @param int $v new value
-     * @return $this|\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
      */
-    public function setItemLevel($v)
+    public function setLevel($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->item_level !== $v) {
-            $this->item_level = $v;
-            $this->modifiedColumns[ItemInfoTableMap::COL_ITEM_LEVEL] = true;
+        if ($this->level !== $v) {
+            $this->level = $v;
+            $this->modifiedColumns[ItemInfoTableMap::COL_LEVEL] = true;
         }
 
         return $this;
-    } // setItemLevel()
+    } // setLevel()
 
     /**
-     * Set the value of [item_vendor_value] column.
+     * Set the value of [vendor_value] column.
      *
      * @param int $v new value
-     * @return $this|\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
      */
-    public function setItemVendorValue($v)
+    public function setVendorValue($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->item_vendor_value !== $v) {
-            $this->item_vendor_value = $v;
-            $this->modifiedColumns[ItemInfoTableMap::COL_ITEM_VENDOR_VALUE] = true;
+        if ($this->vendor_value !== $v) {
+            $this->vendor_value = $v;
+            $this->modifiedColumns[ItemInfoTableMap::COL_VENDOR_VALUE] = true;
         }
 
         return $this;
-    } // setItemVendorValue()
+    } // setVendorValue()
 
     /**
-     * Set the value of [item_default_skin] column.
+     * Set the value of [default_skin] column.
      *
      * @param int $v new value
-     * @return $this|\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
      */
-    public function setItemDefaultSkin($v)
+    public function setDefaultSkin($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->item_default_skin !== $v) {
-            $this->item_default_skin = $v;
-            $this->modifiedColumns[ItemInfoTableMap::COL_ITEM_DEFAULT_SKIN] = true;
+        if ($this->default_skin !== $v) {
+            $this->default_skin = $v;
+            $this->modifiedColumns[ItemInfoTableMap::COL_DEFAULT_SKIN] = true;
         }
 
         return $this;
-    } // setItemDefaultSkin()
+    } // setDefaultSkin()
 
     /**
-     * Set the value of [item_flags] column.
+     * Set the value of [flags] column.
      *
      * @param string $v new value
-     * @return $this|\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
      */
-    public function setItemFlags($v)
+    public function setFlags($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->item_flags !== $v) {
-            $this->item_flags = $v;
-            $this->modifiedColumns[ItemInfoTableMap::COL_ITEM_FLAGS] = true;
+        if ($this->flags !== $v) {
+            $this->flags = $v;
+            $this->modifiedColumns[ItemInfoTableMap::COL_FLAGS] = true;
         }
 
         return $this;
-    } // setItemFlags()
+    } // setFlags()
 
     /**
-     * Set the value of [item_game_types] column.
+     * Set the value of [game_types] column.
      *
      * @param string $v new value
-     * @return $this|\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
      */
-    public function setItemGameTypes($v)
+    public function setGameTypes($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->item_game_types !== $v) {
-            $this->item_game_types = $v;
-            $this->modifiedColumns[ItemInfoTableMap::COL_ITEM_GAME_TYPES] = true;
+        if ($this->game_types !== $v) {
+            $this->game_types = $v;
+            $this->modifiedColumns[ItemInfoTableMap::COL_GAME_TYPES] = true;
         }
 
         return $this;
-    } // setItemGameTypes()
+    } // setGameTypes()
 
     /**
-     * Set the value of [item_restrictions] column.
+     * Set the value of [restrictions] column.
      *
      * @param string $v new value
-     * @return $this|\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
      */
-    public function setItemRestrictions($v)
+    public function setRestrictions($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->item_restrictions !== $v) {
-            $this->item_restrictions = $v;
-            $this->modifiedColumns[ItemInfoTableMap::COL_ITEM_RESTRICTIONS] = true;
+        if ($this->restrictions !== $v) {
+            $this->restrictions = $v;
+            $this->modifiedColumns[ItemInfoTableMap::COL_RESTRICTIONS] = true;
         }
 
         return $this;
-    } // setItemRestrictions()
+    } // setRestrictions()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -694,32 +694,32 @@ abstract class ItemInfo implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : ItemInfoTableMap::translateFieldName('ItemId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->item_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : ItemInfoTableMap::translateFieldName('ItemDescription', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->item_description = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : ItemInfoTableMap::translateFieldName('Description', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->description = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ItemInfoTableMap::translateFieldName('ItemType', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->item_type = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ItemInfoTableMap::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->type = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ItemInfoTableMap::translateFieldName('ItemRarity', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->item_rarity = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ItemInfoTableMap::translateFieldName('Rarity', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->rarity = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ItemInfoTableMap::translateFieldName('ItemLevel', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->item_level = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ItemInfoTableMap::translateFieldName('Level', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->level = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ItemInfoTableMap::translateFieldName('ItemVendorValue', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->item_vendor_value = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ItemInfoTableMap::translateFieldName('VendorValue', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->vendor_value = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ItemInfoTableMap::translateFieldName('ItemDefaultSkin', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->item_default_skin = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ItemInfoTableMap::translateFieldName('DefaultSkin', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->default_skin = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ItemInfoTableMap::translateFieldName('ItemFlags', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->item_flags = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ItemInfoTableMap::translateFieldName('Flags', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->flags = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : ItemInfoTableMap::translateFieldName('ItemGameTypes', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->item_game_types = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : ItemInfoTableMap::translateFieldName('GameTypes', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->game_types = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : ItemInfoTableMap::translateFieldName('ItemRestrictions', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->item_restrictions = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : ItemInfoTableMap::translateFieldName('Restrictions', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->restrictions = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -731,7 +731,7 @@ abstract class ItemInfo implements ActiveRecordInterface
             return $startcol + 10; // 10 = ItemInfoTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\ItemInfo'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\GW2ledger\\Database\\ItemInfo'), 0, $e);
         }
     }
 
@@ -940,32 +940,32 @@ abstract class ItemInfo implements ActiveRecordInterface
         if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_ID)) {
             $modifiedColumns[':p' . $index++]  = 'item_id';
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_DESCRIPTION)) {
-            $modifiedColumns[':p' . $index++]  = 'item_description';
+        if ($this->isColumnModified(ItemInfoTableMap::COL_DESCRIPTION)) {
+            $modifiedColumns[':p' . $index++]  = 'description';
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_TYPE)) {
-            $modifiedColumns[':p' . $index++]  = 'item_type';
+        if ($this->isColumnModified(ItemInfoTableMap::COL_TYPE)) {
+            $modifiedColumns[':p' . $index++]  = 'type';
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_RARITY)) {
-            $modifiedColumns[':p' . $index++]  = 'item_rarity';
+        if ($this->isColumnModified(ItemInfoTableMap::COL_RARITY)) {
+            $modifiedColumns[':p' . $index++]  = 'rarity';
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_LEVEL)) {
-            $modifiedColumns[':p' . $index++]  = 'item_level';
+        if ($this->isColumnModified(ItemInfoTableMap::COL_LEVEL)) {
+            $modifiedColumns[':p' . $index++]  = 'level';
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_VENDOR_VALUE)) {
-            $modifiedColumns[':p' . $index++]  = 'item_vendor_value';
+        if ($this->isColumnModified(ItemInfoTableMap::COL_VENDOR_VALUE)) {
+            $modifiedColumns[':p' . $index++]  = 'vendor_value';
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_DEFAULT_SKIN)) {
-            $modifiedColumns[':p' . $index++]  = 'item_default_skin';
+        if ($this->isColumnModified(ItemInfoTableMap::COL_DEFAULT_SKIN)) {
+            $modifiedColumns[':p' . $index++]  = 'default_skin';
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_FLAGS)) {
-            $modifiedColumns[':p' . $index++]  = 'item_flags';
+        if ($this->isColumnModified(ItemInfoTableMap::COL_FLAGS)) {
+            $modifiedColumns[':p' . $index++]  = 'flags';
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_GAME_TYPES)) {
-            $modifiedColumns[':p' . $index++]  = 'item_game_types';
+        if ($this->isColumnModified(ItemInfoTableMap::COL_GAME_TYPES)) {
+            $modifiedColumns[':p' . $index++]  = 'game_types';
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_RESTRICTIONS)) {
-            $modifiedColumns[':p' . $index++]  = 'item_restrictions';
+        if ($this->isColumnModified(ItemInfoTableMap::COL_RESTRICTIONS)) {
+            $modifiedColumns[':p' . $index++]  = 'restrictions';
         }
 
         $sql = sprintf(
@@ -981,32 +981,32 @@ abstract class ItemInfo implements ActiveRecordInterface
                     case 'item_id':
                         $stmt->bindValue($identifier, $this->item_id, PDO::PARAM_INT);
                         break;
-                    case 'item_description':
-                        $stmt->bindValue($identifier, $this->item_description, PDO::PARAM_STR);
+                    case 'description':
+                        $stmt->bindValue($identifier, $this->description, PDO::PARAM_STR);
                         break;
-                    case 'item_type':
-                        $stmt->bindValue($identifier, $this->item_type, PDO::PARAM_STR);
+                    case 'type':
+                        $stmt->bindValue($identifier, $this->type, PDO::PARAM_STR);
                         break;
-                    case 'item_rarity':
-                        $stmt->bindValue($identifier, $this->item_rarity, PDO::PARAM_STR);
+                    case 'rarity':
+                        $stmt->bindValue($identifier, $this->rarity, PDO::PARAM_STR);
                         break;
-                    case 'item_level':
-                        $stmt->bindValue($identifier, $this->item_level, PDO::PARAM_INT);
+                    case 'level':
+                        $stmt->bindValue($identifier, $this->level, PDO::PARAM_INT);
                         break;
-                    case 'item_vendor_value':
-                        $stmt->bindValue($identifier, $this->item_vendor_value, PDO::PARAM_INT);
+                    case 'vendor_value':
+                        $stmt->bindValue($identifier, $this->vendor_value, PDO::PARAM_INT);
                         break;
-                    case 'item_default_skin':
-                        $stmt->bindValue($identifier, $this->item_default_skin, PDO::PARAM_INT);
+                    case 'default_skin':
+                        $stmt->bindValue($identifier, $this->default_skin, PDO::PARAM_INT);
                         break;
-                    case 'item_flags':
-                        $stmt->bindValue($identifier, $this->item_flags, PDO::PARAM_STR);
+                    case 'flags':
+                        $stmt->bindValue($identifier, $this->flags, PDO::PARAM_STR);
                         break;
-                    case 'item_game_types':
-                        $stmt->bindValue($identifier, $this->item_game_types, PDO::PARAM_STR);
+                    case 'game_types':
+                        $stmt->bindValue($identifier, $this->game_types, PDO::PARAM_STR);
                         break;
-                    case 'item_restrictions':
-                        $stmt->bindValue($identifier, $this->item_restrictions, PDO::PARAM_STR);
+                    case 'restrictions':
+                        $stmt->bindValue($identifier, $this->restrictions, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -1067,31 +1067,31 @@ abstract class ItemInfo implements ActiveRecordInterface
                 return $this->getItemId();
                 break;
             case 1:
-                return $this->getItemDescription();
+                return $this->getDescription();
                 break;
             case 2:
-                return $this->getItemType();
+                return $this->getType();
                 break;
             case 3:
-                return $this->getItemRarity();
+                return $this->getRarity();
                 break;
             case 4:
-                return $this->getItemLevel();
+                return $this->getLevel();
                 break;
             case 5:
-                return $this->getItemVendorValue();
+                return $this->getVendorValue();
                 break;
             case 6:
-                return $this->getItemDefaultSkin();
+                return $this->getDefaultSkin();
                 break;
             case 7:
-                return $this->getItemFlags();
+                return $this->getFlags();
                 break;
             case 8:
-                return $this->getItemGameTypes();
+                return $this->getGameTypes();
                 break;
             case 9:
-                return $this->getItemRestrictions();
+                return $this->getRestrictions();
                 break;
             default:
                 return null;
@@ -1124,15 +1124,15 @@ abstract class ItemInfo implements ActiveRecordInterface
         $keys = ItemInfoTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getItemId(),
-            $keys[1] => $this->getItemDescription(),
-            $keys[2] => $this->getItemType(),
-            $keys[3] => $this->getItemRarity(),
-            $keys[4] => $this->getItemLevel(),
-            $keys[5] => $this->getItemVendorValue(),
-            $keys[6] => $this->getItemDefaultSkin(),
-            $keys[7] => $this->getItemFlags(),
-            $keys[8] => $this->getItemGameTypes(),
-            $keys[9] => $this->getItemRestrictions(),
+            $keys[1] => $this->getDescription(),
+            $keys[2] => $this->getType(),
+            $keys[3] => $this->getRarity(),
+            $keys[4] => $this->getLevel(),
+            $keys[5] => $this->getVendorValue(),
+            $keys[6] => $this->getDefaultSkin(),
+            $keys[7] => $this->getFlags(),
+            $keys[8] => $this->getGameTypes(),
+            $keys[9] => $this->getRestrictions(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1169,7 +1169,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\ItemInfo
+     * @return $this|\GW2ledger\Database\ItemInfo
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
@@ -1184,7 +1184,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\ItemInfo
+     * @return $this|\GW2ledger\Database\ItemInfo
      */
     public function setByPosition($pos, $value)
     {
@@ -1193,31 +1193,31 @@ abstract class ItemInfo implements ActiveRecordInterface
                 $this->setItemId($value);
                 break;
             case 1:
-                $this->setItemDescription($value);
+                $this->setDescription($value);
                 break;
             case 2:
-                $this->setItemType($value);
+                $this->setType($value);
                 break;
             case 3:
-                $this->setItemRarity($value);
+                $this->setRarity($value);
                 break;
             case 4:
-                $this->setItemLevel($value);
+                $this->setLevel($value);
                 break;
             case 5:
-                $this->setItemVendorValue($value);
+                $this->setVendorValue($value);
                 break;
             case 6:
-                $this->setItemDefaultSkin($value);
+                $this->setDefaultSkin($value);
                 break;
             case 7:
-                $this->setItemFlags($value);
+                $this->setFlags($value);
                 break;
             case 8:
-                $this->setItemGameTypes($value);
+                $this->setGameTypes($value);
                 break;
             case 9:
-                $this->setItemRestrictions($value);
+                $this->setRestrictions($value);
                 break;
         } // switch()
 
@@ -1249,31 +1249,31 @@ abstract class ItemInfo implements ActiveRecordInterface
             $this->setItemId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setItemDescription($arr[$keys[1]]);
+            $this->setDescription($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setItemType($arr[$keys[2]]);
+            $this->setType($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setItemRarity($arr[$keys[3]]);
+            $this->setRarity($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setItemLevel($arr[$keys[4]]);
+            $this->setLevel($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setItemVendorValue($arr[$keys[5]]);
+            $this->setVendorValue($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setItemDefaultSkin($arr[$keys[6]]);
+            $this->setDefaultSkin($arr[$keys[6]]);
         }
         if (array_key_exists($keys[7], $arr)) {
-            $this->setItemFlags($arr[$keys[7]]);
+            $this->setFlags($arr[$keys[7]]);
         }
         if (array_key_exists($keys[8], $arr)) {
-            $this->setItemGameTypes($arr[$keys[8]]);
+            $this->setGameTypes($arr[$keys[8]]);
         }
         if (array_key_exists($keys[9], $arr)) {
-            $this->setItemRestrictions($arr[$keys[9]]);
+            $this->setRestrictions($arr[$keys[9]]);
         }
     }
 
@@ -1294,7 +1294,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\ItemInfo The current object, for fluid interface
+     * @return $this|\GW2ledger\Database\ItemInfo The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1319,32 +1319,32 @@ abstract class ItemInfo implements ActiveRecordInterface
         if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_ID)) {
             $criteria->add(ItemInfoTableMap::COL_ITEM_ID, $this->item_id);
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_DESCRIPTION)) {
-            $criteria->add(ItemInfoTableMap::COL_ITEM_DESCRIPTION, $this->item_description);
+        if ($this->isColumnModified(ItemInfoTableMap::COL_DESCRIPTION)) {
+            $criteria->add(ItemInfoTableMap::COL_DESCRIPTION, $this->description);
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_TYPE)) {
-            $criteria->add(ItemInfoTableMap::COL_ITEM_TYPE, $this->item_type);
+        if ($this->isColumnModified(ItemInfoTableMap::COL_TYPE)) {
+            $criteria->add(ItemInfoTableMap::COL_TYPE, $this->type);
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_RARITY)) {
-            $criteria->add(ItemInfoTableMap::COL_ITEM_RARITY, $this->item_rarity);
+        if ($this->isColumnModified(ItemInfoTableMap::COL_RARITY)) {
+            $criteria->add(ItemInfoTableMap::COL_RARITY, $this->rarity);
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_LEVEL)) {
-            $criteria->add(ItemInfoTableMap::COL_ITEM_LEVEL, $this->item_level);
+        if ($this->isColumnModified(ItemInfoTableMap::COL_LEVEL)) {
+            $criteria->add(ItemInfoTableMap::COL_LEVEL, $this->level);
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_VENDOR_VALUE)) {
-            $criteria->add(ItemInfoTableMap::COL_ITEM_VENDOR_VALUE, $this->item_vendor_value);
+        if ($this->isColumnModified(ItemInfoTableMap::COL_VENDOR_VALUE)) {
+            $criteria->add(ItemInfoTableMap::COL_VENDOR_VALUE, $this->vendor_value);
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_DEFAULT_SKIN)) {
-            $criteria->add(ItemInfoTableMap::COL_ITEM_DEFAULT_SKIN, $this->item_default_skin);
+        if ($this->isColumnModified(ItemInfoTableMap::COL_DEFAULT_SKIN)) {
+            $criteria->add(ItemInfoTableMap::COL_DEFAULT_SKIN, $this->default_skin);
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_FLAGS)) {
-            $criteria->add(ItemInfoTableMap::COL_ITEM_FLAGS, $this->item_flags);
+        if ($this->isColumnModified(ItemInfoTableMap::COL_FLAGS)) {
+            $criteria->add(ItemInfoTableMap::COL_FLAGS, $this->flags);
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_GAME_TYPES)) {
-            $criteria->add(ItemInfoTableMap::COL_ITEM_GAME_TYPES, $this->item_game_types);
+        if ($this->isColumnModified(ItemInfoTableMap::COL_GAME_TYPES)) {
+            $criteria->add(ItemInfoTableMap::COL_GAME_TYPES, $this->game_types);
         }
-        if ($this->isColumnModified(ItemInfoTableMap::COL_ITEM_RESTRICTIONS)) {
-            $criteria->add(ItemInfoTableMap::COL_ITEM_RESTRICTIONS, $this->item_restrictions);
+        if ($this->isColumnModified(ItemInfoTableMap::COL_RESTRICTIONS)) {
+            $criteria->add(ItemInfoTableMap::COL_RESTRICTIONS, $this->restrictions);
         }
 
         return $criteria;
@@ -1432,7 +1432,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \ItemInfo (or compatible) type.
+     * @param      object $copyObj An object of \GW2ledger\Database\ItemInfo (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
@@ -1440,15 +1440,15 @@ abstract class ItemInfo implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setItemId($this->getItemId());
-        $copyObj->setItemDescription($this->getItemDescription());
-        $copyObj->setItemType($this->getItemType());
-        $copyObj->setItemRarity($this->getItemRarity());
-        $copyObj->setItemLevel($this->getItemLevel());
-        $copyObj->setItemVendorValue($this->getItemVendorValue());
-        $copyObj->setItemDefaultSkin($this->getItemDefaultSkin());
-        $copyObj->setItemFlags($this->getItemFlags());
-        $copyObj->setItemGameTypes($this->getItemGameTypes());
-        $copyObj->setItemRestrictions($this->getItemRestrictions());
+        $copyObj->setDescription($this->getDescription());
+        $copyObj->setType($this->getType());
+        $copyObj->setRarity($this->getRarity());
+        $copyObj->setLevel($this->getLevel());
+        $copyObj->setVendorValue($this->getVendorValue());
+        $copyObj->setDefaultSkin($this->getDefaultSkin());
+        $copyObj->setFlags($this->getFlags());
+        $copyObj->setGameTypes($this->getGameTypes());
+        $copyObj->setRestrictions($this->getRestrictions());
         if ($makeNew) {
             $copyObj->setNew(true);
         }
@@ -1463,7 +1463,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \ItemInfo Clone of current object.
+     * @return \GW2ledger\Database\ItemInfo Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1480,7 +1480,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * Declares an association between this object and a ChildItem object.
      *
      * @param  ChildItem $v
-     * @return $this|\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
      * @throws PropelException
      */
     public function setItem(ChildItem $v = null)
@@ -1532,15 +1532,15 @@ abstract class ItemInfo implements ActiveRecordInterface
             $this->aItem->removeItemInfo($this);
         }
         $this->item_id = null;
-        $this->item_description = null;
-        $this->item_type = null;
-        $this->item_rarity = null;
-        $this->item_level = null;
-        $this->item_vendor_value = null;
-        $this->item_default_skin = null;
-        $this->item_flags = null;
-        $this->item_game_types = null;
-        $this->item_restrictions = null;
+        $this->description = null;
+        $this->type = null;
+        $this->rarity = null;
+        $this->level = null;
+        $this->vendor_value = null;
+        $this->default_skin = null;
+        $this->flags = null;
+        $this->game_types = null;
+        $this->restrictions = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();

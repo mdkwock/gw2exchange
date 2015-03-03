@@ -1,20 +1,20 @@
 <?php
 
-namespace Base;
+namespace GW2ledger\Database\Base;
 
-use \Item as ChildItem;
-use \ItemDetail as ChildItemDetail;
-use \ItemDetailQuery as ChildItemDetailQuery;
-use \ItemInfo as ChildItemInfo;
-use \ItemInfoQuery as ChildItemInfoQuery;
-use \ItemItemDetail as ChildItemItemDetail;
-use \ItemItemDetailQuery as ChildItemItemDetailQuery;
-use \ItemQuery as ChildItemQuery;
-use \ItemSummary as ChildItemSummary;
-use \ItemSummaryQuery as ChildItemSummaryQuery;
 use \Exception;
 use \PDO;
-use Map\ItemTableMap;
+use GW2ledger\Database\Item as ChildItem;
+use GW2ledger\Database\ItemDetail as ChildItemDetail;
+use GW2ledger\Database\ItemDetailQuery as ChildItemDetailQuery;
+use GW2ledger\Database\ItemInfo as ChildItemInfo;
+use GW2ledger\Database\ItemInfoQuery as ChildItemInfoQuery;
+use GW2ledger\Database\ItemItemDetail as ChildItemItemDetail;
+use GW2ledger\Database\ItemItemDetailQuery as ChildItemItemDetailQuery;
+use GW2ledger\Database\ItemQuery as ChildItemQuery;
+use GW2ledger\Database\ItemSummary as ChildItemSummary;
+use GW2ledger\Database\ItemSummaryQuery as ChildItemSummaryQuery;
+use GW2ledger\Database\Map\ItemTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -33,14 +33,14 @@ use Propel\Runtime\Parser\AbstractParser;
  *
  *
  *
-* @package    propel.generator..Base
+* @package    propel.generator.GW2ledger.Database.Base
 */
 abstract class Item implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Map\\ItemTableMap';
+    const TABLE_MAP = '\\GW2ledger\\Database\\Map\\ItemTableMap';
 
 
     /**
@@ -134,7 +134,7 @@ abstract class Item implements ActiveRecordInterface
     protected $itemItemDetailsScheduledForDeletion = null;
 
     /**
-     * Initializes internal state of Base\Item object.
+     * Initializes internal state of GW2ledger\Database\Base\Item object.
      */
     public function __construct()
     {
@@ -384,7 +384,7 @@ abstract class Item implements ActiveRecordInterface
      * Set the value of [id] column.
      *
      * @param int $v new value
-     * @return $this|\Item The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -404,7 +404,7 @@ abstract class Item implements ActiveRecordInterface
      * Set the value of [name] column.
      *
      * @param string $v new value
-     * @return $this|\Item The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
      */
     public function setName($v)
     {
@@ -424,7 +424,7 @@ abstract class Item implements ActiveRecordInterface
      * Set the value of [icon] column.
      *
      * @param string $v new value
-     * @return $this|\Item The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
      */
     public function setIcon($v)
     {
@@ -495,7 +495,7 @@ abstract class Item implements ActiveRecordInterface
             return $startcol + 3; // 3 = ItemTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\Item'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\GW2ledger\\Database\\Item'), 0, $e);
         }
     }
 
@@ -681,7 +681,7 @@ abstract class Item implements ActiveRecordInterface
                         $pks[] = $entryPk;
                     }
 
-                    \ItemItemDetailQuery::create()
+                    \GW2ledger\Database\ItemItemDetailQuery::create()
                         ->filterByPrimaryKeys($pks)
                         ->delete($con);
 
@@ -707,7 +707,7 @@ abstract class Item implements ActiveRecordInterface
 
             if ($this->itemItemDetailsScheduledForDeletion !== null) {
                 if (!$this->itemItemDetailsScheduledForDeletion->isEmpty()) {
-                    \ItemItemDetailQuery::create()
+                    \GW2ledger\Database\ItemItemDetailQuery::create()
                         ->filterByPrimaryKeys($this->itemItemDetailsScheduledForDeletion->getPrimaryKeys(false))
                         ->delete($con);
                     $this->itemItemDetailsScheduledForDeletion = null;
@@ -942,7 +942,7 @@ abstract class Item implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\Item
+     * @return $this|\GW2ledger\Database\Item
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
@@ -957,7 +957,7 @@ abstract class Item implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\Item
+     * @return $this|\GW2ledger\Database\Item
      */
     public function setByPosition($pos, $value)
     {
@@ -1025,7 +1025,7 @@ abstract class Item implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\Item The current object, for fluid interface
+     * @return $this|\GW2ledger\Database\Item The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1135,7 +1135,7 @@ abstract class Item implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \Item (or compatible) type.
+     * @param      object $copyObj An object of \GW2ledger\Database\Item (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
@@ -1183,7 +1183,7 @@ abstract class Item implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \Item Clone of current object.
+     * @return \GW2ledger\Database\Item Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1233,7 +1233,7 @@ abstract class Item implements ActiveRecordInterface
      * Sets a single ChildItemInfo object as related to this object by a one-to-one relationship.
      *
      * @param  ChildItemInfo $v ChildItemInfo
-     * @return $this|\Item The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
      * @throws PropelException
      */
     public function setItemInfo(ChildItemInfo $v = null)
@@ -1288,7 +1288,7 @@ abstract class Item implements ActiveRecordInterface
             return;
         }
         $this->collItemItemDetails = new ObjectCollection();
-        $this->collItemItemDetails->setModel('\ItemItemDetail');
+        $this->collItemItemDetails->setModel('\GW2ledger\Database\ItemItemDetail');
     }
 
     /**
@@ -1424,7 +1424,7 @@ abstract class Item implements ActiveRecordInterface
      * through the ChildItemItemDetail foreign key attribute.
      *
      * @param  ChildItemItemDetail $l ChildItemItemDetail
-     * @return $this|\Item The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
      */
     public function addItemItemDetail(ChildItemItemDetail $l)
     {
@@ -1515,7 +1515,7 @@ abstract class Item implements ActiveRecordInterface
      * Sets a single ChildItemSummary object as related to this object by a one-to-one relationship.
      *
      * @param  ChildItemSummary $v ChildItemSummary
-     * @return $this|\Item The current object (for fluent API support)
+     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
      * @throws PropelException
      */
     public function setItemSummary(ChildItemSummary $v = null)
@@ -1558,7 +1558,7 @@ abstract class Item implements ActiveRecordInterface
         $this->collItemDetails = new ObjectCollection();
         $this->collItemDetailsPartial = true;
 
-        $this->collItemDetails->setModel('\ItemDetail');
+        $this->collItemDetails->setModel('\GW2ledger\Database\ItemDetail');
     }
 
     /**

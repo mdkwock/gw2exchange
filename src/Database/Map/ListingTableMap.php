@@ -1,9 +1,9 @@
 <?php
 
-namespace Map;
+namespace GW2ledger\Database\Map;
 
-use \Listing;
-use \ListingQuery;
+use GW2ledger\Database\Listing;
+use GW2ledger\Database\ListingQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -34,7 +34,7 @@ class ListingTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = '.Map.ListingTableMap';
+    const CLASS_NAME = 'GW2ledger.Database.Map.ListingTableMap';
 
     /**
      * The default database name for this class
@@ -49,12 +49,12 @@ class ListingTableMap extends TableMap
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\Listing';
+    const OM_CLASS = '\\GW2ledger\\Database\\Listing';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'Listing';
+    const CLASS_DEFAULT = 'GW2ledger.Database.Listing';
 
     /**
      * The total number of columns
@@ -142,9 +142,9 @@ class ListingTableMap extends TableMap
         $this->setName('listing');
         $this->setPhpName('Listing');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\Listing');
-        $this->setPackage('');
-        $this->setUseIdGenerator(false);
+        $this->setClassName('\\GW2ledger\\Database\\Listing');
+        $this->setPackage('GW2ledger.Database');
+        $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('type', 'Type', 'VARCHAR', true, 255, null);
@@ -358,7 +358,7 @@ class ListingTableMap extends TableMap
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \Listing) { // it's a model object
+        } elseif ($values instanceof \GW2ledger\Database\Listing) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
@@ -409,6 +409,10 @@ class ListingTableMap extends TableMap
             $criteria = clone $criteria; // rename for clarity
         } else {
             $criteria = $criteria->buildCriteria(); // build Criteria from Listing object
+        }
+
+        if ($criteria->containsKey(ListingTableMap::COL_ID) && $criteria->keyContainsValue(ListingTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.ListingTableMap::COL_ID.')');
         }
 
 

@@ -5,7 +5,7 @@ use \GW2ledger\Signature\Item\ItemParserInterface;
 /**
  * This interface is the Item object class facade
  */
-interface ItemFactoryInterface
+interface ItemInfoFactoryInterface
 {
   /**
    * constructor, supplies the factory with the classes it needs to create items
