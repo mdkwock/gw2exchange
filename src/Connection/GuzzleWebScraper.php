@@ -12,9 +12,9 @@ class GuzzleWebScraper implements WebScraperInterface
 {
   private $guzzleClient;
 
-  public function __construct()
+  public function __construct(Client $clientClass)
   {
-    $this->guzzleClient = new Client();
+    $this->guzzleClient = $clientClass;
   }
 
   /**

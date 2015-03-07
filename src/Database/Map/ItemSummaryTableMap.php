@@ -144,7 +144,7 @@ class ItemSummaryTableMap extends TableMap
         $this->setIdentifierQuoting(false);
         $this->setClassName('\\GW2ledger\\Database\\ItemSummary');
         $this->setPackage('GW2ledger.Database');
-        $this->setUseIdGenerator(true);
+        $this->setUseIdGenerator(false);
         // columns
         $this->addForeignPrimaryKey('item_id', 'ItemId', 'INTEGER' , 'item', 'id', true, null, null);
         $this->addColumn('buy_price', 'BuyPrice', 'INTEGER', false, null, null);
@@ -416,10 +416,6 @@ class ItemSummaryTableMap extends TableMap
             $criteria = clone $criteria; // rename for clarity
         } else {
             $criteria = $criteria->buildCriteria(); // build Criteria from ItemSummary object
-        }
-
-        if ($criteria->containsKey(ItemSummaryTableMap::COL_ITEM_ID) && $criteria->keyContainsValue(ItemSummaryTableMap::COL_ITEM_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.ItemSummaryTableMap::COL_ITEM_ID.')');
         }
 
 

@@ -3,16 +3,21 @@ require './vendor/autoload.php';
 
 require './database/generated-conf/config.php';
 
-use GW2ledger\Connection\GuzzleWebScraper;
-use GW2ledger\Item\ItemParser;
-use GW2ledger\Item\ItemFactory;
 
-$scraper = new GuzzleWebScraper();
-$webInfo = $scraper->getInfo('https://api.guildwars2.com/v2/items/1');
+use GW2ledger\Item\ItemDetailsArrayObject;
 
-$itemParser = new ItemParser();
-$itemFactory = new ItemFactory($itemParser);
 
-$item = $itemFactory->createFromJson($webInfo);
-$item->save();
-dd($item);
+    $details = array (
+      'type' => 'Staff',
+      'damage_type' => 'Physical',
+      'min_power' => 146,
+      'max_power' => 165,
+      'defense' => 0,
+      'infusion_slots' => array ( ),
+      'infix_upgrade' => array (
+          'attributes' => array ( ),
+        )
+      );
+    $type = "Weapon";
+    $item = null;
+    $itemDetails = new ItemDetailsArrayObject($item, $type, $details);

@@ -3,7 +3,7 @@ namespace GW2ledger\Signature\Item;
 
 use \GW2ledger\Signature\Item\ItemParserInterface;
 /**
- * This interface is the Item object class facade
+ * This interface creates Item model objects
  */
 interface ItemFactoryInterface
 {
@@ -16,7 +16,7 @@ interface ItemFactoryInterface
    * this function will return an instance of GW2ItemInterface
    * with values that are from the json string passed in
    * @param   string  $json           a json string representing the Item
-   * @return  GW2ItemInterface       the created object
+   * @return  Item      the created object
    */
   public function createFromJson($json);
 }

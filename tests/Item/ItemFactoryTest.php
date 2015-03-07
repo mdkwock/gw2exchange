@@ -3,6 +3,7 @@
 use GW2ledger\Item\ItemParser;
 use GW2ledger\Database\Item;
 use GW2ledger\Item\ItemFactory;
+use GW2ledger\Signature\Database\DatabaseObjectInterface;
 
 
 class ItemFactoryTest extends PHPUnit_Framework_TestCase
@@ -15,7 +16,7 @@ class ItemFactoryTest extends PHPUnit_Framework_TestCase
     $itemFactory = new ItemFactory($itemParser);
     $item = $itemFactory->createFromJson($json);
     $this->assertNotEmpty($item);
-    $this->assertTrue($item instanceof Item);
+    $this->assertTrue($item instanceof DatabaseObjectInterface);
   }
 }
 ?>

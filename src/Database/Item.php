@@ -16,21 +16,30 @@ use GW2ledger\Signature\Database\DatabaseObjectInterface;
  */
 class Item extends BaseItem implements DatabaseObjectInterface
 {
-  public function __construct($id, $name, $icon)
+
+  /**
+   * This function creates an Item using the parameters given
+   * @param  int     $id          the id of the item as given by GW2 server
+   * @param  string  $name        the name of the item
+   * @param  string  $icon        the icon of the item
+   * @return Item
+   */
+  public static function create($id, $name, $icon)
   {
-    $this->setId($id);
-    $this->setName($name);
-    $this->setIcon($icon);
+    $obj = new static();
+    $obj->setId($id);
+    $obj->setName($name);
+    $obj->setIcon($icon);
+    return $obj;    
   }
 
   /**
    * creates an object using an array of attributes
    * @param  array $attributes  an array of the attributes necessary to create the object
-   * @return object             the object that is created using the array
+   * @return Item             the object that is created using the array
    */
-  public static function create($attributes)
+  public static function createFromArray($attributes)
   {
-    $obj = new static($attributes['id'], $attributes['name'], $attributes['icon']);
-    return $obj;
+    return static::create($attributes['id'],$attributes['name'],$attributes['icon']);
   }
 }

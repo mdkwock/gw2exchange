@@ -740,10 +740,6 @@ abstract class ItemSummary implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[ItemSummaryTableMap::COL_ITEM_ID] = true;
-        if (null !== $this->item_id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . ItemSummaryTableMap::COL_ITEM_ID . ')');
-        }
 
          // check the columns in natural order for more readable SQL queries
         if ($this->isColumnModified(ItemSummaryTableMap::COL_ITEM_ID)) {
@@ -794,13 +790,6 @@ abstract class ItemSummary implements ActiveRecordInterface
             Propel::log($e->getMessage(), Propel::LOG_ERR);
             throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
         }
-
-        try {
-            $pk = $con->lastInsertId();
-        } catch (Exception $e) {
-            throw new PropelException('Unable to get autoincrement id.', 0, $e);
-        }
-        $this->setItemId($pk);
 
         $this->setNew(false);
     }
@@ -1160,13 +1149,13 @@ abstract class ItemSummary implements ActiveRecordInterface
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
+        $copyObj->setItemId($this->getItemId());
         $copyObj->setBuyPrice($this->getBuyPrice());
         $copyObj->setSellPrice($this->getSellPrice());
         $copyObj->setBuyQty($this->getBuyQty());
         $copyObj->setSellQty($this->getSellQty());
         if ($makeNew) {
             $copyObj->setNew(true);
-            $copyObj->setItemId(NULL); // this is a auto-increment column, so set to default value
         }
     }
 

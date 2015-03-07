@@ -16,12 +16,22 @@ use GW2ledger\Signature\Database\DatabaseObjectInterface;
  */
 class Listing extends BaseListing implements DatabaseObjectInterface
 {
-  public function __construct($type, $orders, $unit_price, $quantity)
+  /**
+   * creates an object using parameters
+   * @param  string $type          the value of the item detail for the item
+   * @param  int    $orders        the number of different orders that are being requested
+   * @param  int    $unit_price    the cost of one the listing
+   * @param  int    $quantity      the number that are being traded
+   * @return ItemItemDetail
+   */
+  public function create($type, $orders, $unit_price, $quantity)
   { 
-    $this->type = $type;
-    $this->orders = $orders;
-    $this->unit_price = $unit_price;
-    $this->quantity = $quantity;
+    $obj = new static();
+    $obj->setType($type);
+    $obj->setOrders($orders);
+    $obj->setUnitPrice($unit_price);
+    $obj->setQuantity($quantity);
+    return $obj;
   }
   
   /**
@@ -29,8 +39,8 @@ class Listing extends BaseListing implements DatabaseObjectInterface
    * @param  array $attributes  an array of the attributes necessary to create the object
    * @return object             the object that is created using the array
    */
-  public static function create($attributes)
+  public static function createFromArray($attributes)
   {
-    
+    return static::create($attributes['type'], $attributes['orders'], $attributes['unit_price'], $attributes['quantity']);
   }
 }

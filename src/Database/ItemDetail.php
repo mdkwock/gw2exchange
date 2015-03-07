@@ -2,7 +2,7 @@
 namespace GW2ledger\Database;
 
 use GW2ledger\Database\Base\ItemDetail as BaseItemDetail;
-use GW2ledger\Signature\Database\DatabaseObjectInterface;
+use GW2ledger\Signature\Database\ItemDetailInterface;
 
 /**
  * Skeleton subclass for representing a row from the 'item_detail' table.
@@ -14,13 +14,24 @@ use GW2ledger\Signature\Database\DatabaseObjectInterface;
  * long as it does not already exist in the output directory.
  *
  */
-class ItemDetail extends BaseItemDetail implements DatabaseObjectInterface
+class ItemDetail extends BaseItemDetail implements ItemDetailInterface
 {
-  public function __construct($item_type, $label, $value_type)
+  /**
+   * creates a new instance using parameters
+   * @param  string $item_type the type of item determines which details are available
+   * @param  string $label     the name of the value key
+   * @return ItemDetail
+   */
+  public static function create($item_type, $label,$value_type=null)
   {
-    $this->item_type = $item_type;
-    $this->label = $label;
-    $this->value_type = $value_type;
+    $obj = new static();
+    $obj->setItemType($item_type);
+    $obj->setLabel($label);
+    if(!empty($value_type)){
+      $obj->setValueType($value_type);
+    }
+    return $obj;
+
   }
 
   /**
@@ -28,8 +39,12 @@ class ItemDetail extends BaseItemDetail implements DatabaseObjectInterface
    * @param  array $attributes  an array of the attributes necessary to create the object
    * @return object             the object that is created using the array
    */
-  public static function create($attributes)
+  public static function createFromArray($values)
   {
-    
+    if(!array_key_exists('value_type', $values)){
+      //force the value type to exist bc otherwise they'll be errors
+      $values['value_type'] = null;
+    }
+    return static::create($values['item_type'],$values['label'],$values['value_type']);
   }
 }

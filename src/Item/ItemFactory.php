@@ -24,12 +24,12 @@ class ItemFactory implements ItemFactoryInterface
    * this function will return an instance of GW2ItemInterface
    * with values that are from the json string passed in
    * @param   string  $json           a json string representing the Item
-   * @return  GW2ItemInterface       the created object
+   * @return  Item            the created object
    */
   public function createFromJson($json)
   {
     $attributes = $this->itemParser->parseJson($json); //take the string and make it into a formatted array
-    $item = Item::create($attributes);
+    $item = Item::createFromArray($attributes);
     return $item;
   }
 }

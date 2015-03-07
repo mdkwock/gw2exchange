@@ -56,7 +56,7 @@
     <!-- what the item detail is called -->
     <column name="label" type="varchar" size="255" required="true" />
     <!-- the variable type ex number, string, array not sure if this will be used -->
-    <column name="value_type" type="varchar" size="255" required="true" />    
+    <column name="value_type" type="varchar" size="255" />    
   </table>
 
   <table name="listing">
@@ -75,7 +75,7 @@
      -->
   <table name="item_summary">
     <!-- setting primary key to true, makes propel treat it as a 1-1 relation -->
-    <column name="item_id" type="integer" required="required" primaryKey="true"  autoIncrement="true" />
+    <column name="item_id" type="integer" required="required" primaryKey="true" />
     <column name="buy_price" type="integer" required="required" />
     <column name="sell_price" type="integer" required="required" />
     <column name="buy_qty" type="integer" required="required" />

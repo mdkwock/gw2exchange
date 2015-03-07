@@ -144,7 +144,7 @@ class ItemDetailTableMap extends TableMap
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('item_type', 'ItemType', 'VARCHAR', true, 255, null);
         $this->addColumn('label', 'Label', 'VARCHAR', true, 255, null);
-        $this->addColumn('value_type', 'ValueType', 'VARCHAR', true, 255, null);
+        $this->addColumn('value_type', 'ValueType', 'VARCHAR', false, 255, null);
     } // initialize()
 
     /**

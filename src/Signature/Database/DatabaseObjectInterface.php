@@ -11,7 +11,7 @@ interface DatabaseObjectInterface
    * @param  array $attributes  an array of the attributes necessary to create the object
    * @return object             the object that is created using the array
    */
-  public static function create($attributes);
+  public static function createFromArray($attributes);
 
   /**
    * this function saves the object into storage

@@ -16,22 +16,33 @@ use GW2ledger\Signature\Database\DatabaseObjectInterface;
  */
 class ItemSummary extends BaseItemSummary implements DatabaseObjectInterface
 {
-  public function __construct($item_id, $buy_price, $sell_price, $buy_qty, $sell_qty)
+  /**
+   * creates an object
+   * @param  [type] $item_id    [description]
+   * @param  [type] $buy_price  [description]
+   * @param  [type] $sell_price [description]
+   * @param  [type] $buy_qty    [description]
+   * @param  [type] $sell_qty   [description]
+   * @return [type]             [description]
+   */
+  public static function create($item_id, $buy_price, $sell_price, $buy_qty, $sell_qty)
   {
-    $this->item_id = $item_id;
-    $this->buy_price = $buy_price;
-    $this->sell_price = $sell_price;
-    $this->buy_qty = $buy_qty;
-    $this->sell_qty = $sell_qty;
+    $obj = new static();
+    $obj->setItemId($item_id);
+    $obj->setBuyPrice($buy_price);
+    $obj->setSellPrice($sell_price);
+    $obj->setBuyQty($buy_qty);
+    $obj->setSellQty($sell_qty);
+    return $obj;
   }
   
   /**
    * creates an object using an array of attributes
-   * @param  array $attributes  an array of the attributes necessary to create the object
+   * @param  array $values  an array of the values necessary to create the object
    * @return object             the object that is created using the array
    */
-  public static function create($attributes)
+  public static function createFromArray($values)
   {
-    
+    return static::create($values['item_id'], $values['buy_price'], $values['sell_price'], $values['buy_qty'], $values['sell_qty']);
   }
 }

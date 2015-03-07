@@ -30,14 +30,14 @@ class ItemParserTest extends PHPUnit_Framework_TestCase
       'id' => 1,
       'icon' => 'https://render.guildwars2.com/file/4AECE5EA59CA057F4C53E1EDFE95E0E3E61DE37F/60980.png',
       'details' => array (
-      'type' => 'Staff',
-      'damage_type' => 'Physical',
-      'min_power' => 146,
-      'max_power' => 165,
-      'defense' => 0,
-      'infusion_slots' => array ( ),
-      'infix_upgrade' => array (
-        'attributes' => array ( ),
+        'type' => 'Staff',
+        'damage_type' => 'Physical',
+        'min_power' => 146,
+        'max_power' => 165,
+        'defense' => 0,
+        'infusion_slots' => array ( ),
+        'infix_upgrade' => array (
+          'attributes' => array ( ),
       ),
       'secondary_suffix_item_id' => '', 
       ),
@@ -49,6 +49,18 @@ class ItemParserTest extends PHPUnit_Framework_TestCase
     $this->assertEquals('1', $result['id']);
     $this->assertEquals('MONSTER ONLY Moa Unarmed Pet', $result['name']);
     $this->assertEquals('https://render.guildwars2.com/file/4AECE5EA59CA057F4C53E1EDFE95E0E3E61DE37F/60980.png', $result['icon']);
+    $this->assertEquals(array (
+        'type' => 'Staff',
+        'damage_type' => 'Physical',
+        'min_power' => 146,
+        'max_power' => 165,
+        'defense' => 0,
+        'infusion_slots' => array ( ),
+        'infix_upgrade' => array (
+          'attributes' => array ( ),
+      ),
+      'secondary_suffix_item_id' => '', 
+      ),$result['details']);
   }
 }
 ?>
