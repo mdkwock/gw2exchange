@@ -23,10 +23,12 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItemQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildItemQuery orderByName($order = Criteria::ASC) Order by the name column
  * @method     ChildItemQuery orderByIcon($order = Criteria::ASC) Order by the icon column
+ * @method     ChildItemQuery orderByUrl($order = Criteria::ASC) Order by the url column
  *
  * @method     ChildItemQuery groupById() Group by the id column
  * @method     ChildItemQuery groupByName() Group by the name column
  * @method     ChildItemQuery groupByIcon() Group by the icon column
+ * @method     ChildItemQuery groupByUrl() Group by the url column
  *
  * @method     ChildItemQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildItemQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -51,7 +53,8 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildItem findOneById(int $id) Return the first ChildItem filtered by the id column
  * @method     ChildItem findOneByName(string $name) Return the first ChildItem filtered by the name column
- * @method     ChildItem findOneByIcon(string $icon) Return the first ChildItem filtered by the icon column *
+ * @method     ChildItem findOneByIcon(string $icon) Return the first ChildItem filtered by the icon column
+ * @method     ChildItem findOneByUrl(string $url) Return the first ChildItem filtered by the url column *
 
  * @method     ChildItem requirePk($key, ConnectionInterface $con = null) Return the ChildItem by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildItem requireOne(ConnectionInterface $con = null) Return the first ChildItem matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -59,11 +62,13 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItem requireOneById(int $id) Return the first ChildItem filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildItem requireOneByName(string $name) Return the first ChildItem filtered by the name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildItem requireOneByIcon(string $icon) Return the first ChildItem filtered by the icon column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildItem requireOneByUrl(string $url) Return the first ChildItem filtered by the url column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildItem[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildItem objects based on current ModelCriteria
  * @method     ChildItem[]|ObjectCollection findById(int $id) Return ChildItem objects filtered by the id column
  * @method     ChildItem[]|ObjectCollection findByName(string $name) Return ChildItem objects filtered by the name column
  * @method     ChildItem[]|ObjectCollection findByIcon(string $icon) Return ChildItem objects filtered by the icon column
+ * @method     ChildItem[]|ObjectCollection findByUrl(string $url) Return ChildItem objects filtered by the url column
  * @method     ChildItem[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -156,7 +161,7 @@ abstract class ItemQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, name, icon FROM item WHERE id = :p0';
+        $sql = 'SELECT id, name, icon, url FROM item WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -343,6 +348,35 @@ abstract class ItemQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(ItemTableMap::COL_ICON, $icon, $comparison);
+    }
+
+    /**
+     * Filter the query on the url column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUrl('fooValue');   // WHERE url = 'fooValue'
+     * $query->filterByUrl('%fooValue%'); // WHERE url LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $url The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildItemQuery The current query, for fluid interface
+     */
+    public function filterByUrl($url = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($url)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $url)) {
+                $url = str_replace('*', '%', $url);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(ItemTableMap::COL_URL, $url, $comparison);
     }
 
     /**

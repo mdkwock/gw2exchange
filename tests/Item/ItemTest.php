@@ -44,7 +44,8 @@ class ItemTest extends PHPUnit_Framework_TestCase
         'secondary_suffix_item_id' => '', 
       ),
     );
-    $item = Item::createFromArray($attributes);
+    $item = new Item();
+    $item->setAllFromArray($attributes);
     $this->assertNotEmpty($item);
     $this->assertEquals(1,$item->getId());
     $this->assertEquals('MONSTER ONLY Moa Unarmed Pet', $item->getName());

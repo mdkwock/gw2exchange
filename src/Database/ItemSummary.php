@@ -37,11 +37,16 @@ class ItemSummary extends BaseItemSummary implements DatabaseObjectInterface
   }
   
   /**
-   * creates an object using an array of attributes
+   * sets all the fields of an object using an array of attributes
    * @param  array $values  an array of the values necessary to create the object
    * @return object             the object that is created using the array
    */
-  public static function createFromArray($values)
+  /**
+   * sets all the fields of an object using an array of attributes
+   * @param  array $attributes  an array of the attributes necessary to create the object
+   * @return object             the object that is created using the array
+   */
+  public function setAllFromArray($values)
   {
     return static::create($values['item_id'], $values['buy_price'], $values['sell_price'], $values['buy_qty'], $values['sell_qty']);
   }

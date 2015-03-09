@@ -88,6 +88,12 @@ abstract class Item implements ActiveRecordInterface
     protected $icon;
 
     /**
+     * The value for the url field.
+     * @var        string
+     */
+    protected $url;
+
+    /**
      * @var        ChildItemInfo one-to-one related ChildItemInfo object
      */
     protected $singleItemInfo;
@@ -381,6 +387,16 @@ abstract class Item implements ActiveRecordInterface
     }
 
     /**
+     * Get the [url] column value.
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
      * Set the value of [id] column.
      *
      * @param int $v new value
@@ -441,6 +457,26 @@ abstract class Item implements ActiveRecordInterface
     } // setIcon()
 
     /**
+     * Set the value of [url] column.
+     *
+     * @param string $v new value
+     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
+     */
+    public function setUrl($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->url !== $v) {
+            $this->url = $v;
+            $this->modifiedColumns[ItemTableMap::COL_URL] = true;
+        }
+
+        return $this;
+    } // setUrl()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -484,6 +520,9 @@ abstract class Item implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ItemTableMap::translateFieldName('Icon', TableMap::TYPE_PHPNAME, $indexType)];
             $this->icon = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ItemTableMap::translateFieldName('Url', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->url = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -492,7 +531,7 @@ abstract class Item implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 3; // 3 = ItemTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 4; // 4 = ItemTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\GW2ledger\\Database\\Item'), 0, $e);
@@ -759,6 +798,9 @@ abstract class Item implements ActiveRecordInterface
         if ($this->isColumnModified(ItemTableMap::COL_ICON)) {
             $modifiedColumns[':p' . $index++]  = 'icon';
         }
+        if ($this->isColumnModified(ItemTableMap::COL_URL)) {
+            $modifiedColumns[':p' . $index++]  = 'url';
+        }
 
         $sql = sprintf(
             'INSERT INTO item (%s) VALUES (%s)',
@@ -778,6 +820,9 @@ abstract class Item implements ActiveRecordInterface
                         break;
                     case 'icon':
                         $stmt->bindValue($identifier, $this->icon, PDO::PARAM_STR);
+                        break;
+                    case 'url':
+                        $stmt->bindValue($identifier, $this->url, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -843,6 +888,9 @@ abstract class Item implements ActiveRecordInterface
             case 2:
                 return $this->getIcon();
                 break;
+            case 3:
+                return $this->getUrl();
+                break;
             default:
                 return null;
                 break;
@@ -876,6 +924,7 @@ abstract class Item implements ActiveRecordInterface
             $keys[0] => $this->getId(),
             $keys[1] => $this->getName(),
             $keys[2] => $this->getIcon(),
+            $keys[3] => $this->getUrl(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -971,6 +1020,9 @@ abstract class Item implements ActiveRecordInterface
             case 2:
                 $this->setIcon($value);
                 break;
+            case 3:
+                $this->setUrl($value);
+                break;
         } // switch()
 
         return $this;
@@ -1005,6 +1057,9 @@ abstract class Item implements ActiveRecordInterface
         }
         if (array_key_exists($keys[2], $arr)) {
             $this->setIcon($arr[$keys[2]]);
+        }
+        if (array_key_exists($keys[3], $arr)) {
+            $this->setUrl($arr[$keys[3]]);
         }
     }
 
@@ -1055,6 +1110,9 @@ abstract class Item implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ItemTableMap::COL_ICON)) {
             $criteria->add(ItemTableMap::COL_ICON, $this->icon);
+        }
+        if ($this->isColumnModified(ItemTableMap::COL_URL)) {
+            $criteria->add(ItemTableMap::COL_URL, $this->url);
         }
 
         return $criteria;
@@ -1145,6 +1203,7 @@ abstract class Item implements ActiveRecordInterface
         $copyObj->setId($this->getId());
         $copyObj->setName($this->getName());
         $copyObj->setIcon($this->getIcon());
+        $copyObj->setUrl($this->getUrl());
 
         if ($deepCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -1782,6 +1841,7 @@ abstract class Item implements ActiveRecordInterface
         $this->id = null;
         $this->name = null;
         $this->icon = null;
+        $this->url = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();

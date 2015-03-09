@@ -59,7 +59,7 @@ class ItemTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 3;
+    const NUM_COLUMNS = 4;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class ItemTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 3;
+    const NUM_HYDRATE_COLUMNS = 4;
 
     /**
      * the column name for the id field
@@ -87,6 +87,11 @@ class ItemTableMap extends TableMap
     const COL_ICON = 'item.icon';
 
     /**
+     * the column name for the url field
+     */
+    const COL_URL = 'item.url';
+
+    /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
@@ -98,11 +103,11 @@ class ItemTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Name', 'Icon', ),
-        self::TYPE_CAMELNAME     => array('id', 'name', 'icon', ),
-        self::TYPE_COLNAME       => array(ItemTableMap::COL_ID, ItemTableMap::COL_NAME, ItemTableMap::COL_ICON, ),
-        self::TYPE_FIELDNAME     => array('id', 'name', 'icon', ),
-        self::TYPE_NUM           => array(0, 1, 2, )
+        self::TYPE_PHPNAME       => array('Id', 'Name', 'Icon', 'Url', ),
+        self::TYPE_CAMELNAME     => array('id', 'name', 'icon', 'url', ),
+        self::TYPE_COLNAME       => array(ItemTableMap::COL_ID, ItemTableMap::COL_NAME, ItemTableMap::COL_ICON, ItemTableMap::COL_URL, ),
+        self::TYPE_FIELDNAME     => array('id', 'name', 'icon', 'url', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
     /**
@@ -112,11 +117,11 @@ class ItemTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'Icon' => 2, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'icon' => 2, ),
-        self::TYPE_COLNAME       => array(ItemTableMap::COL_ID => 0, ItemTableMap::COL_NAME => 1, ItemTableMap::COL_ICON => 2, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'icon' => 2, ),
-        self::TYPE_NUM           => array(0, 1, 2, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'Icon' => 2, 'Url' => 3, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'icon' => 2, 'url' => 3, ),
+        self::TYPE_COLNAME       => array(ItemTableMap::COL_ID => 0, ItemTableMap::COL_NAME => 1, ItemTableMap::COL_ICON => 2, ItemTableMap::COL_URL => 3, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'icon' => 2, 'url' => 3, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
     /**
@@ -139,6 +144,7 @@ class ItemTableMap extends TableMap
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('name', 'Name', 'VARCHAR', true, 255, null);
         $this->addColumn('icon', 'Icon', 'VARCHAR', true, 255, null);
+        $this->addColumn('url', 'Url', 'VARCHAR', true, 255, null);
     } // initialize()
 
     /**
@@ -314,10 +320,12 @@ class ItemTableMap extends TableMap
             $criteria->addSelectColumn(ItemTableMap::COL_ID);
             $criteria->addSelectColumn(ItemTableMap::COL_NAME);
             $criteria->addSelectColumn(ItemTableMap::COL_ICON);
+            $criteria->addSelectColumn(ItemTableMap::COL_URL);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.name');
             $criteria->addSelectColumn($alias . '.icon');
+            $criteria->addSelectColumn($alias . '.url');
         }
     }
 

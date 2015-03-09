@@ -23,26 +23,24 @@ class ItemItemDetail extends BaseItemItemDetail implements DatabaseObjectInterfa
    * @param  int    $item_detail_id the id of the item_detail
    * @return ItemItemDetail
    */
-  public static function create($value,$item_id=null,$item_detail_id=null)
+  public function setAll($value,$item_id=null,$item_detail_id=null)
   {
-    $obj = new static();
     if(!empty($item_id)){
-      $obj->setItemId($item_id);
+      $this->setItemId($item_id);
     }
     if(!empty($item_detail_id)){
-      $obj->setItemDetailId($item_detail_id);
+      $this->setItemDetailId($item_detail_id);
     }
     //we arent sure what we're getting so serialize it always
-    $obj->setValue($value);
-    return $obj;
+    $this->setValue($value);
   }
   
   /**
-   * creates an object using an array of attributes
+   * sets all the fields of an object using an array of attributes
    * @param  array $attributes  an array of the attributes necessary to create the object
    * @return object             the object that is created using the array
    */
-  public static function createFromArray($values)
+  public function setAllFromArray($values)
   {
     if(!array_key_exists('item_id', $values)){
       //if the item is not passed
@@ -52,7 +50,7 @@ class ItemItemDetail extends BaseItemItemDetail implements DatabaseObjectInterfa
       //if the item detail is not passed
       $values['item_detail_id'] = null;//prevent it from erroring out
     }
-    return static::create($values['value'],$values['item_id'],$values['item_detail_id']);
+    return $this->setAll($values['value'],$values['item_id'],$values['item_detail_id']);
   }
 
   public function getValue()

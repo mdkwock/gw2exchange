@@ -22,15 +22,16 @@ class Item extends BaseItem implements DatabaseObjectInterface
    * @param  int     $id          the id of the item as given by GW2 server
    * @param  string  $name        the name of the item
    * @param  string  $icon        the icon of the item
+   * @param  string  $url         the gw2 server endpoint (for easy referencing) 
    * @return Item
    */
-  public static function create($id, $name, $icon)
+  public function setAll($id, $name, $icon, $url)
   {
-    $obj = new static();
-    $obj->setId($id);
-    $obj->setName($name);
-    $obj->setIcon($icon);
-    return $obj;    
+    $this->setId($id);
+    $this->setName($name);
+    $this->setIcon($icon);
+    $this->setUrl($url);
+    return $this;    
   }
 
   /**
@@ -38,8 +39,8 @@ class Item extends BaseItem implements DatabaseObjectInterface
    * @param  array $attributes  an array of the attributes necessary to create the object
    * @return Item             the object that is created using the array
    */
-  public static function createFromArray($attributes)
+  public function setAllFromArray($attributes)
   {
-    return static::create($attributes['id'],$attributes['name'],$attributes['icon']);
+    return $this->setAll($attributes['id'],$attributes['name'],$attributes['icon']);
   }
 }

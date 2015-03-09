@@ -29,7 +29,8 @@ class ItemFactory implements ItemFactoryInterface
   public function createFromJson($json)
   {
     $attributes = $this->itemParser->parseJson($json); //take the string and make it into a formatted array
-    $item = Item::createFromArray($attributes);
+    $item = new Item();
+    $item->setAllFromArray($attributes);
     return $item;
   }
 }

@@ -2,7 +2,7 @@
 namespace GW2ledger\Database;
 
 use GW2ledger\Database\Base\ItemDetail as BaseItemDetail;
-use GW2ledger\Signature\Database\ItemDetailInterface;
+use GW2ledger\Database\ItemDetailInterface;
 
 /**
  * Skeleton subclass for representing a row from the 'item_detail' table.
@@ -22,29 +22,27 @@ class ItemDetail extends BaseItemDetail implements ItemDetailInterface
    * @param  string $label     the name of the value key
    * @return ItemDetail
    */
-  public static function create($item_type, $label,$value_type=null)
+  public function setAll($item_type, $label,$value_type=null)
   {
-    $obj = new static();
-    $obj->setItemType($item_type);
-    $obj->setLabel($label);
+    $this->setItemType($item_type);
+    $this->setLabel($label);
     if(!empty($value_type)){
-      $obj->setValueType($value_type);
+      $this->setValueType($value_type);
     }
-    return $obj;
 
   }
 
   /**
-   * creates an object using an array of attributes
+   * sets all the fields of an object using an array of attributes
    * @param  array $attributes  an array of the attributes necessary to create the object
    * @return object             the object that is created using the array
    */
-  public static function createFromArray($values)
+  public function setAllFromArray($values)
   {
     if(!array_key_exists('value_type', $values)){
       //force the value type to exist bc otherwise they'll be errors
       $values['value_type'] = null;
     }
-    return static::create($values['item_type'],$values['label'],$values['value_type']);
+    return $this->setAll($values['item_type'],$values['label'],$values['value_type']);
   }
 }

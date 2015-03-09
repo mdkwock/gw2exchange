@@ -35,11 +35,11 @@ class Listing extends BaseListing implements DatabaseObjectInterface
   }
   
   /**
-   * creates an object using an array of attributes
+   * sets all the fields of an object using an array of attributes
    * @param  array $attributes  an array of the attributes necessary to create the object
    * @return object             the object that is created using the array
    */
-  public static function createFromArray($attributes)
+  public function setAllFromArray($attributes)
   {
     return static::create($attributes['type'], $attributes['orders'], $attributes['unit_price'], $attributes['quantity']);
   }

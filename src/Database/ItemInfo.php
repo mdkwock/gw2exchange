@@ -30,48 +30,46 @@ class ItemInfo extends BaseItemInfo implements DatabaseObjectInterface
    * @param  string  $restrictions  what restrictions are on this item
    * @return ItemInfo
    */
-  public static function create($item_id,$description,$type,$rarity,$level,$vendor_value,$default_skin,$flags,$game_types,$restrictions)
+  public function setAll($item_id,$description,$type,$rarity,$level,$vendor_value,$default_skin,$flags,$game_types,$restrictions)
   {
-    $obj = new static();
-    $obj->setItemId($item_id);
+    $this->setItemId($item_id);
     if(!empty($description)){
       //only fill the description if it is set
-      $obj->setDescription($description);
+      $this->setDescription($description);
     }
-    $obj->setType($type);
-    $obj->setRarity($rarity);
-    $obj->setLevel($level);
-    $obj->setVendorValue($vendor_value);
+    $this->setType($type);
+    $this->setRarity($rarity);
+    $this->setLevel($level);
+    $this->setVendorValue($vendor_value);
     if(!empty($default_skin)){
       //only fill the description if it is set
-      $obj->setDefaultSkin($default_skin);
+      $this->setDefaultSkin($default_skin);
     }
 
     //flags is an array of strings, so serialize them
     $flagsStr = serialize($flags);
-    $obj->setFlags($flagsStr);
+    $this->setFlags($flagsStr);
 
     //game_types is an array of strings
     $gameTypesStr = serialize($game_types);
-    $obj->setGameTypes($gameTypesStr);
+    $this->setGameTypes($gameTypesStr);
 
     //restrictions is an array of strings
     $restrictionsStr = serialize($restrictions);
-    $obj->setRestrictions($restrictionsStr);
-    return $obj;
+    $this->setRestrictions($restrictionsStr);
   }
   
   /**
-   * creates an object using an array of attributes
+   * sets all the fields of an object using an array of attributes
    * @param  array $attributes  an array of the attributes necessary to create the object
    * @return object             the object that is created using the array
    */
-  public static function createFromArray($attributes)
+  public function setAllFromArray($attributes)
   {
     //description is optional so set it to null if it does not exist
     $attributes['description'] = empty($attributes['description'])?null:$attributes['description'];
     $attributes['default_skin'] = empty($attributes['default_skin'])?null:$attributes['default_skin'];
-    return static::create($attributes['id'],$attributes['description'],$attributes['type'],$attributes['rarity'],$attributes['level'],$attributes['vendor_value'],$attributes['default_skin'],$attributes['flags'],$attributes['game_types'],$attributes['restrictions']);
+    return $this->setAll($attributes['id'],$attributes['description'],$attributes['type'],$attributes['rarity'],$attributes['level'],$attributes['vendor_value'],$attributes['default_skin'],$attributes['flags'],$attributes['game_types'],$attributes['restrictions']);
   }
 
   public function getFlags(){
