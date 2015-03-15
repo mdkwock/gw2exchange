@@ -2,6 +2,7 @@
 namespace GW2ledger\Database;
 
 use GW2ledger\Database\Base\ItemSummary as BaseItemSummary;
+use GW2ledger\Database\Map\ItemSummaryTableMap;
 use GW2ledger\Signature\Database\DatabaseObjectInterface;
 
 /**
@@ -16,8 +17,27 @@ use GW2ledger\Signature\Database\DatabaseObjectInterface;
  */
 class ItemSummary extends BaseItemSummary implements DatabaseObjectInterface
 {
+  protected static $tableColumnMap;
+
   /**
-   * creates an object
+   * this function is used as a shortcut to the propel table mapping process
+   * will return an array of all of the columns that are controlled by this object
+   * @return string[]     all of the fields that this object has
+   */
+  public function getFields()
+  {
+    if(empty(static::$tableColumnMap)){
+      //if we have not already generated a map
+      $baseItemTable = ItemSummaryTableMap::getTableMap();
+      $baseItemColumns = $baseItemTable->getColumns();
+      //save to cache it
+      static::$tableColumnMap = array_map('strtolower', array_keys($baseItemColumns));
+    }
+    return static::$tableColumnMap;
+  }
+
+  /**
+   * sets all the fields an object
    * @param  [type] $item_id    [description]
    * @param  [type] $buy_price  [description]
    * @param  [type] $sell_price [description]
@@ -25,7 +45,7 @@ class ItemSummary extends BaseItemSummary implements DatabaseObjectInterface
    * @param  [type] $sell_qty   [description]
    * @return [type]             [description]
    */
-  public static function create($item_id, $buy_price, $sell_price, $buy_qty, $sell_qty)
+  public function setAll($item_id, $buy_price, $sell_price, $buy_qty, $sell_qty)
   {
     $obj = new static();
     $obj->setItemId($item_id);
@@ -36,11 +56,6 @@ class ItemSummary extends BaseItemSummary implements DatabaseObjectInterface
     return $obj;
   }
   
-  /**
-   * sets all the fields of an object using an array of attributes
-   * @param  array $values  an array of the values necessary to create the object
-   * @return object             the object that is created using the array
-   */
   /**
    * sets all the fields of an object using an array of attributes
    * @param  array $attributes  an array of the attributes necessary to create the object

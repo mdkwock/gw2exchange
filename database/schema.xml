@@ -7,7 +7,6 @@
     <column name="id" type="integer" required="true" primaryKey="true" />
     <column name="name" type="varchar" size="255" required="true" />
     <column name="icon" type="varchar" size="255" required="true" />
-    <column name="url" type="varchar" size="255" required="true" />
   </table>
 
   <!--
@@ -62,6 +61,10 @@
 
   <table name="listing">
     <column name="id" type="integer" primaryKey="true" autoIncrement="true" />   
+    <column name="item_id" type="integer" required="required" />
+    <foreign-key foreignTable="item">
+      <reference local="item_id" foreign="id"/>
+    </foreign-key>
     <!-- Type is either buy or sell for the type of order -->
     <column name="type" type="varchar" required="true"/> 
     <!-- The number of individual listings this object refers to (e.g. two players selling at the same price will end up in the same listing) -->

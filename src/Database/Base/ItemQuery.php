@@ -23,12 +23,10 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItemQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildItemQuery orderByName($order = Criteria::ASC) Order by the name column
  * @method     ChildItemQuery orderByIcon($order = Criteria::ASC) Order by the icon column
- * @method     ChildItemQuery orderByUrl($order = Criteria::ASC) Order by the url column
  *
  * @method     ChildItemQuery groupById() Group by the id column
  * @method     ChildItemQuery groupByName() Group by the name column
  * @method     ChildItemQuery groupByIcon() Group by the icon column
- * @method     ChildItemQuery groupByUrl() Group by the url column
  *
  * @method     ChildItemQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildItemQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -42,19 +40,22 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItemQuery rightJoinItemItemDetail($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ItemItemDetail relation
  * @method     ChildItemQuery innerJoinItemItemDetail($relationAlias = null) Adds a INNER JOIN clause to the query using the ItemItemDetail relation
  *
+ * @method     ChildItemQuery leftJoinListing($relationAlias = null) Adds a LEFT JOIN clause to the query using the Listing relation
+ * @method     ChildItemQuery rightJoinListing($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Listing relation
+ * @method     ChildItemQuery innerJoinListing($relationAlias = null) Adds a INNER JOIN clause to the query using the Listing relation
+ *
  * @method     ChildItemQuery leftJoinItemSummary($relationAlias = null) Adds a LEFT JOIN clause to the query using the ItemSummary relation
  * @method     ChildItemQuery rightJoinItemSummary($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ItemSummary relation
  * @method     ChildItemQuery innerJoinItemSummary($relationAlias = null) Adds a INNER JOIN clause to the query using the ItemSummary relation
  *
- * @method     \GW2ledger\Database\ItemInfoQuery|\GW2ledger\Database\ItemItemDetailQuery|\GW2ledger\Database\ItemSummaryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \GW2ledger\Database\ItemInfoQuery|\GW2ledger\Database\ItemItemDetailQuery|\GW2ledger\Database\ListingQuery|\GW2ledger\Database\ItemSummaryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildItem findOne(ConnectionInterface $con = null) Return the first ChildItem matching the query
  * @method     ChildItem findOneOrCreate(ConnectionInterface $con = null) Return the first ChildItem matching the query, or a new ChildItem object populated from the query conditions when no match is found
  *
  * @method     ChildItem findOneById(int $id) Return the first ChildItem filtered by the id column
  * @method     ChildItem findOneByName(string $name) Return the first ChildItem filtered by the name column
- * @method     ChildItem findOneByIcon(string $icon) Return the first ChildItem filtered by the icon column
- * @method     ChildItem findOneByUrl(string $url) Return the first ChildItem filtered by the url column *
+ * @method     ChildItem findOneByIcon(string $icon) Return the first ChildItem filtered by the icon column *
 
  * @method     ChildItem requirePk($key, ConnectionInterface $con = null) Return the ChildItem by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildItem requireOne(ConnectionInterface $con = null) Return the first ChildItem matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -62,13 +63,11 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItem requireOneById(int $id) Return the first ChildItem filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildItem requireOneByName(string $name) Return the first ChildItem filtered by the name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildItem requireOneByIcon(string $icon) Return the first ChildItem filtered by the icon column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildItem requireOneByUrl(string $url) Return the first ChildItem filtered by the url column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildItem[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildItem objects based on current ModelCriteria
  * @method     ChildItem[]|ObjectCollection findById(int $id) Return ChildItem objects filtered by the id column
  * @method     ChildItem[]|ObjectCollection findByName(string $name) Return ChildItem objects filtered by the name column
  * @method     ChildItem[]|ObjectCollection findByIcon(string $icon) Return ChildItem objects filtered by the icon column
- * @method     ChildItem[]|ObjectCollection findByUrl(string $url) Return ChildItem objects filtered by the url column
  * @method     ChildItem[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -161,7 +160,7 @@ abstract class ItemQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, name, icon, url FROM item WHERE id = :p0';
+        $sql = 'SELECT id, name, icon FROM item WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -351,35 +350,6 @@ abstract class ItemQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the url column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByUrl('fooValue');   // WHERE url = 'fooValue'
-     * $query->filterByUrl('%fooValue%'); // WHERE url LIKE '%fooValue%'
-     * </code>
-     *
-     * @param     string $url The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return $this|ChildItemQuery The current query, for fluid interface
-     */
-    public function filterByUrl($url = null, $comparison = null)
-    {
-        if (null === $comparison) {
-            if (is_array($url)) {
-                $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $url)) {
-                $url = str_replace('*', '%', $url);
-                $comparison = Criteria::LIKE;
-            }
-        }
-
-        return $this->addUsingAlias(ItemTableMap::COL_URL, $url, $comparison);
-    }
-
-    /**
      * Filter the query by a related \GW2ledger\Database\ItemInfo object
      *
      * @param \GW2ledger\Database\ItemInfo|ObjectCollection $itemInfo the related object to use as filter
@@ -523,6 +493,79 @@ abstract class ItemQuery extends ModelCriteria
         return $this
             ->joinItemItemDetail($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'ItemItemDetail', '\GW2ledger\Database\ItemItemDetailQuery');
+    }
+
+    /**
+     * Filter the query by a related \GW2ledger\Database\Listing object
+     *
+     * @param \GW2ledger\Database\Listing|ObjectCollection $listing the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildItemQuery The current query, for fluid interface
+     */
+    public function filterByListing($listing, $comparison = null)
+    {
+        if ($listing instanceof \GW2ledger\Database\Listing) {
+            return $this
+                ->addUsingAlias(ItemTableMap::COL_ID, $listing->getItemId(), $comparison);
+        } elseif ($listing instanceof ObjectCollection) {
+            return $this
+                ->useListingQuery()
+                ->filterByPrimaryKeys($listing->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByListing() only accepts arguments of type \GW2ledger\Database\Listing or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Listing relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildItemQuery The current query, for fluid interface
+     */
+    public function joinListing($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Listing');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Listing');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Listing relation Listing object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \GW2ledger\Database\ListingQuery A secondary query class using the current class as primary query
+     */
+    public function useListingQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinListing($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Listing', '\GW2ledger\Database\ListingQuery');
     }
 
     /**
