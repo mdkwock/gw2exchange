@@ -2,6 +2,7 @@
 namespace GW2ledger\Database;
 
 use GW2ledger\Database\Base\Listing as BaseListing;
+use GW2ledger\Database\Map\ListingTableMap;
 use GW2ledger\Signature\Database\DatabaseObjectInterface;
 
 /**
@@ -16,31 +17,50 @@ use GW2ledger\Signature\Database\DatabaseObjectInterface;
  */
 class Listing extends BaseListing implements DatabaseObjectInterface
 {
+  protected static $tableColumnMap;
+
   /**
-   * creates an object using parameters
+   * this function is used as a shortcut to the propel table mapping process
+   * will return an array of all of the columns that are controlled by this object
+   * @return string[]     all of the fields that this object has
+   */
+  public function getFields()
+  {
+    if(empty(static::$tableColumnMap)){
+      //if we have not already generated a map
+      $baseItemTable = ListingTableMap::getTableMap();
+      $baseItemColumns = $baseItemTable->getColumns();
+      //save to cache it
+      static::$tableColumnMap = array_map('strtolower', array_keys($baseItemColumns));
+    }
+    return static::$tableColumnMap;
+  }
+
+  /**
+   * sets all of the attributes of an object using parameters
+   * @param  int    $item_id       the id of the item that this listing pertains to
    * @param  string $type          the value of the item detail for the item
    * @param  int    $orders        the number of different orders that are being requested
    * @param  int    $unit_price    the cost of one the listing
    * @param  int    $quantity      the number that are being traded
    * @return ItemItemDetail
    */
-  public function create($type, $orders, $unit_price, $quantity)
+  public function setAll($item_id, $type, $orders, $unit_price, $quantity)
   { 
-    $obj = new static();
-    $obj->setType($type);
-    $obj->setOrders($orders);
-    $obj->setUnitPrice($unit_price);
-    $obj->setQuantity($quantity);
-    return $obj;
+    $this->setItemId($item_id);
+    $this->setType($type);
+    $this->setOrders($orders);
+    $this->setUnitPrice($unit_price);
+    $this->setQuantity($quantity);
   }
   
   /**
-   * sets all the fields of an object using an array of attributes
+   * sets all the fields of an thisect using an array of attributes
    * @param  array $attributes  an array of the attributes necessary to create the object
    * @return object             the object that is created using the array
    */
   public function setAllFromArray($attributes)
   {
-    return static::create($attributes['type'], $attributes['orders'], $attributes['unit_price'], $attributes['quantity']);
+    $this->setAll($attributes['ItemId'], $attributes['Type'], $attributes['Orders'], $attributes['UnitPrice'], $attributes['Quantity']);
   }
 }

@@ -14,6 +14,8 @@ use GW2ledger\Database\ItemItemDetailQuery as ChildItemItemDetailQuery;
 use GW2ledger\Database\ItemQuery as ChildItemQuery;
 use GW2ledger\Database\ItemSummary as ChildItemSummary;
 use GW2ledger\Database\ItemSummaryQuery as ChildItemSummaryQuery;
+use GW2ledger\Database\Listing as ChildListing;
+use GW2ledger\Database\ListingQuery as ChildListingQuery;
 use GW2ledger\Database\Map\ItemTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
@@ -88,12 +90,6 @@ abstract class Item implements ActiveRecordInterface
     protected $icon;
 
     /**
-     * The value for the url field.
-     * @var        string
-     */
-    protected $url;
-
-    /**
      * @var        ChildItemInfo one-to-one related ChildItemInfo object
      */
     protected $singleItemInfo;
@@ -103,6 +99,12 @@ abstract class Item implements ActiveRecordInterface
      */
     protected $collItemItemDetails;
     protected $collItemItemDetailsPartial;
+
+    /**
+     * @var        ObjectCollection|ChildListing[] Collection to store aggregation of ChildListing objects.
+     */
+    protected $collListings;
+    protected $collListingsPartial;
 
     /**
      * @var        ChildItemSummary one-to-one related ChildItemSummary object
@@ -138,6 +140,12 @@ abstract class Item implements ActiveRecordInterface
      * @var ObjectCollection|ChildItemItemDetail[]
      */
     protected $itemItemDetailsScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildListing[]
+     */
+    protected $listingsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of GW2ledger\Database\Base\Item object.
@@ -387,16 +395,6 @@ abstract class Item implements ActiveRecordInterface
     }
 
     /**
-     * Get the [url] column value.
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
      * Set the value of [id] column.
      *
      * @param int $v new value
@@ -457,26 +455,6 @@ abstract class Item implements ActiveRecordInterface
     } // setIcon()
 
     /**
-     * Set the value of [url] column.
-     *
-     * @param string $v new value
-     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
-     */
-    public function setUrl($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->url !== $v) {
-            $this->url = $v;
-            $this->modifiedColumns[ItemTableMap::COL_URL] = true;
-        }
-
-        return $this;
-    } // setUrl()
-
-    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -520,9 +498,6 @@ abstract class Item implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ItemTableMap::translateFieldName('Icon', TableMap::TYPE_PHPNAME, $indexType)];
             $this->icon = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ItemTableMap::translateFieldName('Url', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->url = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -531,7 +506,7 @@ abstract class Item implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 4; // 4 = ItemTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 3; // 3 = ItemTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\GW2ledger\\Database\\Item'), 0, $e);
@@ -595,6 +570,8 @@ abstract class Item implements ActiveRecordInterface
             $this->singleItemInfo = null;
 
             $this->collItemItemDetails = null;
+
+            $this->collListings = null;
 
             $this->singleItemSummary = null;
 
@@ -761,6 +738,24 @@ abstract class Item implements ActiveRecordInterface
                 }
             }
 
+            if ($this->listingsScheduledForDeletion !== null) {
+                if (!$this->listingsScheduledForDeletion->isEmpty()) {
+                    foreach ($this->listingsScheduledForDeletion as $listing) {
+                        // need to save related object because we set the relation to null
+                        $listing->save($con);
+                    }
+                    $this->listingsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collListings !== null) {
+                foreach ($this->collListings as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
             if ($this->singleItemSummary !== null) {
                 if (!$this->singleItemSummary->isDeleted() && ($this->singleItemSummary->isNew() || $this->singleItemSummary->isModified())) {
                     $affectedRows += $this->singleItemSummary->save($con);
@@ -798,9 +793,6 @@ abstract class Item implements ActiveRecordInterface
         if ($this->isColumnModified(ItemTableMap::COL_ICON)) {
             $modifiedColumns[':p' . $index++]  = 'icon';
         }
-        if ($this->isColumnModified(ItemTableMap::COL_URL)) {
-            $modifiedColumns[':p' . $index++]  = 'url';
-        }
 
         $sql = sprintf(
             'INSERT INTO item (%s) VALUES (%s)',
@@ -820,9 +812,6 @@ abstract class Item implements ActiveRecordInterface
                         break;
                     case 'icon':
                         $stmt->bindValue($identifier, $this->icon, PDO::PARAM_STR);
-                        break;
-                    case 'url':
-                        $stmt->bindValue($identifier, $this->url, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -888,9 +877,6 @@ abstract class Item implements ActiveRecordInterface
             case 2:
                 return $this->getIcon();
                 break;
-            case 3:
-                return $this->getUrl();
-                break;
             default:
                 return null;
                 break;
@@ -924,7 +910,6 @@ abstract class Item implements ActiveRecordInterface
             $keys[0] => $this->getId(),
             $keys[1] => $this->getName(),
             $keys[2] => $this->getIcon(),
-            $keys[3] => $this->getUrl(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -961,6 +946,21 @@ abstract class Item implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->collItemItemDetails->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collListings) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'listings';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'listings';
+                        break;
+                    default:
+                        $key = 'Listings';
+                }
+
+                $result[$key] = $this->collListings->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
             if (null !== $this->singleItemSummary) {
 
@@ -1020,9 +1020,6 @@ abstract class Item implements ActiveRecordInterface
             case 2:
                 $this->setIcon($value);
                 break;
-            case 3:
-                $this->setUrl($value);
-                break;
         } // switch()
 
         return $this;
@@ -1057,9 +1054,6 @@ abstract class Item implements ActiveRecordInterface
         }
         if (array_key_exists($keys[2], $arr)) {
             $this->setIcon($arr[$keys[2]]);
-        }
-        if (array_key_exists($keys[3], $arr)) {
-            $this->setUrl($arr[$keys[3]]);
         }
     }
 
@@ -1110,9 +1104,6 @@ abstract class Item implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ItemTableMap::COL_ICON)) {
             $criteria->add(ItemTableMap::COL_ICON, $this->icon);
-        }
-        if ($this->isColumnModified(ItemTableMap::COL_URL)) {
-            $criteria->add(ItemTableMap::COL_URL, $this->url);
         }
 
         return $criteria;
@@ -1203,7 +1194,6 @@ abstract class Item implements ActiveRecordInterface
         $copyObj->setId($this->getId());
         $copyObj->setName($this->getName());
         $copyObj->setIcon($this->getIcon());
-        $copyObj->setUrl($this->getUrl());
 
         if ($deepCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -1218,6 +1208,12 @@ abstract class Item implements ActiveRecordInterface
             foreach ($this->getItemItemDetails() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addItemItemDetail($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getListings() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addListing($relObj->copy($deepCopy));
                 }
             }
 
@@ -1268,6 +1264,9 @@ abstract class Item implements ActiveRecordInterface
     {
         if ('ItemItemDetail' == $relationName) {
             return $this->initItemItemDetails();
+        }
+        if ('Listing' == $relationName) {
+            return $this->initListings();
         }
     }
 
@@ -1551,6 +1550,224 @@ abstract class Item implements ActiveRecordInterface
         $query->joinWith('ItemDetail', $joinBehavior);
 
         return $this->getItemItemDetails($query, $con);
+    }
+
+    /**
+     * Clears out the collListings collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addListings()
+     */
+    public function clearListings()
+    {
+        $this->collListings = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collListings collection loaded partially.
+     */
+    public function resetPartialListings($v = true)
+    {
+        $this->collListingsPartial = $v;
+    }
+
+    /**
+     * Initializes the collListings collection.
+     *
+     * By default this just sets the collListings collection to an empty array (like clearcollListings());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initListings($overrideExisting = true)
+    {
+        if (null !== $this->collListings && !$overrideExisting) {
+            return;
+        }
+        $this->collListings = new ObjectCollection();
+        $this->collListings->setModel('\GW2ledger\Database\Listing');
+    }
+
+    /**
+     * Gets an array of ChildListing objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildItem is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildListing[] List of ChildListing objects
+     * @throws PropelException
+     */
+    public function getListings(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collListingsPartial && !$this->isNew();
+        if (null === $this->collListings || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collListings) {
+                // return empty collection
+                $this->initListings();
+            } else {
+                $collListings = ChildListingQuery::create(null, $criteria)
+                    ->filterByItem($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collListingsPartial && count($collListings)) {
+                        $this->initListings(false);
+
+                        foreach ($collListings as $obj) {
+                            if (false == $this->collListings->contains($obj)) {
+                                $this->collListings->append($obj);
+                            }
+                        }
+
+                        $this->collListingsPartial = true;
+                    }
+
+                    return $collListings;
+                }
+
+                if ($partial && $this->collListings) {
+                    foreach ($this->collListings as $obj) {
+                        if ($obj->isNew()) {
+                            $collListings[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collListings = $collListings;
+                $this->collListingsPartial = false;
+            }
+        }
+
+        return $this->collListings;
+    }
+
+    /**
+     * Sets a collection of ChildListing objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $listings A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildItem The current object (for fluent API support)
+     */
+    public function setListings(Collection $listings, ConnectionInterface $con = null)
+    {
+        /** @var ChildListing[] $listingsToDelete */
+        $listingsToDelete = $this->getListings(new Criteria(), $con)->diff($listings);
+
+
+        $this->listingsScheduledForDeletion = $listingsToDelete;
+
+        foreach ($listingsToDelete as $listingRemoved) {
+            $listingRemoved->setItem(null);
+        }
+
+        $this->collListings = null;
+        foreach ($listings as $listing) {
+            $this->addListing($listing);
+        }
+
+        $this->collListings = $listings;
+        $this->collListingsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Listing objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Listing objects.
+     * @throws PropelException
+     */
+    public function countListings(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collListingsPartial && !$this->isNew();
+        if (null === $this->collListings || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collListings) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getListings());
+            }
+
+            $query = ChildListingQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByItem($this)
+                ->count($con);
+        }
+
+        return count($this->collListings);
+    }
+
+    /**
+     * Method called to associate a ChildListing object to this object
+     * through the ChildListing foreign key attribute.
+     *
+     * @param  ChildListing $l ChildListing
+     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
+     */
+    public function addListing(ChildListing $l)
+    {
+        if ($this->collListings === null) {
+            $this->initListings();
+            $this->collListingsPartial = true;
+        }
+
+        if (!$this->collListings->contains($l)) {
+            $this->doAddListing($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildListing $listing The ChildListing object to add.
+     */
+    protected function doAddListing(ChildListing $listing)
+    {
+        $this->collListings[]= $listing;
+        $listing->setItem($this);
+    }
+
+    /**
+     * @param  ChildListing $listing The ChildListing object to remove.
+     * @return $this|ChildItem The current object (for fluent API support)
+     */
+    public function removeListing(ChildListing $listing)
+    {
+        if ($this->getListings()->contains($listing)) {
+            $pos = $this->collListings->search($listing);
+            $this->collListings->remove($pos);
+            if (null === $this->listingsScheduledForDeletion) {
+                $this->listingsScheduledForDeletion = clone $this->collListings;
+                $this->listingsScheduledForDeletion->clear();
+            }
+            $this->listingsScheduledForDeletion[]= $listing;
+            $listing->setItem(null);
+        }
+
+        return $this;
     }
 
     /**
@@ -1841,7 +2058,6 @@ abstract class Item implements ActiveRecordInterface
         $this->id = null;
         $this->name = null;
         $this->icon = null;
-        $this->url = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -1868,6 +2084,11 @@ abstract class Item implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collListings) {
+                foreach ($this->collListings as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->singleItemSummary) {
                 $this->singleItemSummary->clearAllReferences($deep);
             }
@@ -1880,6 +2101,7 @@ abstract class Item implements ActiveRecordInterface
 
         $this->singleItemInfo = null;
         $this->collItemItemDetails = null;
+        $this->collListings = null;
         $this->singleItemSummary = null;
         $this->collItemDetails = null;
     }

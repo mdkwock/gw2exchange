@@ -4,6 +4,8 @@ namespace GW2ledger\Database\Base;
 
 use \Exception;
 use \PDO;
+use GW2ledger\Database\Item as ChildItem;
+use GW2ledger\Database\ItemQuery as ChildItemQuery;
 use GW2ledger\Database\ListingQuery as ChildListingQuery;
 use GW2ledger\Database\Map\ListingTableMap;
 use Propel\Runtime\Propel;
@@ -66,6 +68,12 @@ abstract class Listing implements ActiveRecordInterface
     protected $id;
 
     /**
+     * The value for the item_id field.
+     * @var        int
+     */
+    protected $item_id;
+
+    /**
      * The value for the type field.
      * @var        string
      */
@@ -88,6 +96,11 @@ abstract class Listing implements ActiveRecordInterface
      * @var        int
      */
     protected $quantity;
+
+    /**
+     * @var        ChildItem
+     */
+    protected $aItem;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -325,6 +338,16 @@ abstract class Listing implements ActiveRecordInterface
     }
 
     /**
+     * Get the [item_id] column value.
+     *
+     * @return int
+     */
+    public function getItemId()
+    {
+        return $this->item_id;
+    }
+
+    /**
      * Get the [type] column value.
      *
      * @return string
@@ -383,6 +406,30 @@ abstract class Listing implements ActiveRecordInterface
 
         return $this;
     } // setId()
+
+    /**
+     * Set the value of [item_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\GW2ledger\Database\Listing The current object (for fluent API support)
+     */
+    public function setItemId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->item_id !== $v) {
+            $this->item_id = $v;
+            $this->modifiedColumns[ListingTableMap::COL_ITEM_ID] = true;
+        }
+
+        if ($this->aItem !== null && $this->aItem->getId() !== $v) {
+            $this->aItem = null;
+        }
+
+        return $this;
+    } // setItemId()
 
     /**
      * Set the value of [type] column.
@@ -503,16 +550,19 @@ abstract class Listing implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : ListingTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : ListingTableMap::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : ListingTableMap::translateFieldName('ItemId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->item_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ListingTableMap::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)];
             $this->type = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ListingTableMap::translateFieldName('Orders', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ListingTableMap::translateFieldName('Orders', TableMap::TYPE_PHPNAME, $indexType)];
             $this->orders = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ListingTableMap::translateFieldName('UnitPrice', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ListingTableMap::translateFieldName('UnitPrice', TableMap::TYPE_PHPNAME, $indexType)];
             $this->unit_price = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ListingTableMap::translateFieldName('Quantity', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ListingTableMap::translateFieldName('Quantity', TableMap::TYPE_PHPNAME, $indexType)];
             $this->quantity = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
@@ -522,7 +572,7 @@ abstract class Listing implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 5; // 5 = ListingTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 6; // 6 = ListingTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\GW2ledger\\Database\\Listing'), 0, $e);
@@ -544,6 +594,9 @@ abstract class Listing implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aItem !== null && $this->item_id !== $this->aItem->getId()) {
+            $this->aItem = null;
+        }
     } // ensureConsistency
 
     /**
@@ -583,6 +636,7 @@ abstract class Listing implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aItem = null;
         } // if (deep)
     }
 
@@ -682,6 +736,18 @@ abstract class Listing implements ActiveRecordInterface
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aItem !== null) {
+                if ($this->aItem->isModified() || $this->aItem->isNew()) {
+                    $affectedRows += $this->aItem->save($con);
+                }
+                $this->setItem($this->aItem);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -722,6 +788,9 @@ abstract class Listing implements ActiveRecordInterface
         if ($this->isColumnModified(ListingTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'id';
         }
+        if ($this->isColumnModified(ListingTableMap::COL_ITEM_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'item_id';
+        }
         if ($this->isColumnModified(ListingTableMap::COL_TYPE)) {
             $modifiedColumns[':p' . $index++]  = 'type';
         }
@@ -747,6 +816,9 @@ abstract class Listing implements ActiveRecordInterface
                 switch ($columnName) {
                     case 'id':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
+                        break;
+                    case 'item_id':
+                        $stmt->bindValue($identifier, $this->item_id, PDO::PARAM_INT);
                         break;
                     case 'type':
                         $stmt->bindValue($identifier, $this->type, PDO::PARAM_STR);
@@ -826,15 +898,18 @@ abstract class Listing implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getType();
+                return $this->getItemId();
                 break;
             case 2:
-                return $this->getOrders();
+                return $this->getType();
                 break;
             case 3:
-                return $this->getUnitPrice();
+                return $this->getOrders();
                 break;
             case 4:
+                return $this->getUnitPrice();
+                break;
+            case 5:
                 return $this->getQuantity();
                 break;
             default:
@@ -854,10 +929,11 @@ abstract class Listing implements ActiveRecordInterface
      *                    Defaults to TableMap::TYPE_PHPNAME.
      * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
      * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
+     * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
      *
      * @return array an associative array containing the field names (as keys) and field values
      */
-    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array())
+    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
         if (isset($alreadyDumpedObjects['Listing'][$this->hashCode()])) {
@@ -867,16 +943,34 @@ abstract class Listing implements ActiveRecordInterface
         $keys = ListingTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getType(),
-            $keys[2] => $this->getOrders(),
-            $keys[3] => $this->getUnitPrice(),
-            $keys[4] => $this->getQuantity(),
+            $keys[1] => $this->getItemId(),
+            $keys[2] => $this->getType(),
+            $keys[3] => $this->getOrders(),
+            $keys[4] => $this->getUnitPrice(),
+            $keys[5] => $this->getQuantity(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
 
+        if ($includeForeignObjects) {
+            if (null !== $this->aItem) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'item';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'item';
+                        break;
+                    default:
+                        $key = 'Item';
+                }
+
+                $result[$key] = $this->aItem->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+        }
 
         return $result;
     }
@@ -914,15 +1008,18 @@ abstract class Listing implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setType($value);
+                $this->setItemId($value);
                 break;
             case 2:
-                $this->setOrders($value);
+                $this->setType($value);
                 break;
             case 3:
-                $this->setUnitPrice($value);
+                $this->setOrders($value);
                 break;
             case 4:
+                $this->setUnitPrice($value);
+                break;
+            case 5:
                 $this->setQuantity($value);
                 break;
         } // switch()
@@ -955,16 +1052,19 @@ abstract class Listing implements ActiveRecordInterface
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setType($arr[$keys[1]]);
+            $this->setItemId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setOrders($arr[$keys[2]]);
+            $this->setType($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setUnitPrice($arr[$keys[3]]);
+            $this->setOrders($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setQuantity($arr[$keys[4]]);
+            $this->setUnitPrice($arr[$keys[4]]);
+        }
+        if (array_key_exists($keys[5], $arr)) {
+            $this->setQuantity($arr[$keys[5]]);
         }
     }
 
@@ -1009,6 +1109,9 @@ abstract class Listing implements ActiveRecordInterface
 
         if ($this->isColumnModified(ListingTableMap::COL_ID)) {
             $criteria->add(ListingTableMap::COL_ID, $this->id);
+        }
+        if ($this->isColumnModified(ListingTableMap::COL_ITEM_ID)) {
+            $criteria->add(ListingTableMap::COL_ITEM_ID, $this->item_id);
         }
         if ($this->isColumnModified(ListingTableMap::COL_TYPE)) {
             $criteria->add(ListingTableMap::COL_TYPE, $this->type);
@@ -1108,6 +1211,7 @@ abstract class Listing implements ActiveRecordInterface
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
+        $copyObj->setItemId($this->getItemId());
         $copyObj->setType($this->getType());
         $copyObj->setOrders($this->getOrders());
         $copyObj->setUnitPrice($this->getUnitPrice());
@@ -1141,13 +1245,68 @@ abstract class Listing implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildItem object.
+     *
+     * @param  ChildItem $v
+     * @return $this|\GW2ledger\Database\Listing The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setItem(ChildItem $v = null)
+    {
+        if ($v === null) {
+            $this->setItemId(NULL);
+        } else {
+            $this->setItemId($v->getId());
+        }
+
+        $this->aItem = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildItem object, it will not be re-added.
+        if ($v !== null) {
+            $v->addListing($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildItem object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildItem The associated ChildItem object.
+     * @throws PropelException
+     */
+    public function getItem(ConnectionInterface $con = null)
+    {
+        if ($this->aItem === null && ($this->item_id !== null)) {
+            $this->aItem = ChildItemQuery::create()->findPk($this->item_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aItem->addListings($this);
+             */
+        }
+
+        return $this->aItem;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
      */
     public function clear()
     {
+        if (null !== $this->aItem) {
+            $this->aItem->removeListing($this);
+        }
         $this->id = null;
+        $this->item_id = null;
         $this->type = null;
         $this->orders = null;
         $this->unit_price = null;
@@ -1172,6 +1331,7 @@ abstract class Listing implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
+        $this->aItem = null;
     }
 
     /**

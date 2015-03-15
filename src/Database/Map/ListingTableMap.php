@@ -59,7 +59,7 @@ class ListingTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 5;
+    const NUM_COLUMNS = 6;
 
     /**
      * The number of lazy-loaded columns
@@ -69,12 +69,17 @@ class ListingTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 5;
+    const NUM_HYDRATE_COLUMNS = 6;
 
     /**
      * the column name for the id field
      */
     const COL_ID = 'listing.id';
+
+    /**
+     * the column name for the item_id field
+     */
+    const COL_ITEM_ID = 'listing.item_id';
 
     /**
      * the column name for the type field
@@ -108,11 +113,11 @@ class ListingTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Type', 'Orders', 'UnitPrice', 'Quantity', ),
-        self::TYPE_CAMELNAME     => array('id', 'type', 'orders', 'unitPrice', 'quantity', ),
-        self::TYPE_COLNAME       => array(ListingTableMap::COL_ID, ListingTableMap::COL_TYPE, ListingTableMap::COL_ORDERS, ListingTableMap::COL_UNIT_PRICE, ListingTableMap::COL_QUANTITY, ),
-        self::TYPE_FIELDNAME     => array('id', 'type', 'orders', 'unit_price', 'quantity', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
+        self::TYPE_PHPNAME       => array('Id', 'ItemId', 'Type', 'Orders', 'UnitPrice', 'Quantity', ),
+        self::TYPE_CAMELNAME     => array('id', 'itemId', 'type', 'orders', 'unitPrice', 'quantity', ),
+        self::TYPE_COLNAME       => array(ListingTableMap::COL_ID, ListingTableMap::COL_ITEM_ID, ListingTableMap::COL_TYPE, ListingTableMap::COL_ORDERS, ListingTableMap::COL_UNIT_PRICE, ListingTableMap::COL_QUANTITY, ),
+        self::TYPE_FIELDNAME     => array('id', 'item_id', 'type', 'orders', 'unit_price', 'quantity', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -122,11 +127,11 @@ class ListingTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Type' => 1, 'Orders' => 2, 'UnitPrice' => 3, 'Quantity' => 4, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'type' => 1, 'orders' => 2, 'unitPrice' => 3, 'quantity' => 4, ),
-        self::TYPE_COLNAME       => array(ListingTableMap::COL_ID => 0, ListingTableMap::COL_TYPE => 1, ListingTableMap::COL_ORDERS => 2, ListingTableMap::COL_UNIT_PRICE => 3, ListingTableMap::COL_QUANTITY => 4, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'type' => 1, 'orders' => 2, 'unit_price' => 3, 'quantity' => 4, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'ItemId' => 1, 'Type' => 2, 'Orders' => 3, 'UnitPrice' => 4, 'Quantity' => 5, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'itemId' => 1, 'type' => 2, 'orders' => 3, 'unitPrice' => 4, 'quantity' => 5, ),
+        self::TYPE_COLNAME       => array(ListingTableMap::COL_ID => 0, ListingTableMap::COL_ITEM_ID => 1, ListingTableMap::COL_TYPE => 2, ListingTableMap::COL_ORDERS => 3, ListingTableMap::COL_UNIT_PRICE => 4, ListingTableMap::COL_QUANTITY => 5, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'item_id' => 1, 'type' => 2, 'orders' => 3, 'unit_price' => 4, 'quantity' => 5, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -147,6 +152,7 @@ class ListingTableMap extends TableMap
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
+        $this->addForeignKey('item_id', 'ItemId', 'INTEGER', 'item', 'id', false, null, null);
         $this->addColumn('type', 'Type', 'VARCHAR', true, 255, null);
         $this->addColumn('orders', 'Orders', 'INTEGER', true, null, null);
         $this->addColumn('unit_price', 'UnitPrice', 'INTEGER', true, null, null);
@@ -158,6 +164,13 @@ class ListingTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('Item', '\\GW2ledger\\Database\\Item', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':item_id',
+    1 => ':id',
+  ),
+), null, null, null, false);
     } // buildRelations()
 
     /**
@@ -302,12 +315,14 @@ class ListingTableMap extends TableMap
     {
         if (null === $alias) {
             $criteria->addSelectColumn(ListingTableMap::COL_ID);
+            $criteria->addSelectColumn(ListingTableMap::COL_ITEM_ID);
             $criteria->addSelectColumn(ListingTableMap::COL_TYPE);
             $criteria->addSelectColumn(ListingTableMap::COL_ORDERS);
             $criteria->addSelectColumn(ListingTableMap::COL_UNIT_PRICE);
             $criteria->addSelectColumn(ListingTableMap::COL_QUANTITY);
         } else {
             $criteria->addSelectColumn($alias . '.id');
+            $criteria->addSelectColumn($alias . '.item_id');
             $criteria->addSelectColumn($alias . '.type');
             $criteria->addSelectColumn($alias . '.orders');
             $criteria->addSelectColumn($alias . '.unit_price');
