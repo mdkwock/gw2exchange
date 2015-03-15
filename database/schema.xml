@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<database name="gw2ledger" defaultIdMethod="native">
+<database name="gw2ledger" defaultIdMethod="native" namespace="GW2ledger\Database">
   <!-- 
     A table of items, using a minimal representation because most attributes are not going to be used
   -->
@@ -7,6 +7,7 @@
     <column name="id" type="integer" required="true" primaryKey="true" />
     <column name="name" type="varchar" size="255" required="true" />
     <column name="icon" type="varchar" size="255" required="true" />
+    <column name="url" type="varchar" size="255" required="true" />
   </table>
 
   <!--
@@ -15,22 +16,22 @@
   <table name="item_info">
     <!-- setting primary key to true, makes propel treat it as a 1-1 relation -->
     <column name="item_id" type="integer" required="required" primaryKey="true" />
-    <column name="item_description" type="LONGVARCHAR" />
-    <column name="item_type" type="varchar" size="255" required="true" />
-    <column name="item_rarity" type="varchar" size="255" required="true" />
-    <column name="item_level" type="integer" required="true" />
-    <column name="item_vendor_value" type="integer" required="true" />
-    <column name="item_default_skin" type="integer" />
-    <column name="item_flags" type="varchar" size="255" required="true" />
-    <column name="item_game_types" type="varchar" size="255" required="true" />
-    <column name="item_restrictions" type="varchar" size="255" required="true" />
+    <column name="description" type="LONGVARCHAR" />
+    <column name="type" type="varchar" size="255" required="true" />
+    <column name="rarity" type="varchar" size="255" required="true" />
+    <column name="level" type="integer" required="true" />
+    <column name="vendor_value" type="integer" required="true" />
+    <column name="default_skin" type="integer" />
+    <column name="flags" type="varchar" size="255" required="true" />
+    <column name="game_types" type="varchar" size="255" required="true" />
+    <column name="restrictions" type="varchar" size="255" required="true" />
     <foreign-key foreignTable="item">
       <reference local="item_id" foreign="id"/>
     </foreign-key>
   </table>
 
   <!--
-    A table which links the item to the item detail
+    A table which is the value of item for the item detail
   -->
   <table name="item_item_detail" isCrossRef="true">
     <column name="item_id" type="integer" required="required" primaryKey="true"/>
@@ -48,18 +49,19 @@
     The Item's detail, it varies based on the item's type
     this table will most likely not change very often, because it is all of the attributes that
     GW decides to add into the game
+    It is only the label, will not be imported from guildwar's servers because 
   -->
   <table name="item_detail">
-    <column name="id" type="integer" primaryKey="true"/>   
+    <column name="id" type="integer" primaryKey="true"  autoIncrement="true" />   
     <column name="item_type" type="varchar" size="255" required="true" />
     <!-- what the item detail is called -->
     <column name="label" type="varchar" size="255" required="true" />
     <!-- the variable type ex number, string, array not sure if this will be used -->
-    <column name="value_type" type="varchar" size="255" required="true" />    
+    <column name="value_type" type="varchar" size="255" />    
   </table>
 
   <table name="listing">
-    <column name="id" type="integer" primaryKey="true"/>   
+    <column name="id" type="integer" primaryKey="true" autoIncrement="true" />   
     <!-- Type is either buy or sell for the type of order -->
     <column name="type" type="varchar" required="true"/> 
     <!-- The number of individual listings this object refers to (e.g. two players selling at the same price will end up in the same listing) -->

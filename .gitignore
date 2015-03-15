@@ -1,3 +1,7 @@
 /.sublime-text-git-autocommit
 /vendor/
 *.lock
+/database/generated-classes/
+/database/generated-conf/
+/database/generated-sql/
+/database/conf/
