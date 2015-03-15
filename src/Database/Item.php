@@ -2,6 +2,7 @@
 namespace GW2ledger\Database;
 
 use GW2ledger\Database\Base\Item as BaseItem;
+use GW2ledger\Database\Map\ItemTableMap;
 use GW2ledger\Signature\Database\DatabaseObjectInterface;
 
 /**
@@ -16,31 +17,45 @@ use GW2ledger\Signature\Database\DatabaseObjectInterface;
  */
 class Item extends BaseItem implements DatabaseObjectInterface
 {
+  protected static $tableColumnMap;
 
   /**
-   * This function creates an Item using the parameters given
+   * this function is used as a shortcut to the propel table mapping process
+   * will return an array of all of the columns that are controlled by this object
+   * @return string[]     all of the fields that this object has
+   */
+  public function getFields()
+  {
+    if(empty(static::$tableColumnMap)){
+      //if we have not already generated a map
+      $baseItemTable = ItemTableMap::getTableMap();
+      $baseItemColumns = $baseItemTable->getColumns();
+      //save to cache it
+      static::$tableColumnMap = array_map('strtolower', array_keys($baseItemColumns));
+    }
+    return static::$tableColumnMap;
+  }
+
+  /**
+   * This function sets all of the values of an Item using the parameters given
    * @param  int     $id          the id of the item as given by GW2 server
    * @param  string  $name        the name of the item
    * @param  string  $icon        the icon of the item
-   * @param  string  $url         the gw2 server endpoint (for easy referencing) 
-   * @return Item
    */
-  public function setAll($id, $name, $icon, $url)
+  public function setAll($id, $name, $icon)
   {
     $this->setId($id);
     $this->setName($name);
     $this->setIcon($icon);
-    $this->setUrl($url);
     return $this;    
   }
 
   /**
-   * creates an object using an array of attributes
+   * sets all the attributes for an object using an array of attributes
    * @param  array $attributes  an array of the attributes necessary to create the object
-   * @return Item             the object that is created using the array
    */
   public function setAllFromArray($attributes)
   {
-    return $this->setAll($attributes['id'],$attributes['name'],$attributes['icon']);
+    return $this->setAll($attributes['Id'],$attributes['Name'],$attributes['Icon']);
   }
 }

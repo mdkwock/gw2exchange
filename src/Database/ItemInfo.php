@@ -2,6 +2,7 @@
 namespace GW2ledger\Database;
 
 use GW2ledger\Database\Base\ItemInfo as BaseItemInfo;
+use GW2ledger\Database\Map\ItemInfoTableMap;
 use GW2ledger\Signature\Database\DatabaseObjectInterface;
 
 /**
@@ -16,8 +17,27 @@ use GW2ledger\Signature\Database\DatabaseObjectInterface;
  */
 class ItemInfo extends BaseItemInfo implements DatabaseObjectInterface
 {
+  protected static $tableColumnMap;
+
   /**
-   * creates the info using parameters
+   * this function is used as a shortcut to the propel table mapping process
+   * will return an array of all of the columns that are controlled by this object
+   * @return string[]     all of the fields that this object has
+   */
+  public function getFields()
+  {
+    if(empty(static::$tableColumnMap)){
+      //if we have not already generated a map
+      $baseItemTable = ItemInfoTableMap::getTableMap();
+      $baseItemColumns = $baseItemTable->getColumns();
+      //save to cache it
+      static::$tableColumnMap = array_map('strtolower', array_keys($baseItemColumns));
+    }
+    return static::$tableColumnMap;
+  }
+
+  /**
+   * sets all of the info using parameters
    * @param  int     $item_id       the id of the item
    * @param  string  $description   the description of the item
    * @param  string  $type          the item type, determines the details
@@ -62,14 +82,13 @@ class ItemInfo extends BaseItemInfo implements DatabaseObjectInterface
   /**
    * sets all the fields of an object using an array of attributes
    * @param  array $attributes  an array of the attributes necessary to create the object
-   * @return object             the object that is created using the array
    */
   public function setAllFromArray($attributes)
   {
     //description is optional so set it to null if it does not exist
-    $attributes['description'] = empty($attributes['description'])?null:$attributes['description'];
-    $attributes['default_skin'] = empty($attributes['default_skin'])?null:$attributes['default_skin'];
-    return $this->setAll($attributes['id'],$attributes['description'],$attributes['type'],$attributes['rarity'],$attributes['level'],$attributes['vendor_value'],$attributes['default_skin'],$attributes['flags'],$attributes['game_types'],$attributes['restrictions']);
+    $attributes['Description'] = empty($attributes['Description'])?null:$attributes['Description'];
+    $attributes['DefaultSkin'] = empty($attributes['DefaultSkin'])?null:$attributes['DefaultSkin'];
+    return $this->setAll($attributes['Id'],$attributes['Description'],$attributes['Type'],$attributes['Rarity'],$attributes['Level'],$attributes['VendorValue'],$attributes['DefaultSkin'],$attributes['Flags'],$attributes['GameTypes'],$attributes['Restrictions']);
   }
 
   public function getFlags(){

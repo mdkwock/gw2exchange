@@ -24,6 +24,13 @@ class ItemParser implements ItemParserInterface
   public function parseJson($json)
   {
     $obj = json_decode($json,true);
-    return $obj;
+    $parsed = array();
+    foreach($obj as $key=>$value){
+      //for each item convert from snake_case to PascalCase
+      $pattern = '/_(\w)/';
+      $nKey = ucfirst(preg_replace_callback($pattern, function($matches){ return strtoupper($matches[1]);}, $key));
+      $parsed[$nKey] = $value;
+    }
+    return $parsed;
   }
 }

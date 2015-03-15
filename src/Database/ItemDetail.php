@@ -2,6 +2,7 @@
 namespace GW2ledger\Database;
 
 use GW2ledger\Database\Base\ItemDetail as BaseItemDetail;
+use GW2ledger\Database\Map\ItemDetailTableMap;
 use GW2ledger\Database\ItemDetailInterface;
 
 /**
@@ -16,11 +17,29 @@ use GW2ledger\Database\ItemDetailInterface;
  */
 class ItemDetail extends BaseItemDetail implements ItemDetailInterface
 {
+  protected static $tableColumnMap;
+
   /**
-   * creates a new instance using parameters
+   * this function is used as a shortcut to the propel table mapping process
+   * will return an array of all of the columns that are controlled by this object
+   * @return string[]     all of the fields that this object has
+   */
+  public function getFields()
+  {
+    if(empty(static::$tableColumnMap)){
+      //if we have not already generated a map
+      $baseItemTable = ItemDetailTableMap::getTableMap();
+      $baseItemColumns = $baseItemTable->getColumns();
+      //save to cache it
+      static::$tableColumnMap = array_map('strtolower', array_keys($baseItemColumns));
+    }
+    return static::$tableColumnMap;
+  }
+
+  /**
+   * This function sets all of the values of an Item using the parameters given
    * @param  string $item_type the type of item determines which details are available
    * @param  string $label     the name of the value key
-   * @return ItemDetail
    */
   public function setAll($item_type, $label,$value_type=null)
   {
@@ -33,9 +52,8 @@ class ItemDetail extends BaseItemDetail implements ItemDetailInterface
   }
 
   /**
-   * sets all the fields of an object using an array of attributes
+   * sets all the attributes for an object using an array of attributes
    * @param  array $attributes  an array of the attributes necessary to create the object
-   * @return object             the object that is created using the array
    */
   public function setAllFromArray($values)
   {
