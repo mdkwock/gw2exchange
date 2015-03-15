@@ -14,42 +14,42 @@ class ListingFactoryTest extends PHPUnit_Framework_TestCase
     //make sure only one listing gets created
     $arr = array(
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 110,
       "Quantity"=> 250,
       "Type"=>"buy"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 109,
       "Quantity"=> 170,
       "Type"=>"buy"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 108,
       "Quantity"=> 243,
       "Type"=>"buy"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 2,
       "UnitPrice"=> 187,
       "Quantity"=> 66,
       "Type"=>"sell"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 188,
       "Quantity"=> 6,
       "Type"=>"sell"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 189,
       "Quantity"=> 221,
@@ -71,42 +71,42 @@ class ListingFactoryTest extends PHPUnit_Framework_TestCase
     $json = '{"id": 24, "buys": [{"listings": 1, "unit_price": 110, "quantity": 250 }, { "listings": 1, "unit_price": 109, "quantity": 170 }, {"listings": 1, "unit_price": 108, "quantity": 243 }], "sells": [{"listings": 2, "unit_price": 187, "quantity": 66 }, {"listings": 1, "unit_price": 188, "quantity": 6}, {"listings": 1, "unit_price": 189, "quantity": 221}]}';//listing for item 24
     $arr = array(
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 110,
       "Quantity"=> 250,
       "Type"=>"buy"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 109,
       "Quantity"=> 170,
       "Type"=>"buy"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 108,
       "Quantity"=> 243,
       "Type"=>"buy"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 2,
       "UnitPrice"=> 187,
       "Quantity"=> 66,
       "Type"=>"sell"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 188,
       "Quantity"=> 6,
       "Type"=>"sell"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 189,
       "Quantity"=> 221,
@@ -136,42 +136,42 @@ class ListingFactoryTest extends PHPUnit_Framework_TestCase
   public function testCreateManyFromArray(){
     $arr = array(
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 110,
       "Quantity"=> 250,
       "Type"=>"buy"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 109,
       "Quantity"=> 170,
       "Type"=>"buy"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 108,
       "Quantity"=> 243,
       "Type"=>"buy"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 2,
       "UnitPrice"=> 187,
       "Quantity"=> 66,
       "Type"=>"sell"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 188,
       "Quantity"=> 6,
       "Type"=>"sell"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 189,
       "Quantity"=> 221,
@@ -192,42 +192,42 @@ class ListingFactoryTest extends PHPUnit_Framework_TestCase
     $json = '{"id": 24, "buys": [{"listings": 1, "unit_price": 110, "quantity": 250 }, { "listings": 1, "unit_price": 109, "quantity": 170 }, {"listings": 1, "unit_price": 108, "quantity": 243 }], "sells": [{"listings": 2, "unit_price": 187, "quantity": 66 }, {"listings": 1, "unit_price": 188, "quantity": 6}, {"listings": 1, "unit_price": 189, "quantity": 221}]}';//listing for item 24
     $arr = array(
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 110,
       "Quantity"=> 250,
       "Type"=>"buy"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 109,
       "Quantity"=> 170,
       "Type"=>"buy"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 108,
       "Quantity"=> 243,
       "Type"=>"buy"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 2,
       "UnitPrice"=> 187,
       "Quantity"=> 66,
       "Type"=>"sell"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 188,
       "Quantity"=> 6,
       "Type"=>"sell"
       ),
       array ( 
-      "Id"=>24,
+      "ItemId"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 189,
       "Quantity"=> 221,
@@ -249,5 +249,6 @@ class ListingFactoryTest extends PHPUnit_Framework_TestCase
     $listings = $listingFactory->createManyFromJson($json);
     $this->assertEquals(count($arr),count($listings));
     $this->assertTrue($listings[0] instanceof DatabaseObjectInterface);
+    $this->assertEquals($arr[0]['Orders'], $listings[0]->getOrders());
   }
 }

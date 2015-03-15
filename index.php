@@ -5,12 +5,19 @@ require './database/generated-conf/config.php';
 
 
 use GW2ledger\Connection\GuzzleWebScraper,
-  GW2ledger\Item\ItemParser,
-  GW2ledger\Item\ItemFactory,
-  GW2ledger\Item\ItemInfoFactory,
-  GW2ledger\Item\ItemDetailsArrayObjectFactory,
   GuzzleHttp\Client;
 
-use GW2ledger\Database\Map\ItemInfoTableMap;
-use GW2ledger\Database\ItemInfo;
-$itemInfo = new ItemInfo();
+use GW2ledger\Listing\ListingParser,
+  GW2ledger\Listing\ListingAssembler,
+  GW2ledger\Listing\ListingFactory,
+  GW2ledger\Database\Listing;
+
+//'https://api.guildwars2.com/v2/commerce/listings/24';
+
+$client = new Client();
+$webScraper = new GuzzleWebScraper($client);
+
+$listingAssembler = new ListingAssembler($webScraper);
+$results = $listingAssembler->getByItemId('24');
+var_dump($results[0]);
+var_dump($results[0]->getUnitPrice());

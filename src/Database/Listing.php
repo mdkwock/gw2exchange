@@ -38,29 +38,29 @@ class Listing extends BaseListing implements DatabaseObjectInterface
 
   /**
    * sets all of the attributes of an object using parameters
+   * @param  int    $item_id       the id of the item that this listing pertains to
    * @param  string $type          the value of the item detail for the item
    * @param  int    $orders        the number of different orders that are being requested
    * @param  int    $unit_price    the cost of one the listing
    * @param  int    $quantity      the number that are being traded
    * @return ItemItemDetail
    */
-  public function setAll($type, $orders, $unit_price, $quantity)
+  public function setAll($item_id, $type, $orders, $unit_price, $quantity)
   { 
-    $obj = new static();
-    $obj->setType($type);
-    $obj->setOrders($orders);
-    $obj->setUnitPrice($unit_price);
-    $obj->setQuantity($quantity);
-    return $obj;
+    $this->setItemId($item_id);
+    $this->setType($type);
+    $this->setOrders($orders);
+    $this->setUnitPrice($unit_price);
+    $this->setQuantity($quantity);
   }
   
   /**
-   * sets all the fields of an object using an array of attributes
+   * sets all the fields of an thisect using an array of attributes
    * @param  array $attributes  an array of the attributes necessary to create the object
    * @return object             the object that is created using the array
    */
   public function setAllFromArray($attributes)
   {
-    $this->setAll($attributes['Type'], $attributes['Orders'], $attributes['UnitPrice'], $attributes['Quantity']);
+    $this->setAll($attributes['ItemId'], $attributes['Type'], $attributes['Orders'], $attributes['UnitPrice'], $attributes['Quantity']);
   }
 }

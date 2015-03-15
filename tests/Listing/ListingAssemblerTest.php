@@ -75,5 +75,6 @@ class ListingAssemblerTest extends PHPUnit_Framework_TestCase
     $this->assertNotEmpty($listings);
     $this->assertEquals(6, count($listings));
     $this->assertTrue($listings[0] instanceof Listing);
+    $this->assertEquals($arr[0]['Orders'], $listings[0]->getOrders());
   }
 }
