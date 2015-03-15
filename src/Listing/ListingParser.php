@@ -27,7 +27,7 @@ class ListingParser implements ListingParserInterface
     $itemId = $obj['id'];//the item id the listing is for
     $parsed = array();
     foreach($obj['buys'] as $listing){
-      //for each sell listing
+      //for each buy listing
       $list = array("ItemId"=>$itemId,"Type"=>"buy");//the starting data for each listing in this set
       $list["Orders"] = $listing['listings'];//the number of orders for this price
       $list["UnitPrice"] = $listing["unit_price"];

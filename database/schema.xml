@@ -77,7 +77,7 @@
       So it shows the highest buy and lowest sell along with qtys.
       It's to be used as a quick survey over every item when scanning, rather than load each ones' details
      -->
-  <table name="item_summary">
+  <table name="price">
     <!-- setting primary key to true, makes propel treat it as a 1-1 relation -->
     <column name="item_id" type="integer" required="required" primaryKey="true" />
     <column name="buy_price" type="integer" required="required" />

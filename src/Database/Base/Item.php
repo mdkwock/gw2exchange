@@ -12,10 +12,10 @@ use GW2ledger\Database\ItemInfoQuery as ChildItemInfoQuery;
 use GW2ledger\Database\ItemItemDetail as ChildItemItemDetail;
 use GW2ledger\Database\ItemItemDetailQuery as ChildItemItemDetailQuery;
 use GW2ledger\Database\ItemQuery as ChildItemQuery;
-use GW2ledger\Database\ItemSummary as ChildItemSummary;
-use GW2ledger\Database\ItemSummaryQuery as ChildItemSummaryQuery;
 use GW2ledger\Database\Listing as ChildListing;
 use GW2ledger\Database\ListingQuery as ChildListingQuery;
+use GW2ledger\Database\Price as ChildPrice;
+use GW2ledger\Database\PriceQuery as ChildPriceQuery;
 use GW2ledger\Database\Map\ItemTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
@@ -107,9 +107,9 @@ abstract class Item implements ActiveRecordInterface
     protected $collListingsPartial;
 
     /**
-     * @var        ChildItemSummary one-to-one related ChildItemSummary object
+     * @var        ChildPrice one-to-one related ChildPrice object
      */
-    protected $singleItemSummary;
+    protected $singlePrice;
 
     /**
      * @var        ObjectCollection|ChildItemDetail[] Cross Collection to store aggregation of ChildItemDetail objects.
@@ -573,7 +573,7 @@ abstract class Item implements ActiveRecordInterface
 
             $this->collListings = null;
 
-            $this->singleItemSummary = null;
+            $this->singlePrice = null;
 
             $this->collItemDetails = null;
         } // if (deep)
@@ -756,9 +756,9 @@ abstract class Item implements ActiveRecordInterface
                 }
             }
 
-            if ($this->singleItemSummary !== null) {
-                if (!$this->singleItemSummary->isDeleted() && ($this->singleItemSummary->isNew() || $this->singleItemSummary->isModified())) {
-                    $affectedRows += $this->singleItemSummary->save($con);
+            if ($this->singlePrice !== null) {
+                if (!$this->singlePrice->isDeleted() && ($this->singlePrice->isNew() || $this->singlePrice->isModified())) {
+                    $affectedRows += $this->singlePrice->save($con);
                 }
             }
 
@@ -962,20 +962,20 @@ abstract class Item implements ActiveRecordInterface
 
                 $result[$key] = $this->collListings->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
-            if (null !== $this->singleItemSummary) {
+            if (null !== $this->singlePrice) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'itemSummary';
+                        $key = 'price';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'item_summary';
+                        $key = 'price';
                         break;
                     default:
-                        $key = 'ItemSummary';
+                        $key = 'Price';
                 }
 
-                $result[$key] = $this->singleItemSummary->toArray($keyType, $includeLazyLoadColumns, $alreadyDumpedObjects, true);
+                $result[$key] = $this->singlePrice->toArray($keyType, $includeLazyLoadColumns, $alreadyDumpedObjects, true);
             }
         }
 
@@ -1217,9 +1217,9 @@ abstract class Item implements ActiveRecordInterface
                 }
             }
 
-            $relObj = $this->getItemSummary();
+            $relObj = $this->getPrice();
             if ($relObj) {
-                $copyObj->setItemSummary($relObj->copy($deepCopy));
+                $copyObj->setPrice($relObj->copy($deepCopy));
             }
 
         } // if ($deepCopy)
@@ -1771,34 +1771,34 @@ abstract class Item implements ActiveRecordInterface
     }
 
     /**
-     * Gets a single ChildItemSummary object, which is related to this object by a one-to-one relationship.
+     * Gets a single ChildPrice object, which is related to this object by a one-to-one relationship.
      *
      * @param  ConnectionInterface $con optional connection object
-     * @return ChildItemSummary
+     * @return ChildPrice
      * @throws PropelException
      */
-    public function getItemSummary(ConnectionInterface $con = null)
+    public function getPrice(ConnectionInterface $con = null)
     {
 
-        if ($this->singleItemSummary === null && !$this->isNew()) {
-            $this->singleItemSummary = ChildItemSummaryQuery::create()->findPk($this->getPrimaryKey(), $con);
+        if ($this->singlePrice === null && !$this->isNew()) {
+            $this->singlePrice = ChildPriceQuery::create()->findPk($this->getPrimaryKey(), $con);
         }
 
-        return $this->singleItemSummary;
+        return $this->singlePrice;
     }
 
     /**
-     * Sets a single ChildItemSummary object as related to this object by a one-to-one relationship.
+     * Sets a single ChildPrice object as related to this object by a one-to-one relationship.
      *
-     * @param  ChildItemSummary $v ChildItemSummary
+     * @param  ChildPrice $v ChildPrice
      * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setItemSummary(ChildItemSummary $v = null)
+    public function setPrice(ChildPrice $v = null)
     {
-        $this->singleItemSummary = $v;
+        $this->singlePrice = $v;
 
-        // Make sure that that the passed-in ChildItemSummary isn't already associated with this object
+        // Make sure that that the passed-in ChildPrice isn't already associated with this object
         if ($v !== null && $v->getItem(null, false) === null) {
             $v->setItem($this);
         }
@@ -2089,8 +2089,8 @@ abstract class Item implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
-            if ($this->singleItemSummary) {
-                $this->singleItemSummary->clearAllReferences($deep);
+            if ($this->singlePrice) {
+                $this->singlePrice->clearAllReferences($deep);
             }
             if ($this->collItemDetails) {
                 foreach ($this->collItemDetails as $o) {
@@ -2102,7 +2102,7 @@ abstract class Item implements ActiveRecordInterface
         $this->singleItemInfo = null;
         $this->collItemItemDetails = null;
         $this->collListings = null;
-        $this->singleItemSummary = null;
+        $this->singlePrice = null;
         $this->collItemDetails = null;
     }
 

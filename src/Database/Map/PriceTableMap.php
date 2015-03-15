@@ -2,8 +2,8 @@
 
 namespace GW2ledger\Database\Map;
 
-use GW2ledger\Database\Item;
-use GW2ledger\Database\ItemQuery;
+use GW2ledger\Database\Price;
+use GW2ledger\Database\PriceQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'item' table.
+ * This class defines the structure of the 'price' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class ItemTableMap extends TableMap
+class PriceTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class ItemTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'GW2ledger.Database.Map.ItemTableMap';
+    const CLASS_NAME = 'GW2ledger.Database.Map.PriceTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class ItemTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'item';
+    const TABLE_NAME = 'price';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\GW2ledger\\Database\\Item';
+    const OM_CLASS = '\\GW2ledger\\Database\\Price';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'GW2ledger.Database.Item';
+    const CLASS_DEFAULT = 'GW2ledger.Database.Price';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 3;
+    const NUM_COLUMNS = 5;
 
     /**
      * The number of lazy-loaded columns
@@ -69,22 +69,32 @@ class ItemTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 3;
+    const NUM_HYDRATE_COLUMNS = 5;
 
     /**
-     * the column name for the id field
+     * the column name for the item_id field
      */
-    const COL_ID = 'item.id';
+    const COL_ITEM_ID = 'price.item_id';
 
     /**
-     * the column name for the name field
+     * the column name for the buy_price field
      */
-    const COL_NAME = 'item.name';
+    const COL_BUY_PRICE = 'price.buy_price';
 
     /**
-     * the column name for the icon field
+     * the column name for the sell_price field
      */
-    const COL_ICON = 'item.icon';
+    const COL_SELL_PRICE = 'price.sell_price';
+
+    /**
+     * the column name for the buy_qty field
+     */
+    const COL_BUY_QTY = 'price.buy_qty';
+
+    /**
+     * the column name for the sell_qty field
+     */
+    const COL_SELL_QTY = 'price.sell_qty';
 
     /**
      * The default string format for model objects of the related table
@@ -98,11 +108,11 @@ class ItemTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Name', 'Icon', ),
-        self::TYPE_CAMELNAME     => array('id', 'name', 'icon', ),
-        self::TYPE_COLNAME       => array(ItemTableMap::COL_ID, ItemTableMap::COL_NAME, ItemTableMap::COL_ICON, ),
-        self::TYPE_FIELDNAME     => array('id', 'name', 'icon', ),
-        self::TYPE_NUM           => array(0, 1, 2, )
+        self::TYPE_PHPNAME       => array('ItemId', 'BuyPrice', 'SellPrice', 'BuyQty', 'SellQty', ),
+        self::TYPE_CAMELNAME     => array('itemId', 'buyPrice', 'sellPrice', 'buyQty', 'sellQty', ),
+        self::TYPE_COLNAME       => array(PriceTableMap::COL_ITEM_ID, PriceTableMap::COL_BUY_PRICE, PriceTableMap::COL_SELL_PRICE, PriceTableMap::COL_BUY_QTY, PriceTableMap::COL_SELL_QTY, ),
+        self::TYPE_FIELDNAME     => array('item_id', 'buy_price', 'sell_price', 'buy_qty', 'sell_qty', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
     );
 
     /**
@@ -112,11 +122,11 @@ class ItemTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'Icon' => 2, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'icon' => 2, ),
-        self::TYPE_COLNAME       => array(ItemTableMap::COL_ID => 0, ItemTableMap::COL_NAME => 1, ItemTableMap::COL_ICON => 2, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'icon' => 2, ),
-        self::TYPE_NUM           => array(0, 1, 2, )
+        self::TYPE_PHPNAME       => array('ItemId' => 0, 'BuyPrice' => 1, 'SellPrice' => 2, 'BuyQty' => 3, 'SellQty' => 4, ),
+        self::TYPE_CAMELNAME     => array('itemId' => 0, 'buyPrice' => 1, 'sellPrice' => 2, 'buyQty' => 3, 'sellQty' => 4, ),
+        self::TYPE_COLNAME       => array(PriceTableMap::COL_ITEM_ID => 0, PriceTableMap::COL_BUY_PRICE => 1, PriceTableMap::COL_SELL_PRICE => 2, PriceTableMap::COL_BUY_QTY => 3, PriceTableMap::COL_SELL_QTY => 4, ),
+        self::TYPE_FIELDNAME     => array('item_id' => 0, 'buy_price' => 1, 'sell_price' => 2, 'buy_qty' => 3, 'sell_qty' => 4, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
     );
 
     /**
@@ -129,16 +139,18 @@ class ItemTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('item');
-        $this->setPhpName('Item');
+        $this->setName('price');
+        $this->setPhpName('Price');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\GW2ledger\\Database\\Item');
+        $this->setClassName('\\GW2ledger\\Database\\Price');
         $this->setPackage('GW2ledger.Database');
         $this->setUseIdGenerator(false);
         // columns
-        $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addColumn('name', 'Name', 'VARCHAR', true, 255, null);
-        $this->addColumn('icon', 'Icon', 'VARCHAR', true, 255, null);
+        $this->addForeignPrimaryKey('item_id', 'ItemId', 'INTEGER' , 'item', 'id', true, null, null);
+        $this->addColumn('buy_price', 'BuyPrice', 'INTEGER', false, null, null);
+        $this->addColumn('sell_price', 'SellPrice', 'INTEGER', false, null, null);
+        $this->addColumn('buy_qty', 'BuyQty', 'INTEGER', false, null, null);
+        $this->addColumn('sell_qty', 'SellQty', 'INTEGER', false, null, null);
     } // initialize()
 
     /**
@@ -146,35 +158,13 @@ class ItemTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('ItemInfo', '\\GW2ledger\\Database\\ItemInfo', RelationMap::ONE_TO_ONE, array (
+        $this->addRelation('Item', '\\GW2ledger\\Database\\Item', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':item_id',
     1 => ':id',
   ),
 ), null, null, null, false);
-        $this->addRelation('ItemItemDetail', '\\GW2ledger\\Database\\ItemItemDetail', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':item_id',
-    1 => ':id',
-  ),
-), null, null, 'ItemItemDetails', false);
-        $this->addRelation('Listing', '\\GW2ledger\\Database\\Listing', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':item_id',
-    1 => ':id',
-  ),
-), null, null, 'Listings', false);
-        $this->addRelation('Price', '\\GW2ledger\\Database\\Price', RelationMap::ONE_TO_ONE, array (
-  0 =>
-  array (
-    0 => ':item_id',
-    1 => ':id',
-  ),
-), null, null, null, false);
-        $this->addRelation('ItemDetail', '\\GW2ledger\\Database\\ItemDetail', RelationMap::MANY_TO_MANY, array(), null, null, 'ItemDetails');
     } // buildRelations()
 
     /**
@@ -193,11 +183,11 @@ class ItemTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('ItemId', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+        return (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('ItemId', TableMap::TYPE_PHPNAME, $indexType)];
     }
 
     /**
@@ -217,7 +207,7 @@ class ItemTableMap extends TableMap
         return (int) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 0 + $offset
-                : self::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)
+                : self::translateFieldName('ItemId', TableMap::TYPE_PHPNAME, $indexType)
         ];
     }
 
@@ -234,7 +224,7 @@ class ItemTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? ItemTableMap::CLASS_DEFAULT : ItemTableMap::OM_CLASS;
+        return $withPrefix ? PriceTableMap::CLASS_DEFAULT : PriceTableMap::OM_CLASS;
     }
 
     /**
@@ -248,22 +238,22 @@ class ItemTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Item object, last column rank)
+     * @return array           (Price object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = ItemTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = ItemTableMap::getInstanceFromPool($key))) {
+        $key = PriceTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = PriceTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + ItemTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + PriceTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = ItemTableMap::OM_CLASS;
-            /** @var Item $obj */
+            $cls = PriceTableMap::OM_CLASS;
+            /** @var Price $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            ItemTableMap::addInstanceToPool($obj, $key);
+            PriceTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -286,18 +276,18 @@ class ItemTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = ItemTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = ItemTableMap::getInstanceFromPool($key))) {
+            $key = PriceTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = PriceTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Item $obj */
+                /** @var Price $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                ItemTableMap::addInstanceToPool($obj, $key);
+                PriceTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -318,13 +308,17 @@ class ItemTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(ItemTableMap::COL_ID);
-            $criteria->addSelectColumn(ItemTableMap::COL_NAME);
-            $criteria->addSelectColumn(ItemTableMap::COL_ICON);
+            $criteria->addSelectColumn(PriceTableMap::COL_ITEM_ID);
+            $criteria->addSelectColumn(PriceTableMap::COL_BUY_PRICE);
+            $criteria->addSelectColumn(PriceTableMap::COL_SELL_PRICE);
+            $criteria->addSelectColumn(PriceTableMap::COL_BUY_QTY);
+            $criteria->addSelectColumn(PriceTableMap::COL_SELL_QTY);
         } else {
-            $criteria->addSelectColumn($alias . '.id');
-            $criteria->addSelectColumn($alias . '.name');
-            $criteria->addSelectColumn($alias . '.icon');
+            $criteria->addSelectColumn($alias . '.item_id');
+            $criteria->addSelectColumn($alias . '.buy_price');
+            $criteria->addSelectColumn($alias . '.sell_price');
+            $criteria->addSelectColumn($alias . '.buy_qty');
+            $criteria->addSelectColumn($alias . '.sell_qty');
         }
     }
 
@@ -337,7 +331,7 @@ class ItemTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(ItemTableMap::DATABASE_NAME)->getTable(ItemTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(PriceTableMap::DATABASE_NAME)->getTable(PriceTableMap::TABLE_NAME);
     }
 
     /**
@@ -345,16 +339,16 @@ class ItemTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(ItemTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(ItemTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new ItemTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(PriceTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(PriceTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new PriceTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Item or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a Price or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Item object or primary key or array of primary keys
+     * @param mixed               $values Criteria or Price object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -365,27 +359,27 @@ class ItemTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(ItemTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(PriceTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \GW2ledger\Database\Item) { // it's a model object
+        } elseif ($values instanceof \GW2ledger\Database\Price) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(ItemTableMap::DATABASE_NAME);
-            $criteria->add(ItemTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(PriceTableMap::DATABASE_NAME);
+            $criteria->add(PriceTableMap::COL_ITEM_ID, (array) $values, Criteria::IN);
         }
 
-        $query = ItemQuery::create()->mergeWith($criteria);
+        $query = PriceQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            ItemTableMap::clearInstancePool();
+            PriceTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                ItemTableMap::removeInstanceFromPool($singleval);
+                PriceTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -393,20 +387,20 @@ class ItemTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the item table.
+     * Deletes all rows from the price table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return ItemQuery::create()->doDeleteAll($con);
+        return PriceQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Item or Criteria object.
+     * Performs an INSERT on the database, given a Price or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Item object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or Price object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -415,18 +409,18 @@ class ItemTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(ItemTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(PriceTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Item object
+            $criteria = $criteria->buildCriteria(); // build Criteria from Price object
         }
 
 
         // Set the correct dbName
-        $query = ItemQuery::create()->mergeWith($criteria);
+        $query = PriceQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -435,7 +429,7 @@ class ItemTableMap extends TableMap
         });
     }
 
-} // ItemTableMap
+} // PriceTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-ItemTableMap::buildTableMap();
+PriceTableMap::buildTableMap();
