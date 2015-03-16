@@ -9,6 +9,32 @@ use GuzzleHttp\Message\AbstractMessage;
 
 class ListingAssemblerTest extends PHPUnit_Framework_TestCase
 {
+  public function testGetIdList()
+  {
+    $json = "[1,3,5,7,9]"; //this is the return from the endpoint
+    $return = array(1,3,5,7,9); //this is what we expect to get
+
+    $response = $this->getMockBuilder('GuzzleHttp\Message\AbstractMessage')
+                    //->setConstructorArgs(array('404',array(),null,array()))
+                    ->setMethods(array('getBody'))
+                    ->getMock();
+    $response->method('getBody')
+        ->will($this->returnValue($json));
+
+    $client = $this->getMockBuilder('GuzzleHttp\Client')
+                     ->setMethods(array('get'))
+                     ->getMock();
+    $client->method('get')
+        ->will($this->returnValue($response));
+
+    $webScraper = new GuzzleWebScraper($client);
+
+    $listingAssembler = new ListingAssembler($webScraper);
+    $itemIds = $listingAssembler->getIdList();    
+    $this->assertNotEmpty($itemIds);
+    $this->assertEquals($return, $itemIds);
+  }
+
   public function testGetByItemId(){
     $json = '{"id": 24, "buys": [{"listings": 1, "unit_price": 110, "quantity": 250 }, { "listings": 1, "unit_price": 109, "quantity": 170 }, {"listings": 1, "unit_price": 108, "quantity": 243 }], "sells": [{"listings": 2, "unit_price": 187, "quantity": 66 }, {"listings": 1, "unit_price": 188, "quantity": 6}, {"listings": 1, "unit_price": 189, "quantity": 221}]}';//listing for item 24
     $arr = array(

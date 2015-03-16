@@ -44,4 +44,17 @@ class ListingParser implements ListingParserInterface
     }
     return $parsed;
   }
+
+  /**
+   * This function parses the result of the endpoint list.
+   * This is a list of items with current listings.
+   *
+   * this function doesnt do much right now, only returns a list of ints
+   * @return int[]    a list of ids
+   */
+  public function parseList($json)
+  {
+    $arr = json_decode($json,true);
+    return $arr;
+  }
 }

@@ -14,14 +14,27 @@ class PriceAssembler implements PriceAssemblerInterface
   protected $webScraper;
 
   private $priceFactory;
+  private $priceParser;
   /**
    * constructor assembles the factories needed to create a new object
    */
   public function __construct(WebScraperInterface $webScraper)
   {
     $this->webScraper = $webScraper;
-    $priceParser = new PriceParser();
-    $this->priceFactory = new PriceFactory($priceParser);
+    $this->priceParser = new PriceParser();
+    $this->priceFactory = new PriceFactory($this->priceParser);
+  }
+
+  /**
+   * returns a list of item ids, the ones listed are the ones with current listings available
+   * @return int[]
+   */
+  public function getIdList()
+  {
+    $url = "https://api.guildwars2.com/v2/commerce/listings/";
+    $result = $this->webScraper->getInfo($url);
+    $result = $this->priceParser->parseList($result);
+    return $result;
   }
 
   /**

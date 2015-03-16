@@ -10,5 +10,5 @@ interface AssemblerInterface
    * returns a list of ids of some type
    * @return int[]
    */
-  public function getList();
+  public function getIdList();
 }

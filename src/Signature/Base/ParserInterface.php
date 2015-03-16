@@ -20,4 +20,12 @@ interface ParserInterface
    * @return array  a mixed array which contains all the parts necessary to making an object
    */
   public function parseJson($json);
+
+  /**
+   * This function parses the result of the endpoint list.
+   * This is not always a list of the object that the listing normally provides.
+   * For example the listings endpoint returns a list of items which have current listings.
+   * @return int[]    a list of ids
+   */
+  public function parseList($json);
 }

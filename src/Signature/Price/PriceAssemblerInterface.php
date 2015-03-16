@@ -1,10 +1,12 @@
 <?php
 namespace GW2ledger\Signature\Price;
 
+use GW2ledger\Signature\Base\AssemblerInterface;
+
 /**
  * This interface is to fetch and retrieve prices
  */
-interface PriceAssemblerInterface
+interface PriceAssemblerInterface extends AssemblerInterface
 {
   /**
    * gets an array of prices for a particular item, optionally restrained by the number and the starting point
