@@ -14,14 +14,27 @@ class ListingAssembler implements ListingAssemblerInterface
   protected $webScraper;
 
   private $listingFactory;
+  private $listingParser;
   /**
    * constructor assembles the factories needed to create a new object
    */
   public function __construct(WebScraperInterface $webScraper)
   {
     $this->webScraper = $webScraper;
-    $listingParser = new ListingParser();
-    $this->listingFactory = new ListingFactory($listingParser);
+    $this->listingParser = new ListingParser();
+    $this->listingFactory = new ListingFactory($this->listingParser);
+  }
+
+  /**
+   * returns a list of item ids, the ones listed are the ones with current listings available
+   * @return int[]
+   */
+  public function getIdList()
+  {
+    $url = "https://api.guildwars2.com/v2/commerce/listings/";
+    $result = $this->webScraper->getInfo($url);
+    $result = $this->listingParser->parseList($result);
+    return $result;
   }
 
   /**

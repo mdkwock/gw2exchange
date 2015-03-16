@@ -44,11 +44,11 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItemQuery rightJoinListing($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Listing relation
  * @method     ChildItemQuery innerJoinListing($relationAlias = null) Adds a INNER JOIN clause to the query using the Listing relation
  *
- * @method     ChildItemQuery leftJoinItemSummary($relationAlias = null) Adds a LEFT JOIN clause to the query using the ItemSummary relation
- * @method     ChildItemQuery rightJoinItemSummary($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ItemSummary relation
- * @method     ChildItemQuery innerJoinItemSummary($relationAlias = null) Adds a INNER JOIN clause to the query using the ItemSummary relation
+ * @method     ChildItemQuery leftJoinPrice($relationAlias = null) Adds a LEFT JOIN clause to the query using the Price relation
+ * @method     ChildItemQuery rightJoinPrice($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Price relation
+ * @method     ChildItemQuery innerJoinPrice($relationAlias = null) Adds a INNER JOIN clause to the query using the Price relation
  *
- * @method     \GW2ledger\Database\ItemInfoQuery|\GW2ledger\Database\ItemItemDetailQuery|\GW2ledger\Database\ListingQuery|\GW2ledger\Database\ItemSummaryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \GW2ledger\Database\ItemInfoQuery|\GW2ledger\Database\ItemItemDetailQuery|\GW2ledger\Database\ListingQuery|\GW2ledger\Database\PriceQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildItem findOne(ConnectionInterface $con = null) Return the first ChildItem matching the query
  * @method     ChildItem findOneOrCreate(ConnectionInterface $con = null) Return the first ChildItem matching the query, or a new ChildItem object populated from the query conditions when no match is found
@@ -569,40 +569,40 @@ abstract class ItemQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \GW2ledger\Database\ItemSummary object
+     * Filter the query by a related \GW2ledger\Database\Price object
      *
-     * @param \GW2ledger\Database\ItemSummary|ObjectCollection $itemSummary the related object to use as filter
+     * @param \GW2ledger\Database\Price|ObjectCollection $price the related object to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return ChildItemQuery The current query, for fluid interface
      */
-    public function filterByItemSummary($itemSummary, $comparison = null)
+    public function filterByPrice($price, $comparison = null)
     {
-        if ($itemSummary instanceof \GW2ledger\Database\ItemSummary) {
+        if ($price instanceof \GW2ledger\Database\Price) {
             return $this
-                ->addUsingAlias(ItemTableMap::COL_ID, $itemSummary->getItemId(), $comparison);
-        } elseif ($itemSummary instanceof ObjectCollection) {
+                ->addUsingAlias(ItemTableMap::COL_ID, $price->getItemId(), $comparison);
+        } elseif ($price instanceof ObjectCollection) {
             return $this
-                ->useItemSummaryQuery()
-                ->filterByPrimaryKeys($itemSummary->getPrimaryKeys())
+                ->usePriceQuery()
+                ->filterByPrimaryKeys($price->getPrimaryKeys())
                 ->endUse();
         } else {
-            throw new PropelException('filterByItemSummary() only accepts arguments of type \GW2ledger\Database\ItemSummary or Collection');
+            throw new PropelException('filterByPrice() only accepts arguments of type \GW2ledger\Database\Price or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the ItemSummary relation
+     * Adds a JOIN clause to the query using the Price relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return $this|ChildItemQuery The current query, for fluid interface
      */
-    public function joinItemSummary($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function joinPrice($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('ItemSummary');
+        $relationMap = $tableMap->getRelation('Price');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -617,14 +617,14 @@ abstract class ItemQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'ItemSummary');
+            $this->addJoinObject($join, 'Price');
         }
 
         return $this;
     }
 
     /**
-     * Use the ItemSummary relation ItemSummary object
+     * Use the Price relation Price object
      *
      * @see useQuery()
      *
@@ -632,13 +632,13 @@ abstract class ItemQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \GW2ledger\Database\ItemSummaryQuery A secondary query class using the current class as primary query
+     * @return \GW2ledger\Database\PriceQuery A secondary query class using the current class as primary query
      */
-    public function useItemSummaryQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function usePriceQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
-            ->joinItemSummary($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'ItemSummary', '\GW2ledger\Database\ItemSummaryQuery');
+            ->joinPrice($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Price', '\GW2ledger\Database\PriceQuery');
     }
 
     /**

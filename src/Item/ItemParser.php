@@ -33,4 +33,17 @@ class ItemParser implements ItemParserInterface
     }
     return $parsed;
   }
+
+  /**
+   * This function parses the result of the endpoint list.
+   * This is a list of all items which currently exist in game
+   *
+   * this function doesnt do much right now, only returns a list of ints
+   * @return int[]    a list of ids
+   */
+  public function parseList($json)
+  {
+    $arr = json_decode($json,true);
+    return $arr;
+  }
 }

@@ -27,7 +27,7 @@ class ListingParser implements ListingParserInterface
     $itemId = $obj['id'];//the item id the listing is for
     $parsed = array();
     foreach($obj['buys'] as $listing){
-      //for each sell listing
+      //for each buy listing
       $list = array("ItemId"=>$itemId,"Type"=>"buy");//the starting data for each listing in this set
       $list["Orders"] = $listing['listings'];//the number of orders for this price
       $list["UnitPrice"] = $listing["unit_price"];
@@ -43,5 +43,18 @@ class ListingParser implements ListingParserInterface
       $parsed[] = $list;
     }
     return $parsed;
+  }
+
+  /**
+   * This function parses the result of the endpoint list.
+   * This is a list of items with current listings.
+   *
+   * this function doesnt do much right now, only returns a list of ints
+   * @return int[]    a list of ids
+   */
+  public function parseList($json)
+  {
+    $arr = json_decode($json,true);
+    return $arr;
   }
 }

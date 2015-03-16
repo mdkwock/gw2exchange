@@ -1,10 +1,12 @@
 <?php
 namespace GW2ledger\Signature\Listing;
 
+use GW2ledger\Signature\Base\AssemblerInterface;
+
 /**
  * This interface is to fetch and retrieve listings
  */
-interface ListingAssemblerInterface
+interface ListingAssemblerInterface extends AssemblerInterface
 {
   /**
    * gets an array of listings for a particular item, optionally restrained by the number and the starting point
