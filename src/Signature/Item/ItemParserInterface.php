@@ -1,7 +1,7 @@
 <?php
-namespace GW2ledger\Signature\Item;
+namespace GW2Exchange\Signature\Item;
 
-use GW2ledger\Signature\Base\ParserInterface;
+use GW2Exchange\Signature\Base\ParserInterface;
 
 /**
  * This interface takes in a json string and creates an array

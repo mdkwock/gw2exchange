@@ -1,11 +1,13 @@
 <?php
-namespace GW2ledger\Item;
+namespace GW2Exchange\Item;
 
-use GW2ledger\Signature\Item\ItemDetailsObjectInterface;
-use GW2ledger\Database\ItemDetailQuery;
-use GW2ledger\Database\ItemItemDetailQuery;
-use GW2ledger\Database\ItemItemDetail;
-use GW2ledger\Database\Map\ItemItemDetailTableMap as TableMap;
+use GW2Exchange\Signature\Item\ItemDetailsObjectInterface;
+use GW2Exchange\Database\ItemDetailQuery;
+use GW2Exchange\Database\ItemItemDetailQuery;
+use GW2Exchange\Database\ItemItemDetail;
+use GW2Exchange\Item\ItemDetailFactory;
+use GW2Exchange\Item\ItemItemDetailFactory;
+use GW2Exchange\Database\Map\ItemItemDetailTableMap as TableMap;
 
 /**
  * This class assembles a ItemDetail object which simplifies usage, uses an array implementation
@@ -19,6 +21,15 @@ class ItemDetailsArrayObject implements ItemDetailsObjectInterface
 
   //a array of ['itemDetailLabel'] => itemItemDetail
   protected $data;
+  protected $itemDetailFactory;
+  protected $itemItemDetailFactory;
+
+  public function __construct(ItemDetailFactory $itemDetailFactory, ItemItemDetailFactory $itemItemDetailFactory)
+  {
+    $this->itemDetailFactory = $itemDetailFactory;
+    $this->itemItemDetailFactory = $itemItemDetailFactory;
+
+  }
 
   /**
    * this function is used as a shortcut to the propel table mapping process
@@ -38,11 +49,8 @@ class ItemDetailsArrayObject implements ItemDetailsObjectInterface
     $this->data = array();
     foreach($details as $detailLabel=>$detailValue){
       //look for an existing item detail or create a new one so we dont duplicate
-      $itemDetail = ItemDetailQuery::create()
-       ->filterByItemType($itemType)
-       ->filterByLabel($detailLabel)
-       ->findOneOrCreate();
-      $itemDetail->setAllFromArray(array('item_type'=>$itemType, 'label'=>$detailLabel));
+      $itemDetail = $this->itemDetailFactory->create($itemType, $detailLabel);
+
       if($itemDetail->isNew()){
         //if the detail attribute has not been created before
         //save it so that we know one exists if we look a second time
@@ -51,14 +59,10 @@ class ItemDetailsArrayObject implements ItemDetailsObjectInterface
         $itemItemDetail = new ItemItemDetail();
       }else{
         //only check if a detail already exists if the item detail existed before
-        $itemItemDetail = ItemItemDetailQuery::create()
-         ->filterByItemId($itemId)
-         ->filterByItemDetail($itemDetail)
-         ->findOneOrCreate();
+        $itemItemDetail = $this->itemItemDetailFactory->create($itemId, $itemDetail);
       }
+        $itemDetail = $this->itemItemDetailFactory->create($itemId, $itemDetail);
       $itemItemDetail->setAllFromArray(array('value'=>$detailValue));
-      $itemItemDetail->setItemId($itemId);
-      $itemItemDetail->setItemDetail($itemDetail);
       $this->data[$detailLabel] = $itemItemDetail;
     }
   }
@@ -93,7 +97,7 @@ class ItemDetailsArrayObject implements ItemDetailsObjectInterface
    * gets an associative array representation of the details
    * @return string[]     the keys are the keys and the values are the corresponding values
    */
-  public function getArray()
+  public function toArray()
   {
     $arr = array();
     foreach($this->data as $key=>$detail){
@@ -116,6 +120,16 @@ class ItemDetailsArrayObject implements ItemDetailsObjectInterface
   }
 
   /**
+   * this function sets the item that the item details pertain to
+   * @param [type] $item [description]
+   */
+  public function setItem($item){
+    foreach($this->data as $detail){
+      $detail->setItem($item);
+    }
+  }
+
+  /**
    * saves the details onto the server
    * @return [type] [description]
    */
@@ -123,7 +137,6 @@ class ItemDetailsArrayObject implements ItemDetailsObjectInterface
   {
     foreach($this->data as $detail)
     {
-
  //     $itemItemDetail->setItemDetail($itemDetail);
       $detail->save();
 

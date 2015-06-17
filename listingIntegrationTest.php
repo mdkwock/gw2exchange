@@ -5,17 +5,17 @@ require './vendor/autoload.php';
 require './database/generated-conf/config.php';
 
 
-use GW2ledger\Connection\GuzzleWebScraper,
+use GW2Exchange\Connection\GuzzleWebScraper,
   GuzzleHttp\Client;
 
-use GW2ledger\Item\ItemAssembler,
-  GW2ledger\Database\Item;
+use GW2Exchange\Item\ItemAssembler,
+  GW2Exchange\Database\Item;
 
-use GW2ledger\Listing\ListingAssembler,
-  GW2ledger\Database\Listing;
+use GW2Exchange\Listing\ListingAssembler,
+  GW2Exchange\Database\Listing;
 
-use GW2ledger\Price\PriceAssembler,
-  GW2ledger\Database\Price;
+use GW2Exchange\Price\PriceAssembler,
+  GW2Exchange\Database\Price;
 
 //'https://api.guildwars2.com/v2/commerce/listings';
 

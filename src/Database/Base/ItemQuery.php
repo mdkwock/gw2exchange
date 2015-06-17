@@ -1,12 +1,13 @@
 <?php
 
-namespace GW2ledger\Database\Base;
+namespace GW2Exchange\Database\Base;
 
 use \Exception;
 use \PDO;
-use GW2ledger\Database\Item as ChildItem;
-use GW2ledger\Database\ItemQuery as ChildItemQuery;
-use GW2ledger\Database\Map\ItemTableMap;
+use GW2Exchange\Database\Item as ChildItem;
+use GW2Exchange\Database\ItemArchive as ChildItemArchive;
+use GW2Exchange\Database\ItemQuery as ChildItemQuery;
+use GW2Exchange\Database\Map\ItemTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -23,10 +24,16 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItemQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildItemQuery orderByName($order = Criteria::ASC) Order by the name column
  * @method     ChildItemQuery orderByIcon($order = Criteria::ASC) Order by the icon column
+ * @method     ChildItemQuery orderByCacheTime($order = Criteria::ASC) Order by the cache_time column
+ * @method     ChildItemQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
+ * @method     ChildItemQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildItemQuery groupById() Group by the id column
  * @method     ChildItemQuery groupByName() Group by the name column
  * @method     ChildItemQuery groupByIcon() Group by the icon column
+ * @method     ChildItemQuery groupByCacheTime() Group by the cache_time column
+ * @method     ChildItemQuery groupByCreatedAt() Group by the created_at column
+ * @method     ChildItemQuery groupByUpdatedAt() Group by the updated_at column
  *
  * @method     ChildItemQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildItemQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -48,14 +55,21 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItemQuery rightJoinPrice($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Price relation
  * @method     ChildItemQuery innerJoinPrice($relationAlias = null) Adds a INNER JOIN clause to the query using the Price relation
  *
- * @method     \GW2ledger\Database\ItemInfoQuery|\GW2ledger\Database\ItemItemDetailQuery|\GW2ledger\Database\ListingQuery|\GW2ledger\Database\PriceQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildItemQuery leftJoinPriceHistory($relationAlias = null) Adds a LEFT JOIN clause to the query using the PriceHistory relation
+ * @method     ChildItemQuery rightJoinPriceHistory($relationAlias = null) Adds a RIGHT JOIN clause to the query using the PriceHistory relation
+ * @method     ChildItemQuery innerJoinPriceHistory($relationAlias = null) Adds a INNER JOIN clause to the query using the PriceHistory relation
+ *
+ * @method     \GW2Exchange\Database\ItemInfoQuery|\GW2Exchange\Database\ItemItemDetailQuery|\GW2Exchange\Database\ListingQuery|\GW2Exchange\Database\PriceQuery|\GW2Exchange\Database\PriceHistoryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildItem findOne(ConnectionInterface $con = null) Return the first ChildItem matching the query
  * @method     ChildItem findOneOrCreate(ConnectionInterface $con = null) Return the first ChildItem matching the query, or a new ChildItem object populated from the query conditions when no match is found
  *
  * @method     ChildItem findOneById(int $id) Return the first ChildItem filtered by the id column
  * @method     ChildItem findOneByName(string $name) Return the first ChildItem filtered by the name column
- * @method     ChildItem findOneByIcon(string $icon) Return the first ChildItem filtered by the icon column *
+ * @method     ChildItem findOneByIcon(string $icon) Return the first ChildItem filtered by the icon column
+ * @method     ChildItem findOneByCacheTime(int $cache_time) Return the first ChildItem filtered by the cache_time column
+ * @method     ChildItem findOneByCreatedAt(string $created_at) Return the first ChildItem filtered by the created_at column
+ * @method     ChildItem findOneByUpdatedAt(string $updated_at) Return the first ChildItem filtered by the updated_at column *
 
  * @method     ChildItem requirePk($key, ConnectionInterface $con = null) Return the ChildItem by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildItem requireOne(ConnectionInterface $con = null) Return the first ChildItem matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -63,26 +77,35 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItem requireOneById(int $id) Return the first ChildItem filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildItem requireOneByName(string $name) Return the first ChildItem filtered by the name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildItem requireOneByIcon(string $icon) Return the first ChildItem filtered by the icon column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildItem requireOneByCacheTime(int $cache_time) Return the first ChildItem filtered by the cache_time column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildItem requireOneByCreatedAt(string $created_at) Return the first ChildItem filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildItem requireOneByUpdatedAt(string $updated_at) Return the first ChildItem filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildItem[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildItem objects based on current ModelCriteria
  * @method     ChildItem[]|ObjectCollection findById(int $id) Return ChildItem objects filtered by the id column
  * @method     ChildItem[]|ObjectCollection findByName(string $name) Return ChildItem objects filtered by the name column
  * @method     ChildItem[]|ObjectCollection findByIcon(string $icon) Return ChildItem objects filtered by the icon column
+ * @method     ChildItem[]|ObjectCollection findByCacheTime(int $cache_time) Return ChildItem objects filtered by the cache_time column
+ * @method     ChildItem[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildItem objects filtered by the created_at column
+ * @method     ChildItem[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildItem objects filtered by the updated_at column
  * @method     ChildItem[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
 abstract class ItemQuery extends ModelCriteria
 {
-    protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityNotFoundException';
+
+    // archivable behavior
+    protected $archiveOnDelete = true;
+protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityNotFoundException';
 
     /**
-     * Initializes internal state of \GW2ledger\Database\Base\ItemQuery object.
+     * Initializes internal state of \GW2Exchange\Database\Base\ItemQuery object.
      *
      * @param     string $dbName The database name
      * @param     string $modelName The phpName of a model, e.g. 'Book'
      * @param     string $modelAlias The alias for the model in this query, e.g. 'b'
      */
-    public function __construct($dbName = 'gw2ledger', $modelName = '\\GW2ledger\\Database\\Item', $modelAlias = null)
+    public function __construct($dbName = 'GW2Exchange', $modelName = '\\GW2Exchange\\Database\\Item', $modelAlias = null)
     {
         parent::__construct($dbName, $modelName, $modelAlias);
     }
@@ -160,7 +183,7 @@ abstract class ItemQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, name, icon FROM item WHERE id = :p0';
+        $sql = 'SELECT id, name, icon, cache_time, created_at, updated_at FROM item WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -350,16 +373,143 @@ abstract class ItemQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \GW2ledger\Database\ItemInfo object
+     * Filter the query on the cache_time column
      *
-     * @param \GW2ledger\Database\ItemInfo|ObjectCollection $itemInfo the related object to use as filter
+     * Example usage:
+     * <code>
+     * $query->filterByCacheTime(1234); // WHERE cache_time = 1234
+     * $query->filterByCacheTime(array(12, 34)); // WHERE cache_time IN (12, 34)
+     * $query->filterByCacheTime(array('min' => 12)); // WHERE cache_time > 12
+     * </code>
+     *
+     * @param     mixed $cacheTime The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildItemQuery The current query, for fluid interface
+     */
+    public function filterByCacheTime($cacheTime = null, $comparison = null)
+    {
+        if (is_array($cacheTime)) {
+            $useMinMax = false;
+            if (isset($cacheTime['min'])) {
+                $this->addUsingAlias(ItemTableMap::COL_CACHE_TIME, $cacheTime['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($cacheTime['max'])) {
+                $this->addUsingAlias(ItemTableMap::COL_CACHE_TIME, $cacheTime['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ItemTableMap::COL_CACHE_TIME, $cacheTime, $comparison);
+    }
+
+    /**
+     * Filter the query on the created_at column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByCreatedAt('2011-03-14'); // WHERE created_at = '2011-03-14'
+     * $query->filterByCreatedAt('now'); // WHERE created_at = '2011-03-14'
+     * $query->filterByCreatedAt(array('max' => 'yesterday')); // WHERE created_at > '2011-03-13'
+     * </code>
+     *
+     * @param     mixed $createdAt The value to use as filter.
+     *              Values can be integers (unix timestamps), DateTime objects, or strings.
+     *              Empty strings are treated as NULL.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildItemQuery The current query, for fluid interface
+     */
+    public function filterByCreatedAt($createdAt = null, $comparison = null)
+    {
+        if (is_array($createdAt)) {
+            $useMinMax = false;
+            if (isset($createdAt['min'])) {
+                $this->addUsingAlias(ItemTableMap::COL_CREATED_AT, $createdAt['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($createdAt['max'])) {
+                $this->addUsingAlias(ItemTableMap::COL_CREATED_AT, $createdAt['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ItemTableMap::COL_CREATED_AT, $createdAt, $comparison);
+    }
+
+    /**
+     * Filter the query on the updated_at column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUpdatedAt('2011-03-14'); // WHERE updated_at = '2011-03-14'
+     * $query->filterByUpdatedAt('now'); // WHERE updated_at = '2011-03-14'
+     * $query->filterByUpdatedAt(array('max' => 'yesterday')); // WHERE updated_at > '2011-03-13'
+     * </code>
+     *
+     * @param     mixed $updatedAt The value to use as filter.
+     *              Values can be integers (unix timestamps), DateTime objects, or strings.
+     *              Empty strings are treated as NULL.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildItemQuery The current query, for fluid interface
+     */
+    public function filterByUpdatedAt($updatedAt = null, $comparison = null)
+    {
+        if (is_array($updatedAt)) {
+            $useMinMax = false;
+            if (isset($updatedAt['min'])) {
+                $this->addUsingAlias(ItemTableMap::COL_UPDATED_AT, $updatedAt['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($updatedAt['max'])) {
+                $this->addUsingAlias(ItemTableMap::COL_UPDATED_AT, $updatedAt['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ItemTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \GW2Exchange\Database\ItemInfo object
+     *
+     * @param \GW2Exchange\Database\ItemInfo|ObjectCollection $itemInfo the related object to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return ChildItemQuery The current query, for fluid interface
      */
     public function filterByItemInfo($itemInfo, $comparison = null)
     {
-        if ($itemInfo instanceof \GW2ledger\Database\ItemInfo) {
+        if ($itemInfo instanceof \GW2Exchange\Database\ItemInfo) {
             return $this
                 ->addUsingAlias(ItemTableMap::COL_ID, $itemInfo->getItemId(), $comparison);
         } elseif ($itemInfo instanceof ObjectCollection) {
@@ -368,7 +518,7 @@ abstract class ItemQuery extends ModelCriteria
                 ->filterByPrimaryKeys($itemInfo->getPrimaryKeys())
                 ->endUse();
         } else {
-            throw new PropelException('filterByItemInfo() only accepts arguments of type \GW2ledger\Database\ItemInfo or Collection');
+            throw new PropelException('filterByItemInfo() only accepts arguments of type \GW2Exchange\Database\ItemInfo or Collection');
         }
     }
 
@@ -413,26 +563,26 @@ abstract class ItemQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \GW2ledger\Database\ItemInfoQuery A secondary query class using the current class as primary query
+     * @return \GW2Exchange\Database\ItemInfoQuery A secondary query class using the current class as primary query
      */
     public function useItemInfoQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinItemInfo($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'ItemInfo', '\GW2ledger\Database\ItemInfoQuery');
+            ->useQuery($relationAlias ? $relationAlias : 'ItemInfo', '\GW2Exchange\Database\ItemInfoQuery');
     }
 
     /**
-     * Filter the query by a related \GW2ledger\Database\ItemItemDetail object
+     * Filter the query by a related \GW2Exchange\Database\ItemItemDetail object
      *
-     * @param \GW2ledger\Database\ItemItemDetail|ObjectCollection $itemItemDetail the related object to use as filter
+     * @param \GW2Exchange\Database\ItemItemDetail|ObjectCollection $itemItemDetail the related object to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return ChildItemQuery The current query, for fluid interface
      */
     public function filterByItemItemDetail($itemItemDetail, $comparison = null)
     {
-        if ($itemItemDetail instanceof \GW2ledger\Database\ItemItemDetail) {
+        if ($itemItemDetail instanceof \GW2Exchange\Database\ItemItemDetail) {
             return $this
                 ->addUsingAlias(ItemTableMap::COL_ID, $itemItemDetail->getItemId(), $comparison);
         } elseif ($itemItemDetail instanceof ObjectCollection) {
@@ -441,7 +591,7 @@ abstract class ItemQuery extends ModelCriteria
                 ->filterByPrimaryKeys($itemItemDetail->getPrimaryKeys())
                 ->endUse();
         } else {
-            throw new PropelException('filterByItemItemDetail() only accepts arguments of type \GW2ledger\Database\ItemItemDetail or Collection');
+            throw new PropelException('filterByItemItemDetail() only accepts arguments of type \GW2Exchange\Database\ItemItemDetail or Collection');
         }
     }
 
@@ -486,26 +636,26 @@ abstract class ItemQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \GW2ledger\Database\ItemItemDetailQuery A secondary query class using the current class as primary query
+     * @return \GW2Exchange\Database\ItemItemDetailQuery A secondary query class using the current class as primary query
      */
     public function useItemItemDetailQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinItemItemDetail($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'ItemItemDetail', '\GW2ledger\Database\ItemItemDetailQuery');
+            ->useQuery($relationAlias ? $relationAlias : 'ItemItemDetail', '\GW2Exchange\Database\ItemItemDetailQuery');
     }
 
     /**
-     * Filter the query by a related \GW2ledger\Database\Listing object
+     * Filter the query by a related \GW2Exchange\Database\Listing object
      *
-     * @param \GW2ledger\Database\Listing|ObjectCollection $listing the related object to use as filter
+     * @param \GW2Exchange\Database\Listing|ObjectCollection $listing the related object to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return ChildItemQuery The current query, for fluid interface
      */
     public function filterByListing($listing, $comparison = null)
     {
-        if ($listing instanceof \GW2ledger\Database\Listing) {
+        if ($listing instanceof \GW2Exchange\Database\Listing) {
             return $this
                 ->addUsingAlias(ItemTableMap::COL_ID, $listing->getItemId(), $comparison);
         } elseif ($listing instanceof ObjectCollection) {
@@ -514,7 +664,7 @@ abstract class ItemQuery extends ModelCriteria
                 ->filterByPrimaryKeys($listing->getPrimaryKeys())
                 ->endUse();
         } else {
-            throw new PropelException('filterByListing() only accepts arguments of type \GW2ledger\Database\Listing or Collection');
+            throw new PropelException('filterByListing() only accepts arguments of type \GW2Exchange\Database\Listing or Collection');
         }
     }
 
@@ -559,26 +709,26 @@ abstract class ItemQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \GW2ledger\Database\ListingQuery A secondary query class using the current class as primary query
+     * @return \GW2Exchange\Database\ListingQuery A secondary query class using the current class as primary query
      */
     public function useListingQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
     {
         return $this
             ->joinListing($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'Listing', '\GW2ledger\Database\ListingQuery');
+            ->useQuery($relationAlias ? $relationAlias : 'Listing', '\GW2Exchange\Database\ListingQuery');
     }
 
     /**
-     * Filter the query by a related \GW2ledger\Database\Price object
+     * Filter the query by a related \GW2Exchange\Database\Price object
      *
-     * @param \GW2ledger\Database\Price|ObjectCollection $price the related object to use as filter
+     * @param \GW2Exchange\Database\Price|ObjectCollection $price the related object to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return ChildItemQuery The current query, for fluid interface
      */
     public function filterByPrice($price, $comparison = null)
     {
-        if ($price instanceof \GW2ledger\Database\Price) {
+        if ($price instanceof \GW2Exchange\Database\Price) {
             return $this
                 ->addUsingAlias(ItemTableMap::COL_ID, $price->getItemId(), $comparison);
         } elseif ($price instanceof ObjectCollection) {
@@ -587,7 +737,7 @@ abstract class ItemQuery extends ModelCriteria
                 ->filterByPrimaryKeys($price->getPrimaryKeys())
                 ->endUse();
         } else {
-            throw new PropelException('filterByPrice() only accepts arguments of type \GW2ledger\Database\Price or Collection');
+            throw new PropelException('filterByPrice() only accepts arguments of type \GW2Exchange\Database\Price or Collection');
         }
     }
 
@@ -632,13 +782,86 @@ abstract class ItemQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \GW2ledger\Database\PriceQuery A secondary query class using the current class as primary query
+     * @return \GW2Exchange\Database\PriceQuery A secondary query class using the current class as primary query
      */
     public function usePriceQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinPrice($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'Price', '\GW2ledger\Database\PriceQuery');
+            ->useQuery($relationAlias ? $relationAlias : 'Price', '\GW2Exchange\Database\PriceQuery');
+    }
+
+    /**
+     * Filter the query by a related \GW2Exchange\Database\PriceHistory object
+     *
+     * @param \GW2Exchange\Database\PriceHistory|ObjectCollection $priceHistory the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildItemQuery The current query, for fluid interface
+     */
+    public function filterByPriceHistory($priceHistory, $comparison = null)
+    {
+        if ($priceHistory instanceof \GW2Exchange\Database\PriceHistory) {
+            return $this
+                ->addUsingAlias(ItemTableMap::COL_ID, $priceHistory->getItemId(), $comparison);
+        } elseif ($priceHistory instanceof ObjectCollection) {
+            return $this
+                ->usePriceHistoryQuery()
+                ->filterByPrimaryKeys($priceHistory->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByPriceHistory() only accepts arguments of type \GW2Exchange\Database\PriceHistory or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the PriceHistory relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildItemQuery The current query, for fluid interface
+     */
+    public function joinPriceHistory($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('PriceHistory');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'PriceHistory');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the PriceHistory relation PriceHistory object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \GW2Exchange\Database\PriceHistoryQuery A secondary query class using the current class as primary query
+     */
+    public function usePriceHistoryQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinPriceHistory($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'PriceHistory', '\GW2Exchange\Database\PriceHistoryQuery');
     }
 
     /**
@@ -672,6 +895,25 @@ abstract class ItemQuery extends ModelCriteria
         }
 
         return $this;
+    }
+
+    /**
+     * Code to execute before every DELETE statement
+     *
+     * @param     ConnectionInterface $con The connection object used by the query
+     */
+    protected function basePreDelete(ConnectionInterface $con)
+    {
+        // archivable behavior
+
+        if ($this->archiveOnDelete) {
+            $this->archive($con);
+        } else {
+            $this->archiveOnDelete = true;
+        }
+
+
+        return $this->preDelete($con);
     }
 
     /**
@@ -733,6 +975,151 @@ abstract class ItemQuery extends ModelCriteria
 
             return $affectedRows;
         });
+    }
+
+    // timestampable behavior
+
+    /**
+     * Filter by the latest updated
+     *
+     * @param      int $nbDays Maximum age of the latest update in days
+     *
+     * @return     $this|ChildItemQuery The current query, for fluid interface
+     */
+    public function recentlyUpdated($nbDays = 7)
+    {
+        return $this->addUsingAlias(ItemTableMap::COL_UPDATED_AT, time() - $nbDays * 24 * 60 * 60, Criteria::GREATER_EQUAL);
+    }
+
+    /**
+     * Order by update date desc
+     *
+     * @return     $this|ChildItemQuery The current query, for fluid interface
+     */
+    public function lastUpdatedFirst()
+    {
+        return $this->addDescendingOrderByColumn(ItemTableMap::COL_UPDATED_AT);
+    }
+
+    /**
+     * Order by update date asc
+     *
+     * @return     $this|ChildItemQuery The current query, for fluid interface
+     */
+    public function firstUpdatedFirst()
+    {
+        return $this->addAscendingOrderByColumn(ItemTableMap::COL_UPDATED_AT);
+    }
+
+    /**
+     * Order by create date desc
+     *
+     * @return     $this|ChildItemQuery The current query, for fluid interface
+     */
+    public function lastCreatedFirst()
+    {
+        return $this->addDescendingOrderByColumn(ItemTableMap::COL_CREATED_AT);
+    }
+
+    /**
+     * Filter by the latest created
+     *
+     * @param      int $nbDays Maximum age of in days
+     *
+     * @return     $this|ChildItemQuery The current query, for fluid interface
+     */
+    public function recentlyCreated($nbDays = 7)
+    {
+        return $this->addUsingAlias(ItemTableMap::COL_CREATED_AT, time() - $nbDays * 24 * 60 * 60, Criteria::GREATER_EQUAL);
+    }
+
+    /**
+     * Order by create date asc
+     *
+     * @return     $this|ChildItemQuery The current query, for fluid interface
+     */
+    public function firstCreatedFirst()
+    {
+        return $this->addAscendingOrderByColumn(ItemTableMap::COL_CREATED_AT);
+    }
+
+    // archivable behavior
+
+    /**
+     * Copy the data of the objects satisfying the query into ChildItemArchive archive objects.
+     * The archived objects are then saved.
+     * If any of the objects has already been archived, the archived object
+     * is updated and not duplicated.
+     * Warning: This termination methods issues 2n+1 queries.
+     *
+     * @param      ConnectionInterface $con    Connection to use.
+     * @param      Boolean $useLittleMemory    Whether or not to use OnDemandFormatter to retrieve objects.
+     *               Set to false if the identity map matters.
+     *               Set to true (default) to use less memory.
+     *
+     * @return     int the number of archived objects
+     */
+    public function archive($con = null, $useLittleMemory = true)
+    {
+        $criteria = clone $this;
+        // prepare the query
+        $criteria->setWith(array());
+        if ($useLittleMemory) {
+            $criteria->setFormatter(ModelCriteria::FORMAT_ON_DEMAND);
+        }
+        if ($con === null) {
+            $con = Propel::getServiceContainer()->getWriteConnection(ItemTableMap::DATABASE_NAME);
+        }
+
+        return $con->transaction(function () use ($con, $criteria) {
+            $totalArchivedObjects = 0;
+
+            // archive all results one by one
+            foreach ($criteria->find($con) as $object) {
+                $object->archive($con);
+                $totalArchivedObjects++;
+            }
+
+            return $totalArchivedObjects;
+        });
+    }
+
+    /**
+     * Enable/disable auto-archiving on delete for the next query.
+     *
+     * @param boolean True if the query must archive deleted objects, false otherwise.
+     */
+    public function setArchiveOnDelete($archiveOnDelete)
+    {
+        $this->archiveOnDelete = $archiveOnDelete;
+    }
+
+    /**
+     * Delete records matching the current query without archiving them.
+     *
+     * @param      ConnectionInterface $con    Connection to use.
+     *
+     * @return integer the number of deleted rows
+     */
+    public function deleteWithoutArchive($con = null)
+    {
+        $this->archiveOnDelete = false;
+
+        return $this->delete($con);
+    }
+
+    /**
+     * Delete all records without archiving them.
+     *
+     * @param      ConnectionInterface $con    Connection to use.
+     *
+     * @return integer the number of deleted rows
+     */
+    public function deleteAllWithoutArchive($con = null)
+    {
+        $this->archiveOnDelete = false;
+
+        return $this->deleteAll($con);
     }
 
 } // ItemQuery

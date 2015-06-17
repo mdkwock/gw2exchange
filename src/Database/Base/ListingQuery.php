@@ -1,12 +1,13 @@
 <?php
 
-namespace GW2ledger\Database\Base;
+namespace GW2Exchange\Database\Base;
 
 use \Exception;
 use \PDO;
-use GW2ledger\Database\Listing as ChildListing;
-use GW2ledger\Database\ListingQuery as ChildListingQuery;
-use GW2ledger\Database\Map\ListingTableMap;
+use GW2Exchange\Database\Listing as ChildListing;
+use GW2Exchange\Database\ListingArchive as ChildListingArchive;
+use GW2Exchange\Database\ListingQuery as ChildListingQuery;
+use GW2Exchange\Database\Map\ListingTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -26,6 +27,9 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildListingQuery orderByOrders($order = Criteria::ASC) Order by the orders column
  * @method     ChildListingQuery orderByUnitPrice($order = Criteria::ASC) Order by the unit_price column
  * @method     ChildListingQuery orderByQuantity($order = Criteria::ASC) Order by the quantity column
+ * @method     ChildListingQuery orderByCacheTime($order = Criteria::ASC) Order by the cache_time column
+ * @method     ChildListingQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
+ * @method     ChildListingQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildListingQuery groupById() Group by the id column
  * @method     ChildListingQuery groupByItemId() Group by the item_id column
@@ -33,6 +37,9 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildListingQuery groupByOrders() Group by the orders column
  * @method     ChildListingQuery groupByUnitPrice() Group by the unit_price column
  * @method     ChildListingQuery groupByQuantity() Group by the quantity column
+ * @method     ChildListingQuery groupByCacheTime() Group by the cache_time column
+ * @method     ChildListingQuery groupByCreatedAt() Group by the created_at column
+ * @method     ChildListingQuery groupByUpdatedAt() Group by the updated_at column
  *
  * @method     ChildListingQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildListingQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -42,7 +49,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildListingQuery rightJoinItem($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Item relation
  * @method     ChildListingQuery innerJoinItem($relationAlias = null) Adds a INNER JOIN clause to the query using the Item relation
  *
- * @method     \GW2ledger\Database\ItemQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \GW2Exchange\Database\ItemQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildListing findOne(ConnectionInterface $con = null) Return the first ChildListing matching the query
  * @method     ChildListing findOneOrCreate(ConnectionInterface $con = null) Return the first ChildListing matching the query, or a new ChildListing object populated from the query conditions when no match is found
@@ -52,7 +59,10 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildListing findOneByType(string $type) Return the first ChildListing filtered by the type column
  * @method     ChildListing findOneByOrders(int $orders) Return the first ChildListing filtered by the orders column
  * @method     ChildListing findOneByUnitPrice(int $unit_price) Return the first ChildListing filtered by the unit_price column
- * @method     ChildListing findOneByQuantity(int $quantity) Return the first ChildListing filtered by the quantity column *
+ * @method     ChildListing findOneByQuantity(int $quantity) Return the first ChildListing filtered by the quantity column
+ * @method     ChildListing findOneByCacheTime(int $cache_time) Return the first ChildListing filtered by the cache_time column
+ * @method     ChildListing findOneByCreatedAt(string $created_at) Return the first ChildListing filtered by the created_at column
+ * @method     ChildListing findOneByUpdatedAt(string $updated_at) Return the first ChildListing filtered by the updated_at column *
 
  * @method     ChildListing requirePk($key, ConnectionInterface $con = null) Return the ChildListing by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildListing requireOne(ConnectionInterface $con = null) Return the first ChildListing matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -63,6 +73,9 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildListing requireOneByOrders(int $orders) Return the first ChildListing filtered by the orders column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildListing requireOneByUnitPrice(int $unit_price) Return the first ChildListing filtered by the unit_price column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildListing requireOneByQuantity(int $quantity) Return the first ChildListing filtered by the quantity column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildListing requireOneByCacheTime(int $cache_time) Return the first ChildListing filtered by the cache_time column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildListing requireOneByCreatedAt(string $created_at) Return the first ChildListing filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildListing requireOneByUpdatedAt(string $updated_at) Return the first ChildListing filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildListing[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildListing objects based on current ModelCriteria
  * @method     ChildListing[]|ObjectCollection findById(int $id) Return ChildListing objects filtered by the id column
@@ -71,21 +84,28 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildListing[]|ObjectCollection findByOrders(int $orders) Return ChildListing objects filtered by the orders column
  * @method     ChildListing[]|ObjectCollection findByUnitPrice(int $unit_price) Return ChildListing objects filtered by the unit_price column
  * @method     ChildListing[]|ObjectCollection findByQuantity(int $quantity) Return ChildListing objects filtered by the quantity column
+ * @method     ChildListing[]|ObjectCollection findByCacheTime(int $cache_time) Return ChildListing objects filtered by the cache_time column
+ * @method     ChildListing[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildListing objects filtered by the created_at column
+ * @method     ChildListing[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildListing objects filtered by the updated_at column
  * @method     ChildListing[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
 abstract class ListingQuery extends ModelCriteria
 {
-    protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityNotFoundException';
+
+    // archivable behavior
+    protected $archiveOnUpdate = true;
+    protected $archiveOnDelete = true;
+protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityNotFoundException';
 
     /**
-     * Initializes internal state of \GW2ledger\Database\Base\ListingQuery object.
+     * Initializes internal state of \GW2Exchange\Database\Base\ListingQuery object.
      *
      * @param     string $dbName The database name
      * @param     string $modelName The phpName of a model, e.g. 'Book'
      * @param     string $modelAlias The alias for the model in this query, e.g. 'b'
      */
-    public function __construct($dbName = 'gw2ledger', $modelName = '\\GW2ledger\\Database\\Listing', $modelAlias = null)
+    public function __construct($dbName = 'GW2Exchange', $modelName = '\\GW2Exchange\\Database\\Listing', $modelAlias = null)
     {
         parent::__construct($dbName, $modelName, $modelAlias);
     }
@@ -163,7 +183,7 @@ abstract class ListingQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, item_id, type, orders, unit_price, quantity FROM listing WHERE id = :p0';
+        $sql = 'SELECT id, item_id, type, orders, unit_price, quantity, cache_time, created_at, updated_at FROM listing WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -490,9 +510,136 @@ abstract class ListingQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \GW2ledger\Database\Item object
+     * Filter the query on the cache_time column
      *
-     * @param \GW2ledger\Database\Item|ObjectCollection $item The related object(s) to use as filter
+     * Example usage:
+     * <code>
+     * $query->filterByCacheTime(1234); // WHERE cache_time = 1234
+     * $query->filterByCacheTime(array(12, 34)); // WHERE cache_time IN (12, 34)
+     * $query->filterByCacheTime(array('min' => 12)); // WHERE cache_time > 12
+     * </code>
+     *
+     * @param     mixed $cacheTime The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildListingQuery The current query, for fluid interface
+     */
+    public function filterByCacheTime($cacheTime = null, $comparison = null)
+    {
+        if (is_array($cacheTime)) {
+            $useMinMax = false;
+            if (isset($cacheTime['min'])) {
+                $this->addUsingAlias(ListingTableMap::COL_CACHE_TIME, $cacheTime['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($cacheTime['max'])) {
+                $this->addUsingAlias(ListingTableMap::COL_CACHE_TIME, $cacheTime['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ListingTableMap::COL_CACHE_TIME, $cacheTime, $comparison);
+    }
+
+    /**
+     * Filter the query on the created_at column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByCreatedAt('2011-03-14'); // WHERE created_at = '2011-03-14'
+     * $query->filterByCreatedAt('now'); // WHERE created_at = '2011-03-14'
+     * $query->filterByCreatedAt(array('max' => 'yesterday')); // WHERE created_at > '2011-03-13'
+     * </code>
+     *
+     * @param     mixed $createdAt The value to use as filter.
+     *              Values can be integers (unix timestamps), DateTime objects, or strings.
+     *              Empty strings are treated as NULL.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildListingQuery The current query, for fluid interface
+     */
+    public function filterByCreatedAt($createdAt = null, $comparison = null)
+    {
+        if (is_array($createdAt)) {
+            $useMinMax = false;
+            if (isset($createdAt['min'])) {
+                $this->addUsingAlias(ListingTableMap::COL_CREATED_AT, $createdAt['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($createdAt['max'])) {
+                $this->addUsingAlias(ListingTableMap::COL_CREATED_AT, $createdAt['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ListingTableMap::COL_CREATED_AT, $createdAt, $comparison);
+    }
+
+    /**
+     * Filter the query on the updated_at column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUpdatedAt('2011-03-14'); // WHERE updated_at = '2011-03-14'
+     * $query->filterByUpdatedAt('now'); // WHERE updated_at = '2011-03-14'
+     * $query->filterByUpdatedAt(array('max' => 'yesterday')); // WHERE updated_at > '2011-03-13'
+     * </code>
+     *
+     * @param     mixed $updatedAt The value to use as filter.
+     *              Values can be integers (unix timestamps), DateTime objects, or strings.
+     *              Empty strings are treated as NULL.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildListingQuery The current query, for fluid interface
+     */
+    public function filterByUpdatedAt($updatedAt = null, $comparison = null)
+    {
+        if (is_array($updatedAt)) {
+            $useMinMax = false;
+            if (isset($updatedAt['min'])) {
+                $this->addUsingAlias(ListingTableMap::COL_UPDATED_AT, $updatedAt['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($updatedAt['max'])) {
+                $this->addUsingAlias(ListingTableMap::COL_UPDATED_AT, $updatedAt['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ListingTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \GW2Exchange\Database\Item object
+     *
+     * @param \GW2Exchange\Database\Item|ObjectCollection $item The related object(s) to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @throws \Propel\Runtime\Exception\PropelException
@@ -501,7 +648,7 @@ abstract class ListingQuery extends ModelCriteria
      */
     public function filterByItem($item, $comparison = null)
     {
-        if ($item instanceof \GW2ledger\Database\Item) {
+        if ($item instanceof \GW2Exchange\Database\Item) {
             return $this
                 ->addUsingAlias(ListingTableMap::COL_ITEM_ID, $item->getId(), $comparison);
         } elseif ($item instanceof ObjectCollection) {
@@ -512,7 +659,7 @@ abstract class ListingQuery extends ModelCriteria
             return $this
                 ->addUsingAlias(ListingTableMap::COL_ITEM_ID, $item->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByItem() only accepts arguments of type \GW2ledger\Database\Item or Collection');
+            throw new PropelException('filterByItem() only accepts arguments of type \GW2Exchange\Database\Item or Collection');
         }
     }
 
@@ -557,13 +704,13 @@ abstract class ListingQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \GW2ledger\Database\ItemQuery A secondary query class using the current class as primary query
+     * @return \GW2Exchange\Database\ItemQuery A secondary query class using the current class as primary query
      */
     public function useItemQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
     {
         return $this
             ->joinItem($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'Item', '\GW2ledger\Database\ItemQuery');
+            ->useQuery($relationAlias ? $relationAlias : 'Item', '\GW2Exchange\Database\ItemQuery');
     }
 
     /**
@@ -580,6 +727,45 @@ abstract class ListingQuery extends ModelCriteria
         }
 
         return $this;
+    }
+
+    /**
+     * Code to execute before every DELETE statement
+     *
+     * @param     ConnectionInterface $con The connection object used by the query
+     */
+    protected function basePreDelete(ConnectionInterface $con)
+    {
+        // archivable behavior
+
+        if ($this->archiveOnDelete) {
+            $this->archive($con);
+        } else {
+            $this->archiveOnDelete = true;
+        }
+
+
+        return $this->preDelete($con);
+    }
+
+    /**
+     * Code to execute after every UPDATE statement
+     *
+     * @param     int $affectedRows the number of updated rows
+     * @param     ConnectionInterface $con The connection object used by the query
+     */
+    protected function basePostUpdate($affectedRows, ConnectionInterface $con)
+    {
+        // archivable behavior
+
+        if ($this->archiveOnUpdate) {
+            $this->archive($con);
+        } else {
+            $this->archiveOnUpdate = true;
+        }
+
+
+        return $this->postUpdate($affectedRows, $con);
     }
 
     /**
@@ -641,6 +827,177 @@ abstract class ListingQuery extends ModelCriteria
 
             return $affectedRows;
         });
+    }
+
+    // timestampable behavior
+
+    /**
+     * Filter by the latest updated
+     *
+     * @param      int $nbDays Maximum age of the latest update in days
+     *
+     * @return     $this|ChildListingQuery The current query, for fluid interface
+     */
+    public function recentlyUpdated($nbDays = 7)
+    {
+        return $this->addUsingAlias(ListingTableMap::COL_UPDATED_AT, time() - $nbDays * 24 * 60 * 60, Criteria::GREATER_EQUAL);
+    }
+
+    /**
+     * Order by update date desc
+     *
+     * @return     $this|ChildListingQuery The current query, for fluid interface
+     */
+    public function lastUpdatedFirst()
+    {
+        return $this->addDescendingOrderByColumn(ListingTableMap::COL_UPDATED_AT);
+    }
+
+    /**
+     * Order by update date asc
+     *
+     * @return     $this|ChildListingQuery The current query, for fluid interface
+     */
+    public function firstUpdatedFirst()
+    {
+        return $this->addAscendingOrderByColumn(ListingTableMap::COL_UPDATED_AT);
+    }
+
+    /**
+     * Order by create date desc
+     *
+     * @return     $this|ChildListingQuery The current query, for fluid interface
+     */
+    public function lastCreatedFirst()
+    {
+        return $this->addDescendingOrderByColumn(ListingTableMap::COL_CREATED_AT);
+    }
+
+    /**
+     * Filter by the latest created
+     *
+     * @param      int $nbDays Maximum age of in days
+     *
+     * @return     $this|ChildListingQuery The current query, for fluid interface
+     */
+    public function recentlyCreated($nbDays = 7)
+    {
+        return $this->addUsingAlias(ListingTableMap::COL_CREATED_AT, time() - $nbDays * 24 * 60 * 60, Criteria::GREATER_EQUAL);
+    }
+
+    /**
+     * Order by create date asc
+     *
+     * @return     $this|ChildListingQuery The current query, for fluid interface
+     */
+    public function firstCreatedFirst()
+    {
+        return $this->addAscendingOrderByColumn(ListingTableMap::COL_CREATED_AT);
+    }
+
+    // archivable behavior
+
+    /**
+     * Copy the data of the objects satisfying the query into ChildListingArchive archive objects.
+     * The archived objects are then saved.
+     * If any of the objects has already been archived, the archived object
+     * is updated and not duplicated.
+     * Warning: This termination methods issues 2n+1 queries.
+     *
+     * @param      ConnectionInterface $con    Connection to use.
+     * @param      Boolean $useLittleMemory    Whether or not to use OnDemandFormatter to retrieve objects.
+     *               Set to false if the identity map matters.
+     *               Set to true (default) to use less memory.
+     *
+     * @return     int the number of archived objects
+     */
+    public function archive($con = null, $useLittleMemory = true)
+    {
+        $criteria = clone $this;
+        // prepare the query
+        $criteria->setWith(array());
+        if ($useLittleMemory) {
+            $criteria->setFormatter(ModelCriteria::FORMAT_ON_DEMAND);
+        }
+        if ($con === null) {
+            $con = Propel::getServiceContainer()->getWriteConnection(ListingTableMap::DATABASE_NAME);
+        }
+
+        return $con->transaction(function () use ($con, $criteria) {
+            $totalArchivedObjects = 0;
+
+            // archive all results one by one
+            foreach ($criteria->find($con) as $object) {
+                $object->archive($con);
+                $totalArchivedObjects++;
+            }
+
+            return $totalArchivedObjects;
+        });
+    }
+
+    /**
+     * Enable/disable auto-archiving on update for the next query.
+     *
+     * @param boolean True if the query must archive updated objects, false otherwise.
+     */
+    public function setArchiveOnUpdate($archiveOnUpdate)
+    {
+        $this->archiveOnUpdate = $archiveOnUpdate;
+    }
+
+    /**
+     * Delete records matching the current query without archiving them.
+     *
+     * @param      array $values Associative array of keys and values to replace
+     * @param      ConnectionInterface $con an optional connection object
+     * @param      boolean $forceIndividualSaves If false (default), the resulting call is a Criteria::doUpdate(), ortherwise it is a series of save() calls on all the found objects
+     *
+     * @return integer the number of deleted rows
+     */
+    public function updateWithoutArchive($values, $con = null, $forceIndividualSaves = false)
+    {
+        $this->archiveOnUpdate = false;
+
+        return $this->update($values, $con, $forceIndividualSaves);
+    }
+
+    /**
+     * Enable/disable auto-archiving on delete for the next query.
+     *
+     * @param boolean True if the query must archive deleted objects, false otherwise.
+     */
+    public function setArchiveOnDelete($archiveOnDelete)
+    {
+        $this->archiveOnDelete = $archiveOnDelete;
+    }
+
+    /**
+     * Delete records matching the current query without archiving them.
+     *
+     * @param      ConnectionInterface $con    Connection to use.
+     *
+     * @return integer the number of deleted rows
+     */
+    public function deleteWithoutArchive($con = null)
+    {
+        $this->archiveOnDelete = false;
+
+        return $this->delete($con);
+    }
+
+    /**
+     * Delete all records without archiving them.
+     *
+     * @param      ConnectionInterface $con    Connection to use.
+     *
+     * @return integer the number of deleted rows
+     */
+    public function deleteAllWithoutArchive($con = null)
+    {
+        $this->archiveOnDelete = false;
+
+        return $this->deleteAll($con);
     }
 
 } // ListingQuery

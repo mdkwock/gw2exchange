@@ -1,7 +1,7 @@
 <?php
-namespace GW2ledger\Signature\Price;
+namespace GW2Exchange\Signature\Price;
 
-use GW2ledger\Signature\Database\DatabaseObjectInterface;
+use GW2Exchange\Signature\Database\DatabaseObjectInterface;
 
 /**
  * This interface is a facade to simplify the Price hooks

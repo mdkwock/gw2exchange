@@ -1,9 +1,9 @@
 <?php
-namespace GW2ledger\Database;
+namespace GW2Exchange\Database;
 
-use GW2ledger\Database\Base\Listing as BaseListing;
-use GW2ledger\Database\Map\ListingTableMap;
-use GW2ledger\Signature\Database\DatabaseObjectInterface;
+use GW2Exchange\Database\Base\Listing as BaseListing;
+use GW2Exchange\Database\Map\ListingTableMap;
+use GW2Exchange\Signature\Database\DatabaseObjectInterface;
 
 /**
  * Skeleton subclass for representing a row from the 'listing' table.

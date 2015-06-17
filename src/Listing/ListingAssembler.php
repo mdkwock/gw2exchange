@@ -1,10 +1,12 @@
 <?php
-namespace GW2ledger\Listing;
+namespace GW2Exchange\Listing;
 
-use \GW2ledger\Signature\Connection\WebScraperInterface;
-use GW2ledger\Listing\ListingParser;
-use GW2ledger\Listing\ListingFactory;
-use GW2ledger\Signature\Listing\ListingAssemblerInterface;
+use \GW2Exchange\Signature\Connection\WebScraperInterface;
+use GW2Exchange\Listing\ListingParser;
+use GW2Exchange\Listing\ListingFactory;
+use GW2Exchange\Signature\Listing\ListingAssemblerInterface;
+
+use GuzzleHttp\Exception\ClientException;
 
 /**
  * This class is to fetch and retrieve listings
@@ -18,11 +20,11 @@ class ListingAssembler implements ListingAssemblerInterface
   /**
    * constructor assembles the factories needed to create a new object
    */
-  public function __construct(WebScraperInterface $webScraper)
+  public function __construct(WebScraperInterface $webScraper, ListingParser $listingParser, ListingFactory $listingFactory)
   {
     $this->webScraper = $webScraper;
-    $this->listingParser = new ListingParser();
-    $this->listingFactory = new ListingFactory($this->listingParser);
+    $this->listingParser = $listingParser;
+    $this->listingFactory = $listingFactory;
   }
 
   /**
@@ -47,7 +49,11 @@ class ListingAssembler implements ListingAssemblerInterface
   public function getByItemIds($itemIds, $count = -1, $start = 0)
   {
     if(is_array($itemIds)){
-      //if they passed more than one id in
+      //if it's an array
+      if(count($itemIds)>200){
+        //cap the number of ids given at 200
+        $itemIds = array_slice($itemIds,0,200);
+      }
       $itemId = implode(",", $itemIds);
     }elseif(is_numeric($itemIds)){
       //if it looks like a number id
@@ -58,17 +64,62 @@ class ListingAssembler implements ListingAssemblerInterface
       return [];
     }
     $url = "https://api.guildwars2.com/v2/commerce/listings?ids=".$itemId;//this has a very simple result
-    $result = $this->webScraper->getInfo($url);
-    
-    $return = array();//this is the matrix that gets returned by the function
-    $temps = $this->listingFactory->createManyFromJson($result);
-    foreach($temps as $id=>$temp){
-      if($count === -1){
-        $return[$id] = $temp;
+    try{
+      $result = $this->webScraper->getInfo($url);
+    }catch(ClientException $e){
+      if($e->getCode() == 404){
+        //if the item doesn't exist
+        return array();//return an empty array
       }else{
-        $return[$id] = array_slice($temp, $start, $count);
+        throw $e;//else pass the error up
+      }
+    }
+    $return = array();//this is the matrix that gets reJturned by the function
+    $temps = $this->createFromJson($result);
+    foreach($temps as $id=>$temp){
+      //for each item limit the results sent back
+      if($count === -1){
+        $return[] = $temp;
+      }else{
+        $return[] = array_slice($temp, $start, $count);
       }      
     }
     return $return;  
+  }
+
+
+  /**
+   * creates a set of listings from an array of listings data
+   * @param  string[] $array  an array which has all of the info to create a set of listings
+   * @return Listing[]        the set of listings represented by the data
+   */
+  public function createFromArray($array)
+  {
+    $results = array();
+    foreach($array as $obj)
+    {
+      $results[] = $this->listingFactory->createFromArray($obj);
+    }
+    return $results;
+  }
+
+  /**
+   * creates a set of listings from a json string of listings data
+   *
+   * this will probably be the one that is used the most
+   * @param  string $json  an json string which has all of the info to create a set of listings
+   * @return Listing[]        the set of listings represented by the data
+   */
+  public function createFromJson($json)
+  {
+    $objs = $this->listingParser->parseJson($json); //take the string and make it into a formatted array
+    $returns = array();
+    foreach($objs as $itemList){
+      //for every item get all of the listings associated
+      $temp = $this->createFromArray($itemList);
+      $itemId = reset($itemList)['ItemId'];//get the item id from the first listing
+      $returns[] = $temp;
+    }
+    return $returns;
   }
 }

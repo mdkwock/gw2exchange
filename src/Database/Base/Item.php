@@ -1,22 +1,27 @@
 <?php
 
-namespace GW2ledger\Database\Base;
+namespace GW2Exchange\Database\Base;
 
+use \DateTime;
 use \Exception;
 use \PDO;
-use GW2ledger\Database\Item as ChildItem;
-use GW2ledger\Database\ItemDetail as ChildItemDetail;
-use GW2ledger\Database\ItemDetailQuery as ChildItemDetailQuery;
-use GW2ledger\Database\ItemInfo as ChildItemInfo;
-use GW2ledger\Database\ItemInfoQuery as ChildItemInfoQuery;
-use GW2ledger\Database\ItemItemDetail as ChildItemItemDetail;
-use GW2ledger\Database\ItemItemDetailQuery as ChildItemItemDetailQuery;
-use GW2ledger\Database\ItemQuery as ChildItemQuery;
-use GW2ledger\Database\Listing as ChildListing;
-use GW2ledger\Database\ListingQuery as ChildListingQuery;
-use GW2ledger\Database\Price as ChildPrice;
-use GW2ledger\Database\PriceQuery as ChildPriceQuery;
-use GW2ledger\Database\Map\ItemTableMap;
+use GW2Exchange\Database\Item as ChildItem;
+use GW2Exchange\Database\ItemArchive as ChildItemArchive;
+use GW2Exchange\Database\ItemArchiveQuery as ChildItemArchiveQuery;
+use GW2Exchange\Database\ItemDetail as ChildItemDetail;
+use GW2Exchange\Database\ItemDetailQuery as ChildItemDetailQuery;
+use GW2Exchange\Database\ItemInfo as ChildItemInfo;
+use GW2Exchange\Database\ItemInfoQuery as ChildItemInfoQuery;
+use GW2Exchange\Database\ItemItemDetail as ChildItemItemDetail;
+use GW2Exchange\Database\ItemItemDetailQuery as ChildItemItemDetailQuery;
+use GW2Exchange\Database\ItemQuery as ChildItemQuery;
+use GW2Exchange\Database\Listing as ChildListing;
+use GW2Exchange\Database\ListingQuery as ChildListingQuery;
+use GW2Exchange\Database\Price as ChildPrice;
+use GW2Exchange\Database\PriceHistory as ChildPriceHistory;
+use GW2Exchange\Database\PriceHistoryQuery as ChildPriceHistoryQuery;
+use GW2Exchange\Database\PriceQuery as ChildPriceQuery;
+use GW2Exchange\Database\Map\ItemTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -29,20 +34,21 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Propel\Runtime\Util\PropelDateTime;
 
 /**
  * Base class that represents a row from the 'item' table.
  *
  *
  *
-* @package    propel.generator.GW2ledger.Database.Base
+* @package    propel.generator.GW2Exchange.Database.Base
 */
 abstract class Item implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\GW2ledger\\Database\\Map\\ItemTableMap';
+    const TABLE_MAP = '\\GW2Exchange\\Database\\Map\\ItemTableMap';
 
 
     /**
@@ -90,6 +96,24 @@ abstract class Item implements ActiveRecordInterface
     protected $icon;
 
     /**
+     * The value for the cache_time field.
+     * @var        int
+     */
+    protected $cache_time;
+
+    /**
+     * The value for the created_at field.
+     * @var        \DateTime
+     */
+    protected $created_at;
+
+    /**
+     * The value for the updated_at field.
+     * @var        \DateTime
+     */
+    protected $updated_at;
+
+    /**
      * @var        ChildItemInfo one-to-one related ChildItemInfo object
      */
     protected $singleItemInfo;
@@ -112,6 +136,12 @@ abstract class Item implements ActiveRecordInterface
     protected $singlePrice;
 
     /**
+     * @var        ObjectCollection|ChildPriceHistory[] Collection to store aggregation of ChildPriceHistory objects.
+     */
+    protected $collPriceHistories;
+    protected $collPriceHistoriesPartial;
+
+    /**
      * @var        ObjectCollection|ChildItemDetail[] Cross Collection to store aggregation of ChildItemDetail objects.
      */
     protected $collItemDetails;
@@ -128,6 +158,9 @@ abstract class Item implements ActiveRecordInterface
      * @var boolean
      */
     protected $alreadyInSave = false;
+
+    // archivable behavior
+    protected $archiveOnDelete = true;
 
     /**
      * An array of objects scheduled for deletion.
@@ -148,7 +181,13 @@ abstract class Item implements ActiveRecordInterface
     protected $listingsScheduledForDeletion = null;
 
     /**
-     * Initializes internal state of GW2ledger\Database\Base\Item object.
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildPriceHistory[]
+     */
+    protected $priceHistoriesScheduledForDeletion = null;
+
+    /**
+     * Initializes internal state of GW2Exchange\Database\Base\Item object.
      */
     public function __construct()
     {
@@ -395,10 +434,60 @@ abstract class Item implements ActiveRecordInterface
     }
 
     /**
+     * Get the [cache_time] column value.
+     *
+     * @return int
+     */
+    public function getCacheTime()
+    {
+        return $this->cache_time;
+    }
+
+    /**
+     * Get the [optionally formatted] temporal [created_at] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw DateTime object will be returned.
+     *
+     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getCreatedAt($format = NULL)
+    {
+        if ($format === null) {
+            return $this->created_at;
+        } else {
+            return $this->created_at instanceof \DateTime ? $this->created_at->format($format) : null;
+        }
+    }
+
+    /**
+     * Get the [optionally formatted] temporal [updated_at] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw DateTime object will be returned.
+     *
+     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getUpdatedAt($format = NULL)
+    {
+        if ($format === null) {
+            return $this->updated_at;
+        } else {
+            return $this->updated_at instanceof \DateTime ? $this->updated_at->format($format) : null;
+        }
+    }
+
+    /**
      * Set the value of [id] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Item The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -418,7 +507,7 @@ abstract class Item implements ActiveRecordInterface
      * Set the value of [name] column.
      *
      * @param string $v new value
-     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Item The current object (for fluent API support)
      */
     public function setName($v)
     {
@@ -438,7 +527,7 @@ abstract class Item implements ActiveRecordInterface
      * Set the value of [icon] column.
      *
      * @param string $v new value
-     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Item The current object (for fluent API support)
      */
     public function setIcon($v)
     {
@@ -453,6 +542,66 @@ abstract class Item implements ActiveRecordInterface
 
         return $this;
     } // setIcon()
+
+    /**
+     * Set the value of [cache_time] column.
+     *
+     * @param int $v new value
+     * @return $this|\GW2Exchange\Database\Item The current object (for fluent API support)
+     */
+    public function setCacheTime($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->cache_time !== $v) {
+            $this->cache_time = $v;
+            $this->modifiedColumns[ItemTableMap::COL_CACHE_TIME] = true;
+        }
+
+        return $this;
+    } // setCacheTime()
+
+    /**
+     * Sets the value of [created_at] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\GW2Exchange\Database\Item The current object (for fluent API support)
+     */
+    public function setCreatedAt($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->created_at !== null || $dt !== null) {
+            if ($this->created_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->created_at->format("Y-m-d H:i:s")) {
+                $this->created_at = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[ItemTableMap::COL_CREATED_AT] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // setCreatedAt()
+
+    /**
+     * Sets the value of [updated_at] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\GW2Exchange\Database\Item The current object (for fluent API support)
+     */
+    public function setUpdatedAt($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->updated_at !== null || $dt !== null) {
+            if ($this->updated_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->updated_at->format("Y-m-d H:i:s")) {
+                $this->updated_at = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[ItemTableMap::COL_UPDATED_AT] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // setUpdatedAt()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -498,6 +647,21 @@ abstract class Item implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ItemTableMap::translateFieldName('Icon', TableMap::TYPE_PHPNAME, $indexType)];
             $this->icon = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ItemTableMap::translateFieldName('CacheTime', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->cache_time = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ItemTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ItemTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->updated_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -506,10 +670,10 @@ abstract class Item implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 3; // 3 = ItemTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 6; // 6 = ItemTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\GW2ledger\\Database\\Item'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\GW2Exchange\\Database\\Item'), 0, $e);
         }
     }
 
@@ -575,6 +739,8 @@ abstract class Item implements ActiveRecordInterface
 
             $this->singlePrice = null;
 
+            $this->collPriceHistories = null;
+
             $this->collItemDetails = null;
         } // if (deep)
     }
@@ -602,6 +768,16 @@ abstract class Item implements ActiveRecordInterface
             $deleteQuery = ChildItemQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
+            // archivable behavior
+            if ($ret) {
+                if ($this->archiveOnDelete) {
+                    // do nothing yet. The object will be archived later when calling ChildItemQuery::delete().
+                } else {
+                    $deleteQuery->setArchiveOnDelete(false);
+                    $this->archiveOnDelete = true;
+                }
+            }
+
             if ($ret) {
                 $deleteQuery->delete($con);
                 $this->postDelete($con);
@@ -638,8 +814,20 @@ abstract class Item implements ActiveRecordInterface
             $ret = $this->preSave($con);
             if ($isInsert) {
                 $ret = $ret && $this->preInsert($con);
+                // timestampable behavior
+
+                if (!$this->isColumnModified(ItemTableMap::COL_CREATED_AT)) {
+                    $this->setCreatedAt(time());
+                }
+                if (!$this->isColumnModified(ItemTableMap::COL_UPDATED_AT)) {
+                    $this->setUpdatedAt(time());
+                }
             } else {
                 $ret = $ret && $this->preUpdate($con);
+                // timestampable behavior
+                if ($this->isModified() && !$this->isColumnModified(ItemTableMap::COL_UPDATED_AT)) {
+                    $this->setUpdatedAt(time());
+                }
             }
             if ($ret) {
                 $affectedRows = $this->doSave($con);
@@ -697,7 +885,7 @@ abstract class Item implements ActiveRecordInterface
                         $pks[] = $entryPk;
                     }
 
-                    \GW2ledger\Database\ItemItemDetailQuery::create()
+                    \GW2Exchange\Database\ItemItemDetailQuery::create()
                         ->filterByPrimaryKeys($pks)
                         ->delete($con);
 
@@ -723,7 +911,7 @@ abstract class Item implements ActiveRecordInterface
 
             if ($this->itemItemDetailsScheduledForDeletion !== null) {
                 if (!$this->itemItemDetailsScheduledForDeletion->isEmpty()) {
-                    \GW2ledger\Database\ItemItemDetailQuery::create()
+                    \GW2Exchange\Database\ItemItemDetailQuery::create()
                         ->filterByPrimaryKeys($this->itemItemDetailsScheduledForDeletion->getPrimaryKeys(false))
                         ->delete($con);
                     $this->itemItemDetailsScheduledForDeletion = null;
@@ -762,6 +950,24 @@ abstract class Item implements ActiveRecordInterface
                 }
             }
 
+            if ($this->priceHistoriesScheduledForDeletion !== null) {
+                if (!$this->priceHistoriesScheduledForDeletion->isEmpty()) {
+                    foreach ($this->priceHistoriesScheduledForDeletion as $priceHistory) {
+                        // need to save related object because we set the relation to null
+                        $priceHistory->save($con);
+                    }
+                    $this->priceHistoriesScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collPriceHistories !== null) {
+                foreach ($this->collPriceHistories as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
             $this->alreadyInSave = false;
 
         }
@@ -793,6 +999,15 @@ abstract class Item implements ActiveRecordInterface
         if ($this->isColumnModified(ItemTableMap::COL_ICON)) {
             $modifiedColumns[':p' . $index++]  = 'icon';
         }
+        if ($this->isColumnModified(ItemTableMap::COL_CACHE_TIME)) {
+            $modifiedColumns[':p' . $index++]  = 'cache_time';
+        }
+        if ($this->isColumnModified(ItemTableMap::COL_CREATED_AT)) {
+            $modifiedColumns[':p' . $index++]  = 'created_at';
+        }
+        if ($this->isColumnModified(ItemTableMap::COL_UPDATED_AT)) {
+            $modifiedColumns[':p' . $index++]  = 'updated_at';
+        }
 
         $sql = sprintf(
             'INSERT INTO item (%s) VALUES (%s)',
@@ -812,6 +1027,15 @@ abstract class Item implements ActiveRecordInterface
                         break;
                     case 'icon':
                         $stmt->bindValue($identifier, $this->icon, PDO::PARAM_STR);
+                        break;
+                    case 'cache_time':
+                        $stmt->bindValue($identifier, $this->cache_time, PDO::PARAM_INT);
+                        break;
+                    case 'created_at':
+                        $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
+                        break;
+                    case 'updated_at':
+                        $stmt->bindValue($identifier, $this->updated_at ? $this->updated_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -877,6 +1101,15 @@ abstract class Item implements ActiveRecordInterface
             case 2:
                 return $this->getIcon();
                 break;
+            case 3:
+                return $this->getCacheTime();
+                break;
+            case 4:
+                return $this->getCreatedAt();
+                break;
+            case 5:
+                return $this->getUpdatedAt();
+                break;
             default:
                 return null;
                 break;
@@ -910,7 +1143,24 @@ abstract class Item implements ActiveRecordInterface
             $keys[0] => $this->getId(),
             $keys[1] => $this->getName(),
             $keys[2] => $this->getIcon(),
+            $keys[3] => $this->getCacheTime(),
+            $keys[4] => $this->getCreatedAt(),
+            $keys[5] => $this->getUpdatedAt(),
         );
+
+        $utc = new \DateTimeZone('utc');
+        if ($result[$keys[4]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[4]];
+            $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[5]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[5]];
+            $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
@@ -977,6 +1227,21 @@ abstract class Item implements ActiveRecordInterface
 
                 $result[$key] = $this->singlePrice->toArray($keyType, $includeLazyLoadColumns, $alreadyDumpedObjects, true);
             }
+            if (null !== $this->collPriceHistories) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'priceHistories';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'price_histories';
+                        break;
+                    default:
+                        $key = 'PriceHistories';
+                }
+
+                $result[$key] = $this->collPriceHistories->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
         }
 
         return $result;
@@ -991,7 +1256,7 @@ abstract class Item implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\GW2ledger\Database\Item
+     * @return $this|\GW2Exchange\Database\Item
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
@@ -1006,7 +1271,7 @@ abstract class Item implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\GW2ledger\Database\Item
+     * @return $this|\GW2Exchange\Database\Item
      */
     public function setByPosition($pos, $value)
     {
@@ -1019,6 +1284,15 @@ abstract class Item implements ActiveRecordInterface
                 break;
             case 2:
                 $this->setIcon($value);
+                break;
+            case 3:
+                $this->setCacheTime($value);
+                break;
+            case 4:
+                $this->setCreatedAt($value);
+                break;
+            case 5:
+                $this->setUpdatedAt($value);
                 break;
         } // switch()
 
@@ -1055,6 +1329,15 @@ abstract class Item implements ActiveRecordInterface
         if (array_key_exists($keys[2], $arr)) {
             $this->setIcon($arr[$keys[2]]);
         }
+        if (array_key_exists($keys[3], $arr)) {
+            $this->setCacheTime($arr[$keys[3]]);
+        }
+        if (array_key_exists($keys[4], $arr)) {
+            $this->setCreatedAt($arr[$keys[4]]);
+        }
+        if (array_key_exists($keys[5], $arr)) {
+            $this->setUpdatedAt($arr[$keys[5]]);
+        }
     }
 
      /**
@@ -1074,7 +1357,7 @@ abstract class Item implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\GW2ledger\Database\Item The current object, for fluid interface
+     * @return $this|\GW2Exchange\Database\Item The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1104,6 +1387,15 @@ abstract class Item implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ItemTableMap::COL_ICON)) {
             $criteria->add(ItemTableMap::COL_ICON, $this->icon);
+        }
+        if ($this->isColumnModified(ItemTableMap::COL_CACHE_TIME)) {
+            $criteria->add(ItemTableMap::COL_CACHE_TIME, $this->cache_time);
+        }
+        if ($this->isColumnModified(ItemTableMap::COL_CREATED_AT)) {
+            $criteria->add(ItemTableMap::COL_CREATED_AT, $this->created_at);
+        }
+        if ($this->isColumnModified(ItemTableMap::COL_UPDATED_AT)) {
+            $criteria->add(ItemTableMap::COL_UPDATED_AT, $this->updated_at);
         }
 
         return $criteria;
@@ -1184,7 +1476,7 @@ abstract class Item implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \GW2ledger\Database\Item (or compatible) type.
+     * @param      object $copyObj An object of \GW2Exchange\Database\Item (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
@@ -1194,6 +1486,9 @@ abstract class Item implements ActiveRecordInterface
         $copyObj->setId($this->getId());
         $copyObj->setName($this->getName());
         $copyObj->setIcon($this->getIcon());
+        $copyObj->setCacheTime($this->getCacheTime());
+        $copyObj->setCreatedAt($this->getCreatedAt());
+        $copyObj->setUpdatedAt($this->getUpdatedAt());
 
         if ($deepCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -1222,6 +1517,12 @@ abstract class Item implements ActiveRecordInterface
                 $copyObj->setPrice($relObj->copy($deepCopy));
             }
 
+            foreach ($this->getPriceHistories() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addPriceHistory($relObj->copy($deepCopy));
+                }
+            }
+
         } // if ($deepCopy)
 
         if ($makeNew) {
@@ -1238,7 +1539,7 @@ abstract class Item implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \GW2ledger\Database\Item Clone of current object.
+     * @return \GW2Exchange\Database\Item Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1268,6 +1569,9 @@ abstract class Item implements ActiveRecordInterface
         if ('Listing' == $relationName) {
             return $this->initListings();
         }
+        if ('PriceHistory' == $relationName) {
+            return $this->initPriceHistories();
+        }
     }
 
     /**
@@ -1291,7 +1595,7 @@ abstract class Item implements ActiveRecordInterface
      * Sets a single ChildItemInfo object as related to this object by a one-to-one relationship.
      *
      * @param  ChildItemInfo $v ChildItemInfo
-     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Item The current object (for fluent API support)
      * @throws PropelException
      */
     public function setItemInfo(ChildItemInfo $v = null)
@@ -1346,7 +1650,7 @@ abstract class Item implements ActiveRecordInterface
             return;
         }
         $this->collItemItemDetails = new ObjectCollection();
-        $this->collItemItemDetails->setModel('\GW2ledger\Database\ItemItemDetail');
+        $this->collItemItemDetails->setModel('\GW2Exchange\Database\ItemItemDetail');
     }
 
     /**
@@ -1482,7 +1786,7 @@ abstract class Item implements ActiveRecordInterface
      * through the ChildItemItemDetail foreign key attribute.
      *
      * @param  ChildItemItemDetail $l ChildItemItemDetail
-     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Item The current object (for fluent API support)
      */
     public function addItemItemDetail(ChildItemItemDetail $l)
     {
@@ -1592,7 +1896,7 @@ abstract class Item implements ActiveRecordInterface
             return;
         }
         $this->collListings = new ObjectCollection();
-        $this->collListings->setModel('\GW2ledger\Database\Listing');
+        $this->collListings->setModel('\GW2Exchange\Database\Listing');
     }
 
     /**
@@ -1725,7 +2029,7 @@ abstract class Item implements ActiveRecordInterface
      * through the ChildListing foreign key attribute.
      *
      * @param  ChildListing $l ChildListing
-     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Item The current object (for fluent API support)
      */
     public function addListing(ChildListing $l)
     {
@@ -1791,7 +2095,7 @@ abstract class Item implements ActiveRecordInterface
      * Sets a single ChildPrice object as related to this object by a one-to-one relationship.
      *
      * @param  ChildPrice $v ChildPrice
-     * @return $this|\GW2ledger\Database\Item The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Item The current object (for fluent API support)
      * @throws PropelException
      */
     public function setPrice(ChildPrice $v = null)
@@ -1804,6 +2108,249 @@ abstract class Item implements ActiveRecordInterface
         }
 
         return $this;
+    }
+
+    /**
+     * Clears out the collPriceHistories collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addPriceHistories()
+     */
+    public function clearPriceHistories()
+    {
+        $this->collPriceHistories = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collPriceHistories collection loaded partially.
+     */
+    public function resetPartialPriceHistories($v = true)
+    {
+        $this->collPriceHistoriesPartial = $v;
+    }
+
+    /**
+     * Initializes the collPriceHistories collection.
+     *
+     * By default this just sets the collPriceHistories collection to an empty array (like clearcollPriceHistories());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initPriceHistories($overrideExisting = true)
+    {
+        if (null !== $this->collPriceHistories && !$overrideExisting) {
+            return;
+        }
+        $this->collPriceHistories = new ObjectCollection();
+        $this->collPriceHistories->setModel('\GW2Exchange\Database\PriceHistory');
+    }
+
+    /**
+     * Gets an array of ChildPriceHistory objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildItem is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildPriceHistory[] List of ChildPriceHistory objects
+     * @throws PropelException
+     */
+    public function getPriceHistories(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPriceHistoriesPartial && !$this->isNew();
+        if (null === $this->collPriceHistories || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collPriceHistories) {
+                // return empty collection
+                $this->initPriceHistories();
+            } else {
+                $collPriceHistories = ChildPriceHistoryQuery::create(null, $criteria)
+                    ->filterByItem($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collPriceHistoriesPartial && count($collPriceHistories)) {
+                        $this->initPriceHistories(false);
+
+                        foreach ($collPriceHistories as $obj) {
+                            if (false == $this->collPriceHistories->contains($obj)) {
+                                $this->collPriceHistories->append($obj);
+                            }
+                        }
+
+                        $this->collPriceHistoriesPartial = true;
+                    }
+
+                    return $collPriceHistories;
+                }
+
+                if ($partial && $this->collPriceHistories) {
+                    foreach ($this->collPriceHistories as $obj) {
+                        if ($obj->isNew()) {
+                            $collPriceHistories[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collPriceHistories = $collPriceHistories;
+                $this->collPriceHistoriesPartial = false;
+            }
+        }
+
+        return $this->collPriceHistories;
+    }
+
+    /**
+     * Sets a collection of ChildPriceHistory objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $priceHistories A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildItem The current object (for fluent API support)
+     */
+    public function setPriceHistories(Collection $priceHistories, ConnectionInterface $con = null)
+    {
+        /** @var ChildPriceHistory[] $priceHistoriesToDelete */
+        $priceHistoriesToDelete = $this->getPriceHistories(new Criteria(), $con)->diff($priceHistories);
+
+
+        $this->priceHistoriesScheduledForDeletion = $priceHistoriesToDelete;
+
+        foreach ($priceHistoriesToDelete as $priceHistoryRemoved) {
+            $priceHistoryRemoved->setItem(null);
+        }
+
+        $this->collPriceHistories = null;
+        foreach ($priceHistories as $priceHistory) {
+            $this->addPriceHistory($priceHistory);
+        }
+
+        $this->collPriceHistories = $priceHistories;
+        $this->collPriceHistoriesPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related PriceHistory objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related PriceHistory objects.
+     * @throws PropelException
+     */
+    public function countPriceHistories(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPriceHistoriesPartial && !$this->isNew();
+        if (null === $this->collPriceHistories || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collPriceHistories) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getPriceHistories());
+            }
+
+            $query = ChildPriceHistoryQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByItem($this)
+                ->count($con);
+        }
+
+        return count($this->collPriceHistories);
+    }
+
+    /**
+     * Method called to associate a ChildPriceHistory object to this object
+     * through the ChildPriceHistory foreign key attribute.
+     *
+     * @param  ChildPriceHistory $l ChildPriceHistory
+     * @return $this|\GW2Exchange\Database\Item The current object (for fluent API support)
+     */
+    public function addPriceHistory(ChildPriceHistory $l)
+    {
+        if ($this->collPriceHistories === null) {
+            $this->initPriceHistories();
+            $this->collPriceHistoriesPartial = true;
+        }
+
+        if (!$this->collPriceHistories->contains($l)) {
+            $this->doAddPriceHistory($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildPriceHistory $priceHistory The ChildPriceHistory object to add.
+     */
+    protected function doAddPriceHistory(ChildPriceHistory $priceHistory)
+    {
+        $this->collPriceHistories[]= $priceHistory;
+        $priceHistory->setItem($this);
+    }
+
+    /**
+     * @param  ChildPriceHistory $priceHistory The ChildPriceHistory object to remove.
+     * @return $this|ChildItem The current object (for fluent API support)
+     */
+    public function removePriceHistory(ChildPriceHistory $priceHistory)
+    {
+        if ($this->getPriceHistories()->contains($priceHistory)) {
+            $pos = $this->collPriceHistories->search($priceHistory);
+            $this->collPriceHistories->remove($pos);
+            if (null === $this->priceHistoriesScheduledForDeletion) {
+                $this->priceHistoriesScheduledForDeletion = clone $this->collPriceHistories;
+                $this->priceHistoriesScheduledForDeletion->clear();
+            }
+            $this->priceHistoriesScheduledForDeletion[]= $priceHistory;
+            $priceHistory->setItem(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Item is new, it will return
+     * an empty collection; or if this Item has previously
+     * been saved, it will retrieve related PriceHistories from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Item.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildPriceHistory[] List of ChildPriceHistory objects
+     */
+    public function getPriceHistoriesJoinPrice(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildPriceHistoryQuery::create(null, $criteria);
+        $query->joinWith('Price', $joinBehavior);
+
+        return $this->getPriceHistories($query, $con);
     }
 
     /**
@@ -1834,7 +2381,7 @@ abstract class Item implements ActiveRecordInterface
         $this->collItemDetails = new ObjectCollection();
         $this->collItemDetailsPartial = true;
 
-        $this->collItemDetails->setModel('\GW2ledger\Database\ItemDetail');
+        $this->collItemDetails->setModel('\GW2Exchange\Database\ItemDetail');
     }
 
     /**
@@ -2058,6 +2605,9 @@ abstract class Item implements ActiveRecordInterface
         $this->id = null;
         $this->name = null;
         $this->icon = null;
+        $this->cache_time = null;
+        $this->created_at = null;
+        $this->updated_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -2092,6 +2642,11 @@ abstract class Item implements ActiveRecordInterface
             if ($this->singlePrice) {
                 $this->singlePrice->clearAllReferences($deep);
             }
+            if ($this->collPriceHistories) {
+                foreach ($this->collPriceHistories as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collItemDetails) {
                 foreach ($this->collItemDetails as $o) {
                     $o->clearAllReferences($deep);
@@ -2103,6 +2658,7 @@ abstract class Item implements ActiveRecordInterface
         $this->collItemItemDetails = null;
         $this->collListings = null;
         $this->singlePrice = null;
+        $this->collPriceHistories = null;
         $this->collItemDetails = null;
     }
 
@@ -2114,6 +2670,120 @@ abstract class Item implements ActiveRecordInterface
     public function __toString()
     {
         return (string) $this->exportTo(ItemTableMap::DEFAULT_STRING_FORMAT);
+    }
+
+    // timestampable behavior
+
+    /**
+     * Mark the current object so that the update date doesn't get updated during next save
+     *
+     * @return     $this|ChildItem The current object (for fluent API support)
+     */
+    public function keepUpdateDateUnchanged()
+    {
+        $this->modifiedColumns[ItemTableMap::COL_UPDATED_AT] = true;
+
+        return $this;
+    }
+
+    // archivable behavior
+
+    /**
+     * Get an archived version of the current object.
+     *
+     * @param ConnectionInterface $con Optional connection object
+     *
+     * @return     ChildItemArchive An archive object, or null if the current object was never archived
+     */
+    public function getArchive(ConnectionInterface $con = null)
+    {
+        if ($this->isNew()) {
+            return null;
+        }
+        $archive = ChildItemArchiveQuery::create()
+            ->filterByPrimaryKey($this->getPrimaryKey())
+            ->findOne($con);
+
+        return $archive;
+    }
+    /**
+     * Copy the data of the current object into a $archiveTablePhpName archive object.
+     * The archived object is then saved.
+     * If the current object has already been archived, the archived object
+     * is updated and not duplicated.
+     *
+     * @param ConnectionInterface $con Optional connection object
+     *
+     * @throws PropelException If the object is new
+     *
+     * @return     ChildItemArchive The archive object based on this object
+     */
+    public function archive(ConnectionInterface $con = null)
+    {
+        if ($this->isNew()) {
+            throw new PropelException('New objects cannot be archived. You must save the current object before calling archive().');
+        }
+        if (!$archive = $this->getArchive($con)) {
+            $archive = new ChildItemArchive();
+            $archive->setPrimaryKey($this->getPrimaryKey());
+        }
+        $this->copyInto($archive, $deepCopy = false, $makeNew = false);
+        $archive->setArchivedAt(time());
+        $archive->save($con);
+
+        return $archive;
+    }
+
+    /**
+     * Revert the the current object to the state it had when it was last archived.
+     * The object must be saved afterwards if the changes must persist.
+     *
+     * @param ConnectionInterface $con Optional connection object
+     *
+     * @throws PropelException If the object has no corresponding archive.
+     *
+     * @return $this|ChildItem The current object (for fluent API support)
+     */
+    public function restoreFromArchive(ConnectionInterface $con = null)
+    {
+        if (!$archive = $this->getArchive($con)) {
+            throw new PropelException('The current object has never been archived and cannot be restored');
+        }
+        $this->populateFromArchive($archive);
+
+        return $this;
+    }
+
+    /**
+     * Populates the the current object based on a $archiveTablePhpName archive object.
+     *
+     * @param      ChildItemArchive $archive An archived object based on the same class
+      *
+     * @return     ChildItem The current object (for fluent API support)
+     */
+    public function populateFromArchive($archive) {
+        $this->setId($archive->getId());
+        $this->setName($archive->getName());
+        $this->setIcon($archive->getIcon());
+        $this->setCacheTime($archive->getCacheTime());
+        $this->setCreatedAt($archive->getCreatedAt());
+        $this->setUpdatedAt($archive->getUpdatedAt());
+
+        return $this;
+    }
+
+    /**
+     * Removes the object from the database without archiving it.
+     *
+     * @param ConnectionInterface $con Optional connection object
+     *
+     * @return $this|ChildItem The current object (for fluent API support)
+     */
+    public function deleteWithoutArchive(ConnectionInterface $con = null)
+    {
+        $this->archiveOnDelete = false;
+
+        return $this->delete($con);
     }
 
     /**

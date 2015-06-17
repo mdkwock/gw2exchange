@@ -1,9 +1,9 @@
 <?php
 
-namespace GW2ledger\Database\Map;
+namespace GW2Exchange\Database\Map;
 
-use GW2ledger\Database\Listing;
-use GW2ledger\Database\ListingQuery;
+use GW2Exchange\Database\Listing;
+use GW2Exchange\Database\ListingQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -34,12 +34,12 @@ class ListingTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'GW2ledger.Database.Map.ListingTableMap';
+    const CLASS_NAME = 'GW2Exchange.Database.Map.ListingTableMap';
 
     /**
      * The default database name for this class
      */
-    const DATABASE_NAME = 'gw2ledger';
+    const DATABASE_NAME = 'GW2Exchange';
 
     /**
      * The table name for this class
@@ -49,17 +49,17 @@ class ListingTableMap extends TableMap
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\GW2ledger\\Database\\Listing';
+    const OM_CLASS = '\\GW2Exchange\\Database\\Listing';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'GW2ledger.Database.Listing';
+    const CLASS_DEFAULT = 'GW2Exchange.Database.Listing';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 9;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class ListingTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 9;
 
     /**
      * the column name for the id field
@@ -102,6 +102,21 @@ class ListingTableMap extends TableMap
     const COL_QUANTITY = 'listing.quantity';
 
     /**
+     * the column name for the cache_time field
+     */
+    const COL_CACHE_TIME = 'listing.cache_time';
+
+    /**
+     * the column name for the created_at field
+     */
+    const COL_CREATED_AT = 'listing.created_at';
+
+    /**
+     * the column name for the updated_at field
+     */
+    const COL_UPDATED_AT = 'listing.updated_at';
+
+    /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
@@ -113,11 +128,11 @@ class ListingTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'ItemId', 'Type', 'Orders', 'UnitPrice', 'Quantity', ),
-        self::TYPE_CAMELNAME     => array('id', 'itemId', 'type', 'orders', 'unitPrice', 'quantity', ),
-        self::TYPE_COLNAME       => array(ListingTableMap::COL_ID, ListingTableMap::COL_ITEM_ID, ListingTableMap::COL_TYPE, ListingTableMap::COL_ORDERS, ListingTableMap::COL_UNIT_PRICE, ListingTableMap::COL_QUANTITY, ),
-        self::TYPE_FIELDNAME     => array('id', 'item_id', 'type', 'orders', 'unit_price', 'quantity', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id', 'ItemId', 'Type', 'Orders', 'UnitPrice', 'Quantity', 'CacheTime', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'itemId', 'type', 'orders', 'unitPrice', 'quantity', 'cacheTime', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(ListingTableMap::COL_ID, ListingTableMap::COL_ITEM_ID, ListingTableMap::COL_TYPE, ListingTableMap::COL_ORDERS, ListingTableMap::COL_UNIT_PRICE, ListingTableMap::COL_QUANTITY, ListingTableMap::COL_CACHE_TIME, ListingTableMap::COL_CREATED_AT, ListingTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'item_id', 'type', 'orders', 'unit_price', 'quantity', 'cache_time', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -127,11 +142,11 @@ class ListingTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'ItemId' => 1, 'Type' => 2, 'Orders' => 3, 'UnitPrice' => 4, 'Quantity' => 5, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'itemId' => 1, 'type' => 2, 'orders' => 3, 'unitPrice' => 4, 'quantity' => 5, ),
-        self::TYPE_COLNAME       => array(ListingTableMap::COL_ID => 0, ListingTableMap::COL_ITEM_ID => 1, ListingTableMap::COL_TYPE => 2, ListingTableMap::COL_ORDERS => 3, ListingTableMap::COL_UNIT_PRICE => 4, ListingTableMap::COL_QUANTITY => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'item_id' => 1, 'type' => 2, 'orders' => 3, 'unit_price' => 4, 'quantity' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'ItemId' => 1, 'Type' => 2, 'Orders' => 3, 'UnitPrice' => 4, 'Quantity' => 5, 'CacheTime' => 6, 'CreatedAt' => 7, 'UpdatedAt' => 8, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'itemId' => 1, 'type' => 2, 'orders' => 3, 'unitPrice' => 4, 'quantity' => 5, 'cacheTime' => 6, 'createdAt' => 7, 'updatedAt' => 8, ),
+        self::TYPE_COLNAME       => array(ListingTableMap::COL_ID => 0, ListingTableMap::COL_ITEM_ID => 1, ListingTableMap::COL_TYPE => 2, ListingTableMap::COL_ORDERS => 3, ListingTableMap::COL_UNIT_PRICE => 4, ListingTableMap::COL_QUANTITY => 5, ListingTableMap::COL_CACHE_TIME => 6, ListingTableMap::COL_CREATED_AT => 7, ListingTableMap::COL_UPDATED_AT => 8, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'item_id' => 1, 'type' => 2, 'orders' => 3, 'unit_price' => 4, 'quantity' => 5, 'cache_time' => 6, 'created_at' => 7, 'updated_at' => 8, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -147,8 +162,8 @@ class ListingTableMap extends TableMap
         $this->setName('listing');
         $this->setPhpName('Listing');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\GW2ledger\\Database\\Listing');
-        $this->setPackage('GW2ledger.Database');
+        $this->setClassName('\\GW2Exchange\\Database\\Listing');
+        $this->setPackage('GW2Exchange.Database');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
@@ -157,6 +172,9 @@ class ListingTableMap extends TableMap
         $this->addColumn('orders', 'Orders', 'INTEGER', true, null, null);
         $this->addColumn('unit_price', 'UnitPrice', 'INTEGER', true, null, null);
         $this->addColumn('quantity', 'Quantity', 'INTEGER', true, null, null);
+        $this->addColumn('cache_time', 'CacheTime', 'INTEGER', true, null, null);
+        $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
+        $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
 
     /**
@@ -164,7 +182,7 @@ class ListingTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Item', '\\GW2ledger\\Database\\Item', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Item', '\\GW2Exchange\\Database\\Item', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':item_id',
@@ -172,6 +190,20 @@ class ListingTableMap extends TableMap
   ),
 ), null, null, null, false);
     } // buildRelations()
+
+    /**
+     *
+     * Gets the list of behaviors registered for this table
+     *
+     * @return array Associative array (name => parameters) of behaviors
+     */
+    public function getBehaviors()
+    {
+        return array(
+            'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
+            'archivable' => array('archive_table' => '', 'archive_phpname' => '', 'archive_class' => '', 'log_archived_at' => 'true', 'archived_at_column' => 'archived_at', 'archive_on_insert' => 'false', 'archive_on_update' => 'true', 'archive_on_delete' => 'true', ),
+        );
+    } // getBehaviors()
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
@@ -320,6 +352,9 @@ class ListingTableMap extends TableMap
             $criteria->addSelectColumn(ListingTableMap::COL_ORDERS);
             $criteria->addSelectColumn(ListingTableMap::COL_UNIT_PRICE);
             $criteria->addSelectColumn(ListingTableMap::COL_QUANTITY);
+            $criteria->addSelectColumn(ListingTableMap::COL_CACHE_TIME);
+            $criteria->addSelectColumn(ListingTableMap::COL_CREATED_AT);
+            $criteria->addSelectColumn(ListingTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.item_id');
@@ -327,6 +362,9 @@ class ListingTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.orders');
             $criteria->addSelectColumn($alias . '.unit_price');
             $criteria->addSelectColumn($alias . '.quantity');
+            $criteria->addSelectColumn($alias . '.cache_time');
+            $criteria->addSelectColumn($alias . '.created_at');
+            $criteria->addSelectColumn($alias . '.updated_at');
         }
     }
 
@@ -373,7 +411,7 @@ class ListingTableMap extends TableMap
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \GW2ledger\Database\Listing) { // it's a model object
+        } elseif ($values instanceof \GW2Exchange\Database\Listing) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks

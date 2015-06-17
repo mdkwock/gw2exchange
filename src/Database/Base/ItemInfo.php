@@ -1,13 +1,13 @@
 <?php
 
-namespace GW2ledger\Database\Base;
+namespace GW2Exchange\Database\Base;
 
 use \Exception;
 use \PDO;
-use GW2ledger\Database\Item as ChildItem;
-use GW2ledger\Database\ItemInfoQuery as ChildItemInfoQuery;
-use GW2ledger\Database\ItemQuery as ChildItemQuery;
-use GW2ledger\Database\Map\ItemInfoTableMap;
+use GW2Exchange\Database\Item as ChildItem;
+use GW2Exchange\Database\ItemInfoQuery as ChildItemInfoQuery;
+use GW2Exchange\Database\ItemQuery as ChildItemQuery;
+use GW2Exchange\Database\Map\ItemInfoTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -25,14 +25,14 @@ use Propel\Runtime\Parser\AbstractParser;
  *
  *
  *
-* @package    propel.generator.GW2ledger.Database.Base
+* @package    propel.generator.GW2Exchange.Database.Base
 */
 abstract class ItemInfo implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\GW2ledger\\Database\\Map\\ItemInfoTableMap';
+    const TABLE_MAP = '\\GW2Exchange\\Database\\Map\\ItemInfoTableMap';
 
 
     /**
@@ -135,7 +135,7 @@ abstract class ItemInfo implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Initializes internal state of GW2ledger\Database\Base\ItemInfo object.
+     * Initializes internal state of GW2Exchange\Database\Base\ItemInfo object.
      */
     public function __construct()
     {
@@ -455,7 +455,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * Set the value of [item_id] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemInfo The current object (for fluent API support)
      */
     public function setItemId($v)
     {
@@ -479,7 +479,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * Set the value of [description] column.
      *
      * @param string $v new value
-     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemInfo The current object (for fluent API support)
      */
     public function setDescription($v)
     {
@@ -499,7 +499,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * Set the value of [type] column.
      *
      * @param string $v new value
-     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemInfo The current object (for fluent API support)
      */
     public function setType($v)
     {
@@ -519,7 +519,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * Set the value of [rarity] column.
      *
      * @param string $v new value
-     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemInfo The current object (for fluent API support)
      */
     public function setRarity($v)
     {
@@ -539,7 +539,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * Set the value of [level] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemInfo The current object (for fluent API support)
      */
     public function setLevel($v)
     {
@@ -559,7 +559,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * Set the value of [vendor_value] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemInfo The current object (for fluent API support)
      */
     public function setVendorValue($v)
     {
@@ -579,7 +579,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * Set the value of [default_skin] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemInfo The current object (for fluent API support)
      */
     public function setDefaultSkin($v)
     {
@@ -599,7 +599,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * Set the value of [flags] column.
      *
      * @param string $v new value
-     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemInfo The current object (for fluent API support)
      */
     public function setFlags($v)
     {
@@ -619,7 +619,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * Set the value of [game_types] column.
      *
      * @param string $v new value
-     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemInfo The current object (for fluent API support)
      */
     public function setGameTypes($v)
     {
@@ -639,7 +639,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * Set the value of [restrictions] column.
      *
      * @param string $v new value
-     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemInfo The current object (for fluent API support)
      */
     public function setRestrictions($v)
     {
@@ -731,7 +731,7 @@ abstract class ItemInfo implements ActiveRecordInterface
             return $startcol + 10; // 10 = ItemInfoTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\GW2ledger\\Database\\ItemInfo'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\GW2Exchange\\Database\\ItemInfo'), 0, $e);
         }
     }
 
@@ -1169,7 +1169,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\GW2ledger\Database\ItemInfo
+     * @return $this|\GW2Exchange\Database\ItemInfo
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
@@ -1184,7 +1184,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\GW2ledger\Database\ItemInfo
+     * @return $this|\GW2Exchange\Database\ItemInfo
      */
     public function setByPosition($pos, $value)
     {
@@ -1294,7 +1294,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\GW2ledger\Database\ItemInfo The current object, for fluid interface
+     * @return $this|\GW2Exchange\Database\ItemInfo The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1432,7 +1432,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \GW2ledger\Database\ItemInfo (or compatible) type.
+     * @param      object $copyObj An object of \GW2Exchange\Database\ItemInfo (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
@@ -1463,7 +1463,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \GW2ledger\Database\ItemInfo Clone of current object.
+     * @return \GW2Exchange\Database\ItemInfo Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1480,7 +1480,7 @@ abstract class ItemInfo implements ActiveRecordInterface
      * Declares an association between this object and a ChildItem object.
      *
      * @param  ChildItem $v
-     * @return $this|\GW2ledger\Database\ItemInfo The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemInfo The current object (for fluent API support)
      * @throws PropelException
      */
     public function setItem(ChildItem $v = null)

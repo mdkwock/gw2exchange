@@ -1,12 +1,12 @@
 <?php
 
-namespace GW2ledger\Database\Base;
+namespace GW2Exchange\Database\Base;
 
 use \Exception;
 use \PDO;
-use GW2ledger\Database\Price as ChildPrice;
-use GW2ledger\Database\PriceQuery as ChildPriceQuery;
-use GW2ledger\Database\Map\PriceTableMap;
+use GW2Exchange\Database\Price as ChildPrice;
+use GW2Exchange\Database\PriceQuery as ChildPriceQuery;
+use GW2Exchange\Database\Map\PriceTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -25,12 +25,26 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceQuery orderBySellPrice($order = Criteria::ASC) Order by the sell_price column
  * @method     ChildPriceQuery orderByBuyQty($order = Criteria::ASC) Order by the buy_qty column
  * @method     ChildPriceQuery orderBySellQty($order = Criteria::ASC) Order by the sell_qty column
+ * @method     ChildPriceQuery orderByCacheTime($order = Criteria::ASC) Order by the cache_time column
+ * @method     ChildPriceQuery orderByMaxBuy($order = Criteria::ASC) Order by the max_buy column
+ * @method     ChildPriceQuery orderByMinBuy($order = Criteria::ASC) Order by the min_buy column
+ * @method     ChildPriceQuery orderByMaxSell($order = Criteria::ASC) Order by the max_sell column
+ * @method     ChildPriceQuery orderByMinSell($order = Criteria::ASC) Order by the min_sell column
+ * @method     ChildPriceQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
+ * @method     ChildPriceQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildPriceQuery groupByItemId() Group by the item_id column
  * @method     ChildPriceQuery groupByBuyPrice() Group by the buy_price column
  * @method     ChildPriceQuery groupBySellPrice() Group by the sell_price column
  * @method     ChildPriceQuery groupByBuyQty() Group by the buy_qty column
  * @method     ChildPriceQuery groupBySellQty() Group by the sell_qty column
+ * @method     ChildPriceQuery groupByCacheTime() Group by the cache_time column
+ * @method     ChildPriceQuery groupByMaxBuy() Group by the max_buy column
+ * @method     ChildPriceQuery groupByMinBuy() Group by the min_buy column
+ * @method     ChildPriceQuery groupByMaxSell() Group by the max_sell column
+ * @method     ChildPriceQuery groupByMinSell() Group by the min_sell column
+ * @method     ChildPriceQuery groupByCreatedAt() Group by the created_at column
+ * @method     ChildPriceQuery groupByUpdatedAt() Group by the updated_at column
  *
  * @method     ChildPriceQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildPriceQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -40,7 +54,11 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceQuery rightJoinItem($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Item relation
  * @method     ChildPriceQuery innerJoinItem($relationAlias = null) Adds a INNER JOIN clause to the query using the Item relation
  *
- * @method     \GW2ledger\Database\ItemQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildPriceQuery leftJoinPriceHistory($relationAlias = null) Adds a LEFT JOIN clause to the query using the PriceHistory relation
+ * @method     ChildPriceQuery rightJoinPriceHistory($relationAlias = null) Adds a RIGHT JOIN clause to the query using the PriceHistory relation
+ * @method     ChildPriceQuery innerJoinPriceHistory($relationAlias = null) Adds a INNER JOIN clause to the query using the PriceHistory relation
+ *
+ * @method     \GW2Exchange\Database\ItemQuery|\GW2Exchange\Database\PriceHistoryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildPrice findOne(ConnectionInterface $con = null) Return the first ChildPrice matching the query
  * @method     ChildPrice findOneOrCreate(ConnectionInterface $con = null) Return the first ChildPrice matching the query, or a new ChildPrice object populated from the query conditions when no match is found
@@ -49,7 +67,14 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPrice findOneByBuyPrice(int $buy_price) Return the first ChildPrice filtered by the buy_price column
  * @method     ChildPrice findOneBySellPrice(int $sell_price) Return the first ChildPrice filtered by the sell_price column
  * @method     ChildPrice findOneByBuyQty(int $buy_qty) Return the first ChildPrice filtered by the buy_qty column
- * @method     ChildPrice findOneBySellQty(int $sell_qty) Return the first ChildPrice filtered by the sell_qty column *
+ * @method     ChildPrice findOneBySellQty(int $sell_qty) Return the first ChildPrice filtered by the sell_qty column
+ * @method     ChildPrice findOneByCacheTime(int $cache_time) Return the first ChildPrice filtered by the cache_time column
+ * @method     ChildPrice findOneByMaxBuy(int $max_buy) Return the first ChildPrice filtered by the max_buy column
+ * @method     ChildPrice findOneByMinBuy(int $min_buy) Return the first ChildPrice filtered by the min_buy column
+ * @method     ChildPrice findOneByMaxSell(int $max_sell) Return the first ChildPrice filtered by the max_sell column
+ * @method     ChildPrice findOneByMinSell(int $min_sell) Return the first ChildPrice filtered by the min_sell column
+ * @method     ChildPrice findOneByCreatedAt(string $created_at) Return the first ChildPrice filtered by the created_at column
+ * @method     ChildPrice findOneByUpdatedAt(string $updated_at) Return the first ChildPrice filtered by the updated_at column *
 
  * @method     ChildPrice requirePk($key, ConnectionInterface $con = null) Return the ChildPrice by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPrice requireOne(ConnectionInterface $con = null) Return the first ChildPrice matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -59,6 +84,13 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPrice requireOneBySellPrice(int $sell_price) Return the first ChildPrice filtered by the sell_price column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPrice requireOneByBuyQty(int $buy_qty) Return the first ChildPrice filtered by the buy_qty column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPrice requireOneBySellQty(int $sell_qty) Return the first ChildPrice filtered by the sell_qty column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPrice requireOneByCacheTime(int $cache_time) Return the first ChildPrice filtered by the cache_time column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPrice requireOneByMaxBuy(int $max_buy) Return the first ChildPrice filtered by the max_buy column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPrice requireOneByMinBuy(int $min_buy) Return the first ChildPrice filtered by the min_buy column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPrice requireOneByMaxSell(int $max_sell) Return the first ChildPrice filtered by the max_sell column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPrice requireOneByMinSell(int $min_sell) Return the first ChildPrice filtered by the min_sell column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPrice requireOneByCreatedAt(string $created_at) Return the first ChildPrice filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPrice requireOneByUpdatedAt(string $updated_at) Return the first ChildPrice filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildPrice[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildPrice objects based on current ModelCriteria
  * @method     ChildPrice[]|ObjectCollection findByItemId(int $item_id) Return ChildPrice objects filtered by the item_id column
@@ -66,6 +98,13 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPrice[]|ObjectCollection findBySellPrice(int $sell_price) Return ChildPrice objects filtered by the sell_price column
  * @method     ChildPrice[]|ObjectCollection findByBuyQty(int $buy_qty) Return ChildPrice objects filtered by the buy_qty column
  * @method     ChildPrice[]|ObjectCollection findBySellQty(int $sell_qty) Return ChildPrice objects filtered by the sell_qty column
+ * @method     ChildPrice[]|ObjectCollection findByCacheTime(int $cache_time) Return ChildPrice objects filtered by the cache_time column
+ * @method     ChildPrice[]|ObjectCollection findByMaxBuy(int $max_buy) Return ChildPrice objects filtered by the max_buy column
+ * @method     ChildPrice[]|ObjectCollection findByMinBuy(int $min_buy) Return ChildPrice objects filtered by the min_buy column
+ * @method     ChildPrice[]|ObjectCollection findByMaxSell(int $max_sell) Return ChildPrice objects filtered by the max_sell column
+ * @method     ChildPrice[]|ObjectCollection findByMinSell(int $min_sell) Return ChildPrice objects filtered by the min_sell column
+ * @method     ChildPrice[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildPrice objects filtered by the created_at column
+ * @method     ChildPrice[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildPrice objects filtered by the updated_at column
  * @method     ChildPrice[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -74,13 +113,13 @@ abstract class PriceQuery extends ModelCriteria
     protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityNotFoundException';
 
     /**
-     * Initializes internal state of \GW2ledger\Database\Base\PriceQuery object.
+     * Initializes internal state of \GW2Exchange\Database\Base\PriceQuery object.
      *
      * @param     string $dbName The database name
      * @param     string $modelName The phpName of a model, e.g. 'Book'
      * @param     string $modelAlias The alias for the model in this query, e.g. 'b'
      */
-    public function __construct($dbName = 'gw2ledger', $modelName = '\\GW2ledger\\Database\\Price', $modelAlias = null)
+    public function __construct($dbName = 'GW2Exchange', $modelName = '\\GW2Exchange\\Database\\Price', $modelAlias = null)
     {
         parent::__construct($dbName, $modelName, $modelAlias);
     }
@@ -158,7 +197,7 @@ abstract class PriceQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT item_id, buy_price, sell_price, buy_qty, sell_qty FROM price WHERE item_id = :p0';
+        $sql = 'SELECT item_id, buy_price, sell_price, buy_qty, sell_qty, cache_time, max_buy, min_buy, max_sell, min_sell, created_at, updated_at FROM price WHERE item_id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -456,9 +495,300 @@ abstract class PriceQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \GW2ledger\Database\Item object
+     * Filter the query on the cache_time column
      *
-     * @param \GW2ledger\Database\Item|ObjectCollection $item The related object(s) to use as filter
+     * Example usage:
+     * <code>
+     * $query->filterByCacheTime(1234); // WHERE cache_time = 1234
+     * $query->filterByCacheTime(array(12, 34)); // WHERE cache_time IN (12, 34)
+     * $query->filterByCacheTime(array('min' => 12)); // WHERE cache_time > 12
+     * </code>
+     *
+     * @param     mixed $cacheTime The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function filterByCacheTime($cacheTime = null, $comparison = null)
+    {
+        if (is_array($cacheTime)) {
+            $useMinMax = false;
+            if (isset($cacheTime['min'])) {
+                $this->addUsingAlias(PriceTableMap::COL_CACHE_TIME, $cacheTime['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($cacheTime['max'])) {
+                $this->addUsingAlias(PriceTableMap::COL_CACHE_TIME, $cacheTime['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PriceTableMap::COL_CACHE_TIME, $cacheTime, $comparison);
+    }
+
+    /**
+     * Filter the query on the max_buy column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByMaxBuy(1234); // WHERE max_buy = 1234
+     * $query->filterByMaxBuy(array(12, 34)); // WHERE max_buy IN (12, 34)
+     * $query->filterByMaxBuy(array('min' => 12)); // WHERE max_buy > 12
+     * </code>
+     *
+     * @param     mixed $maxBuy The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function filterByMaxBuy($maxBuy = null, $comparison = null)
+    {
+        if (is_array($maxBuy)) {
+            $useMinMax = false;
+            if (isset($maxBuy['min'])) {
+                $this->addUsingAlias(PriceTableMap::COL_MAX_BUY, $maxBuy['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($maxBuy['max'])) {
+                $this->addUsingAlias(PriceTableMap::COL_MAX_BUY, $maxBuy['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PriceTableMap::COL_MAX_BUY, $maxBuy, $comparison);
+    }
+
+    /**
+     * Filter the query on the min_buy column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByMinBuy(1234); // WHERE min_buy = 1234
+     * $query->filterByMinBuy(array(12, 34)); // WHERE min_buy IN (12, 34)
+     * $query->filterByMinBuy(array('min' => 12)); // WHERE min_buy > 12
+     * </code>
+     *
+     * @param     mixed $minBuy The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function filterByMinBuy($minBuy = null, $comparison = null)
+    {
+        if (is_array($minBuy)) {
+            $useMinMax = false;
+            if (isset($minBuy['min'])) {
+                $this->addUsingAlias(PriceTableMap::COL_MIN_BUY, $minBuy['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($minBuy['max'])) {
+                $this->addUsingAlias(PriceTableMap::COL_MIN_BUY, $minBuy['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PriceTableMap::COL_MIN_BUY, $minBuy, $comparison);
+    }
+
+    /**
+     * Filter the query on the max_sell column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByMaxSell(1234); // WHERE max_sell = 1234
+     * $query->filterByMaxSell(array(12, 34)); // WHERE max_sell IN (12, 34)
+     * $query->filterByMaxSell(array('min' => 12)); // WHERE max_sell > 12
+     * </code>
+     *
+     * @param     mixed $maxSell The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function filterByMaxSell($maxSell = null, $comparison = null)
+    {
+        if (is_array($maxSell)) {
+            $useMinMax = false;
+            if (isset($maxSell['min'])) {
+                $this->addUsingAlias(PriceTableMap::COL_MAX_SELL, $maxSell['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($maxSell['max'])) {
+                $this->addUsingAlias(PriceTableMap::COL_MAX_SELL, $maxSell['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PriceTableMap::COL_MAX_SELL, $maxSell, $comparison);
+    }
+
+    /**
+     * Filter the query on the min_sell column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByMinSell(1234); // WHERE min_sell = 1234
+     * $query->filterByMinSell(array(12, 34)); // WHERE min_sell IN (12, 34)
+     * $query->filterByMinSell(array('min' => 12)); // WHERE min_sell > 12
+     * </code>
+     *
+     * @param     mixed $minSell The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function filterByMinSell($minSell = null, $comparison = null)
+    {
+        if (is_array($minSell)) {
+            $useMinMax = false;
+            if (isset($minSell['min'])) {
+                $this->addUsingAlias(PriceTableMap::COL_MIN_SELL, $minSell['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($minSell['max'])) {
+                $this->addUsingAlias(PriceTableMap::COL_MIN_SELL, $minSell['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PriceTableMap::COL_MIN_SELL, $minSell, $comparison);
+    }
+
+    /**
+     * Filter the query on the created_at column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByCreatedAt('2011-03-14'); // WHERE created_at = '2011-03-14'
+     * $query->filterByCreatedAt('now'); // WHERE created_at = '2011-03-14'
+     * $query->filterByCreatedAt(array('max' => 'yesterday')); // WHERE created_at > '2011-03-13'
+     * </code>
+     *
+     * @param     mixed $createdAt The value to use as filter.
+     *              Values can be integers (unix timestamps), DateTime objects, or strings.
+     *              Empty strings are treated as NULL.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function filterByCreatedAt($createdAt = null, $comparison = null)
+    {
+        if (is_array($createdAt)) {
+            $useMinMax = false;
+            if (isset($createdAt['min'])) {
+                $this->addUsingAlias(PriceTableMap::COL_CREATED_AT, $createdAt['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($createdAt['max'])) {
+                $this->addUsingAlias(PriceTableMap::COL_CREATED_AT, $createdAt['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PriceTableMap::COL_CREATED_AT, $createdAt, $comparison);
+    }
+
+    /**
+     * Filter the query on the updated_at column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUpdatedAt('2011-03-14'); // WHERE updated_at = '2011-03-14'
+     * $query->filterByUpdatedAt('now'); // WHERE updated_at = '2011-03-14'
+     * $query->filterByUpdatedAt(array('max' => 'yesterday')); // WHERE updated_at > '2011-03-13'
+     * </code>
+     *
+     * @param     mixed $updatedAt The value to use as filter.
+     *              Values can be integers (unix timestamps), DateTime objects, or strings.
+     *              Empty strings are treated as NULL.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function filterByUpdatedAt($updatedAt = null, $comparison = null)
+    {
+        if (is_array($updatedAt)) {
+            $useMinMax = false;
+            if (isset($updatedAt['min'])) {
+                $this->addUsingAlias(PriceTableMap::COL_UPDATED_AT, $updatedAt['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($updatedAt['max'])) {
+                $this->addUsingAlias(PriceTableMap::COL_UPDATED_AT, $updatedAt['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PriceTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \GW2Exchange\Database\Item object
+     *
+     * @param \GW2Exchange\Database\Item|ObjectCollection $item The related object(s) to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @throws \Propel\Runtime\Exception\PropelException
@@ -467,7 +797,7 @@ abstract class PriceQuery extends ModelCriteria
      */
     public function filterByItem($item, $comparison = null)
     {
-        if ($item instanceof \GW2ledger\Database\Item) {
+        if ($item instanceof \GW2Exchange\Database\Item) {
             return $this
                 ->addUsingAlias(PriceTableMap::COL_ITEM_ID, $item->getId(), $comparison);
         } elseif ($item instanceof ObjectCollection) {
@@ -478,7 +808,7 @@ abstract class PriceQuery extends ModelCriteria
             return $this
                 ->addUsingAlias(PriceTableMap::COL_ITEM_ID, $item->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByItem() only accepts arguments of type \GW2ledger\Database\Item or Collection');
+            throw new PropelException('filterByItem() only accepts arguments of type \GW2Exchange\Database\Item or Collection');
         }
     }
 
@@ -523,13 +853,86 @@ abstract class PriceQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \GW2ledger\Database\ItemQuery A secondary query class using the current class as primary query
+     * @return \GW2Exchange\Database\ItemQuery A secondary query class using the current class as primary query
      */
     public function useItemQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinItem($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'Item', '\GW2ledger\Database\ItemQuery');
+            ->useQuery($relationAlias ? $relationAlias : 'Item', '\GW2Exchange\Database\ItemQuery');
+    }
+
+    /**
+     * Filter the query by a related \GW2Exchange\Database\PriceHistory object
+     *
+     * @param \GW2Exchange\Database\PriceHistory|ObjectCollection $priceHistory the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildPriceQuery The current query, for fluid interface
+     */
+    public function filterByPriceHistory($priceHistory, $comparison = null)
+    {
+        if ($priceHistory instanceof \GW2Exchange\Database\PriceHistory) {
+            return $this
+                ->addUsingAlias(PriceTableMap::COL_ITEM_ID, $priceHistory->getItemId(), $comparison);
+        } elseif ($priceHistory instanceof ObjectCollection) {
+            return $this
+                ->usePriceHistoryQuery()
+                ->filterByPrimaryKeys($priceHistory->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByPriceHistory() only accepts arguments of type \GW2Exchange\Database\PriceHistory or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the PriceHistory relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function joinPriceHistory($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('PriceHistory');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'PriceHistory');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the PriceHistory relation PriceHistory object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \GW2Exchange\Database\PriceHistoryQuery A secondary query class using the current class as primary query
+     */
+    public function usePriceHistoryQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinPriceHistory($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'PriceHistory', '\GW2Exchange\Database\PriceHistoryQuery');
     }
 
     /**
@@ -607,6 +1010,72 @@ abstract class PriceQuery extends ModelCriteria
 
             return $affectedRows;
         });
+    }
+
+    // timestampable behavior
+
+    /**
+     * Filter by the latest updated
+     *
+     * @param      int $nbDays Maximum age of the latest update in days
+     *
+     * @return     $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function recentlyUpdated($nbDays = 7)
+    {
+        return $this->addUsingAlias(PriceTableMap::COL_UPDATED_AT, time() - $nbDays * 24 * 60 * 60, Criteria::GREATER_EQUAL);
+    }
+
+    /**
+     * Order by update date desc
+     *
+     * @return     $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function lastUpdatedFirst()
+    {
+        return $this->addDescendingOrderByColumn(PriceTableMap::COL_UPDATED_AT);
+    }
+
+    /**
+     * Order by update date asc
+     *
+     * @return     $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function firstUpdatedFirst()
+    {
+        return $this->addAscendingOrderByColumn(PriceTableMap::COL_UPDATED_AT);
+    }
+
+    /**
+     * Order by create date desc
+     *
+     * @return     $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function lastCreatedFirst()
+    {
+        return $this->addDescendingOrderByColumn(PriceTableMap::COL_CREATED_AT);
+    }
+
+    /**
+     * Filter by the latest created
+     *
+     * @param      int $nbDays Maximum age of in days
+     *
+     * @return     $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function recentlyCreated($nbDays = 7)
+    {
+        return $this->addUsingAlias(PriceTableMap::COL_CREATED_AT, time() - $nbDays * 24 * 60 * 60, Criteria::GREATER_EQUAL);
+    }
+
+    /**
+     * Order by create date asc
+     *
+     * @return     $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function firstCreatedFirst()
+    {
+        return $this->addAscendingOrderByColumn(PriceTableMap::COL_CREATED_AT);
     }
 
 } // PriceQuery

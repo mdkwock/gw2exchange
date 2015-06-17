@@ -1,7 +1,7 @@
 <?php
-namespace GW2ledger\Database;
+namespace GW2Exchange\Database;
 
-use GW2ledger\Database\Base\ItemDetailQuery as BaseItemDetailQuery;
+use GW2Exchange\Database\Base\ItemDetailQuery as BaseItemDetailQuery;
 
 /**
  * Skeleton subclass for performing query and update operations on the 'item_detail' table.

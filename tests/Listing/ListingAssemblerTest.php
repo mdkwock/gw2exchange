@@ -1,14 +1,25 @@
 <?php
 
-use GW2ledger\Listing\ListingAssembler;
-use GW2ledger\Database\Listing;
+use GW2Exchange\Database\Listing;
 
-use GW2ledger\Connection\GuzzleWebScraper;
+use GW2Exchange\Listing\ListingAssembler;
+use GW2Exchange\Listing\ListingParser;
+use GW2Exchange\Listing\ListingFactory;
+
+use GW2Exchange\Connection\GuzzleWebScraper;
 use GuzzleHttp\Client;
 use GuzzleHttp\Message\AbstractMessage;
 
 class ListingAssemblerTest extends PHPUnit_Framework_TestCase
 {
+  public function setUp()
+  {
+    $this->listingParser = new ListingParser();
+    $this->listingFactory = $this->getMockBuilder('GW2Exchange\Listing\ListingFactory')
+      ->setMethods(array('createFromArray'))
+      ->getMock();
+  }
+
   public function testGetIdList()
   {
     $json = "[1,3,5,7,9]"; //this is the return from the endpoint
@@ -29,7 +40,7 @@ class ListingAssemblerTest extends PHPUnit_Framework_TestCase
 
     $webScraper = new GuzzleWebScraper($client);
 
-    $listingAssembler = new ListingAssembler($webScraper);
+    $listingAssembler = new ListingAssembler($webScraper,$this->listingParser,$this->listingFactory);
     $itemIds = $listingAssembler->getIdList();
     $this->assertNotEmpty($itemIds);
     $this->assertEquals($return, $itemIds);
@@ -84,6 +95,17 @@ class ListingAssemblerTest extends PHPUnit_Framework_TestCase
       )
     )
     );
+
+    $listing = $this->getMockBuilder('GW2Exchange\Database\Listing')
+      ->setMethods(array('isNew','save'))
+      ->getMock();
+    $listing->method('isNew')
+      ->will($this->returnValue(true));
+    $listing->method('save')
+      ->will($this->returnValue(null));
+    $this->listingFactory->method('createFromArray')
+      ->will($this->returnValue($listing));
+
     $response = $this->getMockBuilder('GuzzleHttp\Message\AbstractMessage')
                     //->setConstructorArgs(array('404',array(),null,array()))
                     ->setMethods(array('getBody'))
@@ -99,13 +121,12 @@ class ListingAssemblerTest extends PHPUnit_Framework_TestCase
 
     $webScraper = new GuzzleWebScraper($client);
 
-    $listingAssembler = new ListingAssembler($webScraper);
+    $listingAssembler = new ListingAssembler($webScraper,$this->listingParser,$this->listingFactory);
     $listings = $listingAssembler->getByItemIds(24);
     $this->assertNotEmpty($listings);
     $this->assertEquals(1, count($listings));//we only looked for a single id
     $listing = reset($listings);
     $this->assertEquals(6,count($listing));
     $this->assertTrue($listing[0] instanceof Listing);
-    $this->assertEquals($arr[24][0]['Orders'], $listing[0]->getOrders());
   }
 }

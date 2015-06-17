@@ -1,9 +1,9 @@
 <?php
 
-namespace GW2ledger\Database\Map;
+namespace GW2Exchange\Database\Map;
 
-use GW2ledger\Database\ItemSummary;
-use GW2ledger\Database\ItemSummaryQuery;
+use GW2Exchange\Database\ItemSummary;
+use GW2Exchange\Database\ItemSummaryQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -34,12 +34,12 @@ class ItemSummaryTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'GW2ledger.Database.Map.ItemSummaryTableMap';
+    const CLASS_NAME = 'GW2Exchange.Database.Map.ItemSummaryTableMap';
 
     /**
      * The default database name for this class
      */
-    const DATABASE_NAME = 'gw2ledger';
+    const DATABASE_NAME = 'GW2Exchange';
 
     /**
      * The table name for this class
@@ -49,12 +49,12 @@ class ItemSummaryTableMap extends TableMap
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\GW2ledger\\Database\\ItemSummary';
+    const OM_CLASS = '\\GW2Exchange\\Database\\ItemSummary';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'GW2ledger.Database.ItemSummary';
+    const CLASS_DEFAULT = 'GW2Exchange.Database.ItemSummary';
 
     /**
      * The total number of columns
@@ -142,8 +142,8 @@ class ItemSummaryTableMap extends TableMap
         $this->setName('item_summary');
         $this->setPhpName('ItemSummary');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\GW2ledger\\Database\\ItemSummary');
-        $this->setPackage('GW2ledger.Database');
+        $this->setClassName('\\GW2Exchange\\Database\\ItemSummary');
+        $this->setPackage('GW2Exchange.Database');
         $this->setUseIdGenerator(false);
         // columns
         $this->addForeignPrimaryKey('item_id', 'ItemId', 'INTEGER' , 'item', 'id', true, null, null);
@@ -158,7 +158,7 @@ class ItemSummaryTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Item', '\\GW2ledger\\Database\\Item', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Item', '\\GW2Exchange\\Database\\Item', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':item_id',
@@ -365,7 +365,7 @@ class ItemSummaryTableMap extends TableMap
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \GW2ledger\Database\ItemSummary) { // it's a model object
+        } elseif ($values instanceof \GW2Exchange\Database\ItemSummary) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks

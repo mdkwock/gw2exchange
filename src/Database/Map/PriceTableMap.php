@@ -1,9 +1,9 @@
 <?php
 
-namespace GW2ledger\Database\Map;
+namespace GW2Exchange\Database\Map;
 
-use GW2ledger\Database\Price;
-use GW2ledger\Database\PriceQuery;
+use GW2Exchange\Database\Price;
+use GW2Exchange\Database\PriceQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -34,12 +34,12 @@ class PriceTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'GW2ledger.Database.Map.PriceTableMap';
+    const CLASS_NAME = 'GW2Exchange.Database.Map.PriceTableMap';
 
     /**
      * The default database name for this class
      */
-    const DATABASE_NAME = 'gw2ledger';
+    const DATABASE_NAME = 'GW2Exchange';
 
     /**
      * The table name for this class
@@ -49,17 +49,17 @@ class PriceTableMap extends TableMap
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\GW2ledger\\Database\\Price';
+    const OM_CLASS = '\\GW2Exchange\\Database\\Price';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'GW2ledger.Database.Price';
+    const CLASS_DEFAULT = 'GW2Exchange.Database.Price';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 5;
+    const NUM_COLUMNS = 12;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class PriceTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 5;
+    const NUM_HYDRATE_COLUMNS = 12;
 
     /**
      * the column name for the item_id field
@@ -97,6 +97,41 @@ class PriceTableMap extends TableMap
     const COL_SELL_QTY = 'price.sell_qty';
 
     /**
+     * the column name for the cache_time field
+     */
+    const COL_CACHE_TIME = 'price.cache_time';
+
+    /**
+     * the column name for the max_buy field
+     */
+    const COL_MAX_BUY = 'price.max_buy';
+
+    /**
+     * the column name for the min_buy field
+     */
+    const COL_MIN_BUY = 'price.min_buy';
+
+    /**
+     * the column name for the max_sell field
+     */
+    const COL_MAX_SELL = 'price.max_sell';
+
+    /**
+     * the column name for the min_sell field
+     */
+    const COL_MIN_SELL = 'price.min_sell';
+
+    /**
+     * the column name for the created_at field
+     */
+    const COL_CREATED_AT = 'price.created_at';
+
+    /**
+     * the column name for the updated_at field
+     */
+    const COL_UPDATED_AT = 'price.updated_at';
+
+    /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
@@ -108,11 +143,11 @@ class PriceTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('ItemId', 'BuyPrice', 'SellPrice', 'BuyQty', 'SellQty', ),
-        self::TYPE_CAMELNAME     => array('itemId', 'buyPrice', 'sellPrice', 'buyQty', 'sellQty', ),
-        self::TYPE_COLNAME       => array(PriceTableMap::COL_ITEM_ID, PriceTableMap::COL_BUY_PRICE, PriceTableMap::COL_SELL_PRICE, PriceTableMap::COL_BUY_QTY, PriceTableMap::COL_SELL_QTY, ),
-        self::TYPE_FIELDNAME     => array('item_id', 'buy_price', 'sell_price', 'buy_qty', 'sell_qty', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
+        self::TYPE_PHPNAME       => array('ItemId', 'BuyPrice', 'SellPrice', 'BuyQty', 'SellQty', 'CacheTime', 'MaxBuy', 'MinBuy', 'MaxSell', 'MinSell', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('itemId', 'buyPrice', 'sellPrice', 'buyQty', 'sellQty', 'cacheTime', 'maxBuy', 'minBuy', 'maxSell', 'minSell', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(PriceTableMap::COL_ITEM_ID, PriceTableMap::COL_BUY_PRICE, PriceTableMap::COL_SELL_PRICE, PriceTableMap::COL_BUY_QTY, PriceTableMap::COL_SELL_QTY, PriceTableMap::COL_CACHE_TIME, PriceTableMap::COL_MAX_BUY, PriceTableMap::COL_MIN_BUY, PriceTableMap::COL_MAX_SELL, PriceTableMap::COL_MIN_SELL, PriceTableMap::COL_CREATED_AT, PriceTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('item_id', 'buy_price', 'sell_price', 'buy_qty', 'sell_qty', 'cache_time', 'max_buy', 'min_buy', 'max_sell', 'min_sell', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, )
     );
 
     /**
@@ -122,11 +157,11 @@ class PriceTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('ItemId' => 0, 'BuyPrice' => 1, 'SellPrice' => 2, 'BuyQty' => 3, 'SellQty' => 4, ),
-        self::TYPE_CAMELNAME     => array('itemId' => 0, 'buyPrice' => 1, 'sellPrice' => 2, 'buyQty' => 3, 'sellQty' => 4, ),
-        self::TYPE_COLNAME       => array(PriceTableMap::COL_ITEM_ID => 0, PriceTableMap::COL_BUY_PRICE => 1, PriceTableMap::COL_SELL_PRICE => 2, PriceTableMap::COL_BUY_QTY => 3, PriceTableMap::COL_SELL_QTY => 4, ),
-        self::TYPE_FIELDNAME     => array('item_id' => 0, 'buy_price' => 1, 'sell_price' => 2, 'buy_qty' => 3, 'sell_qty' => 4, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
+        self::TYPE_PHPNAME       => array('ItemId' => 0, 'BuyPrice' => 1, 'SellPrice' => 2, 'BuyQty' => 3, 'SellQty' => 4, 'CacheTime' => 5, 'MaxBuy' => 6, 'MinBuy' => 7, 'MaxSell' => 8, 'MinSell' => 9, 'CreatedAt' => 10, 'UpdatedAt' => 11, ),
+        self::TYPE_CAMELNAME     => array('itemId' => 0, 'buyPrice' => 1, 'sellPrice' => 2, 'buyQty' => 3, 'sellQty' => 4, 'cacheTime' => 5, 'maxBuy' => 6, 'minBuy' => 7, 'maxSell' => 8, 'minSell' => 9, 'createdAt' => 10, 'updatedAt' => 11, ),
+        self::TYPE_COLNAME       => array(PriceTableMap::COL_ITEM_ID => 0, PriceTableMap::COL_BUY_PRICE => 1, PriceTableMap::COL_SELL_PRICE => 2, PriceTableMap::COL_BUY_QTY => 3, PriceTableMap::COL_SELL_QTY => 4, PriceTableMap::COL_CACHE_TIME => 5, PriceTableMap::COL_MAX_BUY => 6, PriceTableMap::COL_MIN_BUY => 7, PriceTableMap::COL_MAX_SELL => 8, PriceTableMap::COL_MIN_SELL => 9, PriceTableMap::COL_CREATED_AT => 10, PriceTableMap::COL_UPDATED_AT => 11, ),
+        self::TYPE_FIELDNAME     => array('item_id' => 0, 'buy_price' => 1, 'sell_price' => 2, 'buy_qty' => 3, 'sell_qty' => 4, 'cache_time' => 5, 'max_buy' => 6, 'min_buy' => 7, 'max_sell' => 8, 'min_sell' => 9, 'created_at' => 10, 'updated_at' => 11, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, )
     );
 
     /**
@@ -142,8 +177,8 @@ class PriceTableMap extends TableMap
         $this->setName('price');
         $this->setPhpName('Price');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\GW2ledger\\Database\\Price');
-        $this->setPackage('GW2ledger.Database');
+        $this->setClassName('\\GW2Exchange\\Database\\Price');
+        $this->setPackage('GW2Exchange.Database');
         $this->setUseIdGenerator(false);
         // columns
         $this->addForeignPrimaryKey('item_id', 'ItemId', 'INTEGER' , 'item', 'id', true, null, null);
@@ -151,6 +186,13 @@ class PriceTableMap extends TableMap
         $this->addColumn('sell_price', 'SellPrice', 'INTEGER', false, null, null);
         $this->addColumn('buy_qty', 'BuyQty', 'INTEGER', false, null, null);
         $this->addColumn('sell_qty', 'SellQty', 'INTEGER', false, null, null);
+        $this->addColumn('cache_time', 'CacheTime', 'INTEGER', false, null, null);
+        $this->addColumn('max_buy', 'MaxBuy', 'INTEGER', false, null, null);
+        $this->addColumn('min_buy', 'MinBuy', 'INTEGER', false, null, null);
+        $this->addColumn('max_sell', 'MaxSell', 'INTEGER', false, null, null);
+        $this->addColumn('min_sell', 'MinSell', 'INTEGER', false, null, null);
+        $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
+        $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
 
     /**
@@ -158,14 +200,34 @@ class PriceTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Item', '\\GW2ledger\\Database\\Item', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Item', '\\GW2Exchange\\Database\\Item', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':item_id',
     1 => ':id',
   ),
 ), null, null, null, false);
+        $this->addRelation('PriceHistory', '\\GW2Exchange\\Database\\PriceHistory', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':item_id',
+    1 => ':item_id',
+  ),
+), null, null, 'PriceHistories', false);
     } // buildRelations()
+
+    /**
+     *
+     * Gets the list of behaviors registered for this table
+     *
+     * @return array Associative array (name => parameters) of behaviors
+     */
+    public function getBehaviors()
+    {
+        return array(
+            'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
+        );
+    } // getBehaviors()
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
@@ -313,12 +375,26 @@ class PriceTableMap extends TableMap
             $criteria->addSelectColumn(PriceTableMap::COL_SELL_PRICE);
             $criteria->addSelectColumn(PriceTableMap::COL_BUY_QTY);
             $criteria->addSelectColumn(PriceTableMap::COL_SELL_QTY);
+            $criteria->addSelectColumn(PriceTableMap::COL_CACHE_TIME);
+            $criteria->addSelectColumn(PriceTableMap::COL_MAX_BUY);
+            $criteria->addSelectColumn(PriceTableMap::COL_MIN_BUY);
+            $criteria->addSelectColumn(PriceTableMap::COL_MAX_SELL);
+            $criteria->addSelectColumn(PriceTableMap::COL_MIN_SELL);
+            $criteria->addSelectColumn(PriceTableMap::COL_CREATED_AT);
+            $criteria->addSelectColumn(PriceTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.item_id');
             $criteria->addSelectColumn($alias . '.buy_price');
             $criteria->addSelectColumn($alias . '.sell_price');
             $criteria->addSelectColumn($alias . '.buy_qty');
             $criteria->addSelectColumn($alias . '.sell_qty');
+            $criteria->addSelectColumn($alias . '.cache_time');
+            $criteria->addSelectColumn($alias . '.max_buy');
+            $criteria->addSelectColumn($alias . '.min_buy');
+            $criteria->addSelectColumn($alias . '.max_sell');
+            $criteria->addSelectColumn($alias . '.min_sell');
+            $criteria->addSelectColumn($alias . '.created_at');
+            $criteria->addSelectColumn($alias . '.updated_at');
         }
     }
 
@@ -365,7 +441,7 @@ class PriceTableMap extends TableMap
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \GW2ledger\Database\Price) { // it's a model object
+        } elseif ($values instanceof \GW2Exchange\Database\Price) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks

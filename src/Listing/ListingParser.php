@@ -1,7 +1,7 @@
 <?php
-namespace GW2ledger\Listing;
+namespace GW2Exchange\Listing;
 
-use GW2ledger\Signature\Listing\ListingParserInterface;
+use GW2Exchange\Signature\Listing\ListingParserInterface;
 
 /**
  * This class takes in a json string and creates an array

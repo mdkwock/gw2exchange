@@ -1,5 +1,5 @@
 <?php
-namespace GW2ledger\Signature\Base;
+namespace GW2Exchange\Signature\Base;
 
 /**
  * This interface creates objects of any type

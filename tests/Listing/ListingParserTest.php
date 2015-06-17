@@ -1,6 +1,6 @@
 <?php
 
-use GW2ledger\Listing\ListingParser;
+use GW2Exchange\Listing\ListingParser;
 
 
 class ListingParserTest extends PHPUnit_Framework_TestCase

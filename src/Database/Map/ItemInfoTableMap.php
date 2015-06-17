@@ -1,9 +1,9 @@
 <?php
 
-namespace GW2ledger\Database\Map;
+namespace GW2Exchange\Database\Map;
 
-use GW2ledger\Database\ItemInfo;
-use GW2ledger\Database\ItemInfoQuery;
+use GW2Exchange\Database\ItemInfo;
+use GW2Exchange\Database\ItemInfoQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -34,12 +34,12 @@ class ItemInfoTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'GW2ledger.Database.Map.ItemInfoTableMap';
+    const CLASS_NAME = 'GW2Exchange.Database.Map.ItemInfoTableMap';
 
     /**
      * The default database name for this class
      */
-    const DATABASE_NAME = 'gw2ledger';
+    const DATABASE_NAME = 'GW2Exchange';
 
     /**
      * The table name for this class
@@ -49,12 +49,12 @@ class ItemInfoTableMap extends TableMap
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\GW2ledger\\Database\\ItemInfo';
+    const OM_CLASS = '\\GW2Exchange\\Database\\ItemInfo';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'GW2ledger.Database.ItemInfo';
+    const CLASS_DEFAULT = 'GW2Exchange.Database.ItemInfo';
 
     /**
      * The total number of columns
@@ -167,8 +167,8 @@ class ItemInfoTableMap extends TableMap
         $this->setName('item_info');
         $this->setPhpName('ItemInfo');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\GW2ledger\\Database\\ItemInfo');
-        $this->setPackage('GW2ledger.Database');
+        $this->setClassName('\\GW2Exchange\\Database\\ItemInfo');
+        $this->setPackage('GW2Exchange.Database');
         $this->setUseIdGenerator(false);
         // columns
         $this->addForeignPrimaryKey('item_id', 'ItemId', 'INTEGER' , 'item', 'id', true, null, null);
@@ -188,7 +188,7 @@ class ItemInfoTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Item', '\\GW2ledger\\Database\\Item', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Item', '\\GW2Exchange\\Database\\Item', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':item_id',
@@ -405,7 +405,7 @@ class ItemInfoTableMap extends TableMap
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \GW2ledger\Database\ItemInfo) { // it's a model object
+        } elseif ($values instanceof \GW2Exchange\Database\ItemInfo) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks

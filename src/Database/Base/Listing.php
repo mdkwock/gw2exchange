@@ -1,13 +1,17 @@
 <?php
 
-namespace GW2ledger\Database\Base;
+namespace GW2Exchange\Database\Base;
 
+use \DateTime;
 use \Exception;
 use \PDO;
-use GW2ledger\Database\Item as ChildItem;
-use GW2ledger\Database\ItemQuery as ChildItemQuery;
-use GW2ledger\Database\ListingQuery as ChildListingQuery;
-use GW2ledger\Database\Map\ListingTableMap;
+use GW2Exchange\Database\Item as ChildItem;
+use GW2Exchange\Database\ItemQuery as ChildItemQuery;
+use GW2Exchange\Database\Listing as ChildListing;
+use GW2Exchange\Database\ListingArchive as ChildListingArchive;
+use GW2Exchange\Database\ListingArchiveQuery as ChildListingArchiveQuery;
+use GW2Exchange\Database\ListingQuery as ChildListingQuery;
+use GW2Exchange\Database\Map\ListingTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -19,20 +23,21 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Propel\Runtime\Util\PropelDateTime;
 
 /**
  * Base class that represents a row from the 'listing' table.
  *
  *
  *
-* @package    propel.generator.GW2ledger.Database.Base
+* @package    propel.generator.GW2Exchange.Database.Base
 */
 abstract class Listing implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\GW2ledger\\Database\\Map\\ListingTableMap';
+    const TABLE_MAP = '\\GW2Exchange\\Database\\Map\\ListingTableMap';
 
 
     /**
@@ -98,6 +103,24 @@ abstract class Listing implements ActiveRecordInterface
     protected $quantity;
 
     /**
+     * The value for the cache_time field.
+     * @var        int
+     */
+    protected $cache_time;
+
+    /**
+     * The value for the created_at field.
+     * @var        \DateTime
+     */
+    protected $created_at;
+
+    /**
+     * The value for the updated_at field.
+     * @var        \DateTime
+     */
+    protected $updated_at;
+
+    /**
      * @var        ChildItem
      */
     protected $aItem;
@@ -110,8 +133,12 @@ abstract class Listing implements ActiveRecordInterface
      */
     protected $alreadyInSave = false;
 
+    // archivable behavior
+    protected $archiveOnUpdate = true;
+    protected $archiveOnDelete = true;
+
     /**
-     * Initializes internal state of GW2ledger\Database\Base\Listing object.
+     * Initializes internal state of GW2Exchange\Database\Base\Listing object.
      */
     public function __construct()
     {
@@ -388,10 +415,60 @@ abstract class Listing implements ActiveRecordInterface
     }
 
     /**
+     * Get the [cache_time] column value.
+     *
+     * @return int
+     */
+    public function getCacheTime()
+    {
+        return $this->cache_time;
+    }
+
+    /**
+     * Get the [optionally formatted] temporal [created_at] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw DateTime object will be returned.
+     *
+     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getCreatedAt($format = NULL)
+    {
+        if ($format === null) {
+            return $this->created_at;
+        } else {
+            return $this->created_at instanceof \DateTime ? $this->created_at->format($format) : null;
+        }
+    }
+
+    /**
+     * Get the [optionally formatted] temporal [updated_at] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw DateTime object will be returned.
+     *
+     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getUpdatedAt($format = NULL)
+    {
+        if ($format === null) {
+            return $this->updated_at;
+        } else {
+            return $this->updated_at instanceof \DateTime ? $this->updated_at->format($format) : null;
+        }
+    }
+
+    /**
      * Set the value of [id] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\Listing The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Listing The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -411,7 +488,7 @@ abstract class Listing implements ActiveRecordInterface
      * Set the value of [item_id] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\Listing The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Listing The current object (for fluent API support)
      */
     public function setItemId($v)
     {
@@ -435,7 +512,7 @@ abstract class Listing implements ActiveRecordInterface
      * Set the value of [type] column.
      *
      * @param string $v new value
-     * @return $this|\GW2ledger\Database\Listing The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Listing The current object (for fluent API support)
      */
     public function setType($v)
     {
@@ -455,7 +532,7 @@ abstract class Listing implements ActiveRecordInterface
      * Set the value of [orders] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\Listing The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Listing The current object (for fluent API support)
      */
     public function setOrders($v)
     {
@@ -475,7 +552,7 @@ abstract class Listing implements ActiveRecordInterface
      * Set the value of [unit_price] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\Listing The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Listing The current object (for fluent API support)
      */
     public function setUnitPrice($v)
     {
@@ -495,7 +572,7 @@ abstract class Listing implements ActiveRecordInterface
      * Set the value of [quantity] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\Listing The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Listing The current object (for fluent API support)
      */
     public function setQuantity($v)
     {
@@ -510,6 +587,66 @@ abstract class Listing implements ActiveRecordInterface
 
         return $this;
     } // setQuantity()
+
+    /**
+     * Set the value of [cache_time] column.
+     *
+     * @param int $v new value
+     * @return $this|\GW2Exchange\Database\Listing The current object (for fluent API support)
+     */
+    public function setCacheTime($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->cache_time !== $v) {
+            $this->cache_time = $v;
+            $this->modifiedColumns[ListingTableMap::COL_CACHE_TIME] = true;
+        }
+
+        return $this;
+    } // setCacheTime()
+
+    /**
+     * Sets the value of [created_at] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\GW2Exchange\Database\Listing The current object (for fluent API support)
+     */
+    public function setCreatedAt($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->created_at !== null || $dt !== null) {
+            if ($this->created_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->created_at->format("Y-m-d H:i:s")) {
+                $this->created_at = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[ListingTableMap::COL_CREATED_AT] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // setCreatedAt()
+
+    /**
+     * Sets the value of [updated_at] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\GW2Exchange\Database\Listing The current object (for fluent API support)
+     */
+    public function setUpdatedAt($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->updated_at !== null || $dt !== null) {
+            if ($this->updated_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->updated_at->format("Y-m-d H:i:s")) {
+                $this->updated_at = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[ListingTableMap::COL_UPDATED_AT] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // setUpdatedAt()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -564,6 +701,21 @@ abstract class Listing implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ListingTableMap::translateFieldName('Quantity', TableMap::TYPE_PHPNAME, $indexType)];
             $this->quantity = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ListingTableMap::translateFieldName('CacheTime', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->cache_time = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ListingTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : ListingTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->updated_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -572,10 +724,10 @@ abstract class Listing implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = ListingTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 9; // 9 = ListingTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\GW2ledger\\Database\\Listing'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\GW2Exchange\\Database\\Listing'), 0, $e);
         }
     }
 
@@ -663,6 +815,16 @@ abstract class Listing implements ActiveRecordInterface
             $deleteQuery = ChildListingQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
+            // archivable behavior
+            if ($ret) {
+                if ($this->archiveOnDelete) {
+                    // do nothing yet. The object will be archived later when calling ChildListingQuery::delete().
+                } else {
+                    $deleteQuery->setArchiveOnDelete(false);
+                    $this->archiveOnDelete = true;
+                }
+            }
+
             if ($ret) {
                 $deleteQuery->delete($con);
                 $this->postDelete($con);
@@ -699,8 +861,20 @@ abstract class Listing implements ActiveRecordInterface
             $ret = $this->preSave($con);
             if ($isInsert) {
                 $ret = $ret && $this->preInsert($con);
+                // timestampable behavior
+
+                if (!$this->isColumnModified(ListingTableMap::COL_CREATED_AT)) {
+                    $this->setCreatedAt(time());
+                }
+                if (!$this->isColumnModified(ListingTableMap::COL_UPDATED_AT)) {
+                    $this->setUpdatedAt(time());
+                }
             } else {
                 $ret = $ret && $this->preUpdate($con);
+                // timestampable behavior
+                if ($this->isModified() && !$this->isColumnModified(ListingTableMap::COL_UPDATED_AT)) {
+                    $this->setUpdatedAt(time());
+                }
             }
             if ($ret) {
                 $affectedRows = $this->doSave($con);
@@ -708,6 +882,12 @@ abstract class Listing implements ActiveRecordInterface
                     $this->postInsert($con);
                 } else {
                     $this->postUpdate($con);
+                    // archivable behavior
+                    if ($this->archiveOnUpdate) {
+                        $this->archive($con);
+                    } else {
+                        $this->archiveOnUpdate = true;
+                    }
                 }
                 $this->postSave($con);
                 ListingTableMap::addInstanceToPool($this);
@@ -803,6 +983,15 @@ abstract class Listing implements ActiveRecordInterface
         if ($this->isColumnModified(ListingTableMap::COL_QUANTITY)) {
             $modifiedColumns[':p' . $index++]  = 'quantity';
         }
+        if ($this->isColumnModified(ListingTableMap::COL_CACHE_TIME)) {
+            $modifiedColumns[':p' . $index++]  = 'cache_time';
+        }
+        if ($this->isColumnModified(ListingTableMap::COL_CREATED_AT)) {
+            $modifiedColumns[':p' . $index++]  = 'created_at';
+        }
+        if ($this->isColumnModified(ListingTableMap::COL_UPDATED_AT)) {
+            $modifiedColumns[':p' . $index++]  = 'updated_at';
+        }
 
         $sql = sprintf(
             'INSERT INTO listing (%s) VALUES (%s)',
@@ -831,6 +1020,15 @@ abstract class Listing implements ActiveRecordInterface
                         break;
                     case 'quantity':
                         $stmt->bindValue($identifier, $this->quantity, PDO::PARAM_INT);
+                        break;
+                    case 'cache_time':
+                        $stmt->bindValue($identifier, $this->cache_time, PDO::PARAM_INT);
+                        break;
+                    case 'created_at':
+                        $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
+                        break;
+                    case 'updated_at':
+                        $stmt->bindValue($identifier, $this->updated_at ? $this->updated_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -912,6 +1110,15 @@ abstract class Listing implements ActiveRecordInterface
             case 5:
                 return $this->getQuantity();
                 break;
+            case 6:
+                return $this->getCacheTime();
+                break;
+            case 7:
+                return $this->getCreatedAt();
+                break;
+            case 8:
+                return $this->getUpdatedAt();
+                break;
             default:
                 return null;
                 break;
@@ -948,7 +1155,24 @@ abstract class Listing implements ActiveRecordInterface
             $keys[3] => $this->getOrders(),
             $keys[4] => $this->getUnitPrice(),
             $keys[5] => $this->getQuantity(),
+            $keys[6] => $this->getCacheTime(),
+            $keys[7] => $this->getCreatedAt(),
+            $keys[8] => $this->getUpdatedAt(),
         );
+
+        $utc = new \DateTimeZone('utc');
+        if ($result[$keys[7]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[7]];
+            $result[$keys[7]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[8]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[8]];
+            $result[$keys[8]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
@@ -984,7 +1208,7 @@ abstract class Listing implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\GW2ledger\Database\Listing
+     * @return $this|\GW2Exchange\Database\Listing
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
@@ -999,7 +1223,7 @@ abstract class Listing implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\GW2ledger\Database\Listing
+     * @return $this|\GW2Exchange\Database\Listing
      */
     public function setByPosition($pos, $value)
     {
@@ -1021,6 +1245,15 @@ abstract class Listing implements ActiveRecordInterface
                 break;
             case 5:
                 $this->setQuantity($value);
+                break;
+            case 6:
+                $this->setCacheTime($value);
+                break;
+            case 7:
+                $this->setCreatedAt($value);
+                break;
+            case 8:
+                $this->setUpdatedAt($value);
                 break;
         } // switch()
 
@@ -1066,6 +1299,15 @@ abstract class Listing implements ActiveRecordInterface
         if (array_key_exists($keys[5], $arr)) {
             $this->setQuantity($arr[$keys[5]]);
         }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setCacheTime($arr[$keys[6]]);
+        }
+        if (array_key_exists($keys[7], $arr)) {
+            $this->setCreatedAt($arr[$keys[7]]);
+        }
+        if (array_key_exists($keys[8], $arr)) {
+            $this->setUpdatedAt($arr[$keys[8]]);
+        }
     }
 
      /**
@@ -1085,7 +1327,7 @@ abstract class Listing implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\GW2ledger\Database\Listing The current object, for fluid interface
+     * @return $this|\GW2Exchange\Database\Listing The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1124,6 +1366,15 @@ abstract class Listing implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ListingTableMap::COL_QUANTITY)) {
             $criteria->add(ListingTableMap::COL_QUANTITY, $this->quantity);
+        }
+        if ($this->isColumnModified(ListingTableMap::COL_CACHE_TIME)) {
+            $criteria->add(ListingTableMap::COL_CACHE_TIME, $this->cache_time);
+        }
+        if ($this->isColumnModified(ListingTableMap::COL_CREATED_AT)) {
+            $criteria->add(ListingTableMap::COL_CREATED_AT, $this->created_at);
+        }
+        if ($this->isColumnModified(ListingTableMap::COL_UPDATED_AT)) {
+            $criteria->add(ListingTableMap::COL_UPDATED_AT, $this->updated_at);
         }
 
         return $criteria;
@@ -1204,7 +1455,7 @@ abstract class Listing implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \GW2ledger\Database\Listing (or compatible) type.
+     * @param      object $copyObj An object of \GW2Exchange\Database\Listing (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
@@ -1216,6 +1467,9 @@ abstract class Listing implements ActiveRecordInterface
         $copyObj->setOrders($this->getOrders());
         $copyObj->setUnitPrice($this->getUnitPrice());
         $copyObj->setQuantity($this->getQuantity());
+        $copyObj->setCacheTime($this->getCacheTime());
+        $copyObj->setCreatedAt($this->getCreatedAt());
+        $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1231,7 +1485,7 @@ abstract class Listing implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \GW2ledger\Database\Listing Clone of current object.
+     * @return \GW2Exchange\Database\Listing Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1248,7 +1502,7 @@ abstract class Listing implements ActiveRecordInterface
      * Declares an association between this object and a ChildItem object.
      *
      * @param  ChildItem $v
-     * @return $this|\GW2ledger\Database\Listing The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Listing The current object (for fluent API support)
      * @throws PropelException
      */
     public function setItem(ChildItem $v = null)
@@ -1311,6 +1565,9 @@ abstract class Listing implements ActiveRecordInterface
         $this->orders = null;
         $this->unit_price = null;
         $this->quantity = null;
+        $this->cache_time = null;
+        $this->created_at = null;
+        $this->updated_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -1342,6 +1599,144 @@ abstract class Listing implements ActiveRecordInterface
     public function __toString()
     {
         return (string) $this->exportTo(ListingTableMap::DEFAULT_STRING_FORMAT);
+    }
+
+    // timestampable behavior
+
+    /**
+     * Mark the current object so that the update date doesn't get updated during next save
+     *
+     * @return     $this|ChildListing The current object (for fluent API support)
+     */
+    public function keepUpdateDateUnchanged()
+    {
+        $this->modifiedColumns[ListingTableMap::COL_UPDATED_AT] = true;
+
+        return $this;
+    }
+
+    // archivable behavior
+
+    /**
+     * Get an archived version of the current object.
+     *
+     * @param ConnectionInterface $con Optional connection object
+     *
+     * @return     ChildListingArchive An archive object, or null if the current object was never archived
+     */
+    public function getArchive(ConnectionInterface $con = null)
+    {
+        if ($this->isNew()) {
+            return null;
+        }
+        $archive = ChildListingArchiveQuery::create()
+            ->filterByPrimaryKey($this->getPrimaryKey())
+            ->findOne($con);
+
+        return $archive;
+    }
+    /**
+     * Copy the data of the current object into a $archiveTablePhpName archive object.
+     * The archived object is then saved.
+     * If the current object has already been archived, the archived object
+     * is updated and not duplicated.
+     *
+     * @param ConnectionInterface $con Optional connection object
+     *
+     * @throws PropelException If the object is new
+     *
+     * @return     ChildListingArchive The archive object based on this object
+     */
+    public function archive(ConnectionInterface $con = null)
+    {
+        if ($this->isNew()) {
+            throw new PropelException('New objects cannot be archived. You must save the current object before calling archive().');
+        }
+        if (!$archive = $this->getArchive($con)) {
+            $archive = new ChildListingArchive();
+            $archive->setPrimaryKey($this->getPrimaryKey());
+        }
+        $this->copyInto($archive, $deepCopy = false, $makeNew = false);
+        $archive->setArchivedAt(time());
+        $archive->save($con);
+
+        return $archive;
+    }
+
+    /**
+     * Revert the the current object to the state it had when it was last archived.
+     * The object must be saved afterwards if the changes must persist.
+     *
+     * @param ConnectionInterface $con Optional connection object
+     *
+     * @throws PropelException If the object has no corresponding archive.
+     *
+     * @return $this|ChildListing The current object (for fluent API support)
+     */
+    public function restoreFromArchive(ConnectionInterface $con = null)
+    {
+        if (!$archive = $this->getArchive($con)) {
+            throw new PropelException('The current object has never been archived and cannot be restored');
+        }
+        $this->populateFromArchive($archive);
+
+        return $this;
+    }
+
+    /**
+     * Populates the the current object based on a $archiveTablePhpName archive object.
+     *
+     * @param      ChildListingArchive $archive An archived object based on the same class
+      * @param      Boolean $populateAutoIncrementPrimaryKeys
+     *               If true, autoincrement columns are copied from the archive object.
+     *               If false, autoincrement columns are left intact.
+      *
+     * @return     ChildListing The current object (for fluent API support)
+     */
+    public function populateFromArchive($archive, $populateAutoIncrementPrimaryKeys = false) {
+        if ($populateAutoIncrementPrimaryKeys) {
+            $this->setId($archive->getId());
+        }
+        $this->setItemId($archive->getItemId());
+        $this->setType($archive->getType());
+        $this->setOrders($archive->getOrders());
+        $this->setUnitPrice($archive->getUnitPrice());
+        $this->setQuantity($archive->getQuantity());
+        $this->setCacheTime($archive->getCacheTime());
+        $this->setCreatedAt($archive->getCreatedAt());
+        $this->setUpdatedAt($archive->getUpdatedAt());
+
+        return $this;
+    }
+
+    /**
+     * Persists the object to the database without archiving it.
+     *
+     * @param ConnectionInterface $con Optional connection object
+     *
+     * @return $this|ChildListing The current object (for fluent API support)
+     */
+    public function saveWithoutArchive(ConnectionInterface $con = null)
+    {
+        if (!$this->isNew()) {
+            $this->archiveOnUpdate = false;
+        }
+
+        return $this->save($con);
+    }
+
+    /**
+     * Removes the object from the database without archiving it.
+     *
+     * @param ConnectionInterface $con Optional connection object
+     *
+     * @return $this|ChildListing The current object (for fluent API support)
+     */
+    public function deleteWithoutArchive(ConnectionInterface $con = null)
+    {
+        $this->archiveOnDelete = false;
+
+        return $this->delete($con);
     }
 
     /**

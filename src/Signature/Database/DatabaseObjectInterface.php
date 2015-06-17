@@ -1,5 +1,5 @@
 <?php
-namespace GW2ledger\Signature\Database;
+namespace GW2Exchange\Signature\Database;
 
 /**
  * This interface is so that we can guarantee that there is a create method for the propel objects
@@ -32,6 +32,12 @@ interface DatabaseObjectInterface
    * @return mixed Value of field.
    */
   public function getByName($name, $type);
+
+  /**
+   * gets an array representation for json and easy output handling
+   * @return array 
+   */
+  public function toArray();
 
   /**
    * this function saves the object into storage

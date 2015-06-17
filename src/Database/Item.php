@@ -1,9 +1,10 @@
 <?php
-namespace GW2ledger\Database;
+namespace GW2Exchange\Database;
 
-use GW2ledger\Database\Base\Item as BaseItem;
-use GW2ledger\Database\Map\ItemTableMap;
-use GW2ledger\Signature\Database\DatabaseObjectInterface;
+use GW2Exchange\Database\Base\Item as BaseItem;
+use GW2Exchange\Database\Map\ItemTableMap;
+use GW2Exchange\Signature\Database\DatabaseObjectInterface;
+use Propel\Runtime\Map\TableMap;
 
 /**
  * Skeleton subclass for representing a row from the 'item' table.
@@ -57,5 +58,98 @@ class Item extends BaseItem implements DatabaseObjectInterface
   public function setAllFromArray($attributes)
   {
     return $this->setAll($attributes['Id'],$attributes['Name'],$attributes['Icon']);
+  }
+
+  public function toArray($keyType = TableMap::TYPE_COLNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
+  {
+
+    //if we have already dumped this object, indicated that its already been done and we're stopping
+    if (isset($alreadyDumpedObjects['Item'][$this->hashCode()])) {
+        return '*RECURSION*';
+    }
+    $keyType = TableMap::TYPE_PHPNAME;
+    $result = parent::toArray($keyType, $includeLazyLoadColumns, $alreadyDumpedObjects, $includeForeignObjects);
+    //assign the related object index keys
+    //use keys variables rather than setting string constants so that it will work no matter how it is being called
+    switch($keyType){
+      default:
+      case TableMap::TYPE_PHPNAME:
+        $itemKey = 'Item';
+        $itemInfoKey = 'ItemInfo';
+        $itemItemDetailKey = 'ItemItemDetails';
+        $itemDetailKey = 'Details';
+        $itemDetail = 'ItemDetail';
+        $itemDetailLabelKey = 'Label';
+        $itemDetailValueKey = 'Value';
+      break;
+      case TableMap::TYPE_CAMELNAME:
+        $itemKey = 'item';
+        $itemInfoKey = 'itemInfo';
+        $itemItemDetailKey = 'itemItemDetails';
+        $itemDetailKey = 'details';
+        $itemDetail = 'itemDetail';
+        $itemDetailLabelKey = 'label';
+        $itemDetailValueKey = 'value';
+      break;
+      case TableMap::TYPE_COLNAME:
+        $itemKey = 'Item';
+        $itemInfoKey = 'ItemInfo';
+        $itemItemDetailKey = 'ItemItemDetails';
+        $itemDetailKey = 'Details';
+        $itemDetail = 'ItemDetail';
+        $itemDetailLabelKey = 'item_detail.label';
+        $itemDetailValueKey = 'item_item_detail.value';
+      break;
+      case TableMap::TYPE_FIELDNAME:
+        $itemKey = 'item';
+        $itemInfoKey = 'item_info';
+        $itemItemDetailKey = 'item_item_details';
+        $itemDetailKey = 'details';
+        $itemDetail = 'item_detail';
+        $itemDetailLabelKey = 'label';
+        $itemDetailValueKey = 'value';
+      break;
+      case TableMap::TYPE_NUM:
+        $itemKey = 'Item';
+        $itemInfoKey = 'ItemInfo';
+        $itemItemDetailKey = 'ItemItemDetails';
+        $itemDetailKey = 'details';
+        $itemDetail = 'ItemDetail';
+        $itemDetailLabelKey = '2';
+        $itemDetailValueKey = '2';
+      break;
+    }
+    //move the item's info into the root
+    //dd($keyType);
+    $itemInfo = $this->getItemInfo();
+    $itemInfoArray = $itemInfo->toArray();
+    $result = array_merge($result, $itemInfoArray);
+    /*
+    $itemInfo = $result[$itemInfoKey];
+    unset($itemInfo[$itemKey]);//unset the recursive entry
+    unset($result[$itemInfoKey]);
+  */
+
+    //reformat the details
+    $details = array();
+    $itemItemDetails = $this->getItemItemDetails();
+    foreach ($itemItemDetails as $itemItemDetail) {
+      $value = $itemItemDetail->getValue();
+      $itemDetail = $itemItemDetail->getItemDetail();
+      $itemDetailLabel = $itemDetail->getLabel();
+      $details[$itemDetailLabel] = $value;
+    }
+
+    /*
+    foreach($result[$itemItemDetailKey] as $itemItemDetail){
+      dd($itemItemDetail);
+
+      $itemDetail = $itemItemDetail[$itemDetail][$itemDetailLabelKey];
+      $details[$itemDetailKey] = $itemItemDetail[$itemDetailValueKey];
+    }
+    */
+    $result[$itemDetailKey] = $details;
+    unset($result[$itemItemDetailKey]);
+    return $result;
   }
 }

@@ -1,7 +1,7 @@
 <?php
-namespace GW2ledger\Database;
+namespace GW2Exchange\Database;
 
-use GW2ledger\Database\Base\PriceQuery as BasePriceQuery;
+use GW2Exchange\Database\Base\PriceQuery as BasePriceQuery;
 
 /**
  * Skeleton subclass for performing query and update operations on the 'item_summary' table.

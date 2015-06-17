@@ -1,13 +1,13 @@
 <?php
 
-namespace GW2ledger\Database\Base;
+namespace GW2Exchange\Database\Base;
 
 use \Exception;
 use \PDO;
-use GW2ledger\Database\Item as ChildItem;
-use GW2ledger\Database\ItemQuery as ChildItemQuery;
-use GW2ledger\Database\ItemSummaryQuery as ChildItemSummaryQuery;
-use GW2ledger\Database\Map\ItemSummaryTableMap;
+use GW2Exchange\Database\Item as ChildItem;
+use GW2Exchange\Database\ItemQuery as ChildItemQuery;
+use GW2Exchange\Database\ItemSummaryQuery as ChildItemSummaryQuery;
+use GW2Exchange\Database\Map\ItemSummaryTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -25,14 +25,14 @@ use Propel\Runtime\Parser\AbstractParser;
  *
  *
  *
-* @package    propel.generator.GW2ledger.Database.Base
+* @package    propel.generator.GW2Exchange.Database.Base
 */
 abstract class ItemSummary implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\GW2ledger\\Database\\Map\\ItemSummaryTableMap';
+    const TABLE_MAP = '\\GW2Exchange\\Database\\Map\\ItemSummaryTableMap';
 
 
     /**
@@ -105,7 +105,7 @@ abstract class ItemSummary implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Initializes internal state of GW2ledger\Database\Base\ItemSummary object.
+     * Initializes internal state of GW2Exchange\Database\Base\ItemSummary object.
      */
     public function __construct()
     {
@@ -375,7 +375,7 @@ abstract class ItemSummary implements ActiveRecordInterface
      * Set the value of [item_id] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\ItemSummary The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemSummary The current object (for fluent API support)
      */
     public function setItemId($v)
     {
@@ -399,7 +399,7 @@ abstract class ItemSummary implements ActiveRecordInterface
      * Set the value of [buy_price] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\ItemSummary The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemSummary The current object (for fluent API support)
      */
     public function setBuyPrice($v)
     {
@@ -419,7 +419,7 @@ abstract class ItemSummary implements ActiveRecordInterface
      * Set the value of [sell_price] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\ItemSummary The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemSummary The current object (for fluent API support)
      */
     public function setSellPrice($v)
     {
@@ -439,7 +439,7 @@ abstract class ItemSummary implements ActiveRecordInterface
      * Set the value of [buy_qty] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\ItemSummary The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemSummary The current object (for fluent API support)
      */
     public function setBuyQty($v)
     {
@@ -459,7 +459,7 @@ abstract class ItemSummary implements ActiveRecordInterface
      * Set the value of [sell_qty] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\ItemSummary The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemSummary The current object (for fluent API support)
      */
     public function setSellQty($v)
     {
@@ -536,7 +536,7 @@ abstract class ItemSummary implements ActiveRecordInterface
             return $startcol + 5; // 5 = ItemSummaryTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\GW2ledger\\Database\\ItemSummary'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\GW2Exchange\\Database\\ItemSummary'), 0, $e);
         }
     }
 
@@ -924,7 +924,7 @@ abstract class ItemSummary implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\GW2ledger\Database\ItemSummary
+     * @return $this|\GW2Exchange\Database\ItemSummary
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
@@ -939,7 +939,7 @@ abstract class ItemSummary implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\GW2ledger\Database\ItemSummary
+     * @return $this|\GW2Exchange\Database\ItemSummary
      */
     public function setByPosition($pos, $value)
     {
@@ -1019,7 +1019,7 @@ abstract class ItemSummary implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\GW2ledger\Database\ItemSummary The current object, for fluid interface
+     * @return $this|\GW2Exchange\Database\ItemSummary The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1142,7 +1142,7 @@ abstract class ItemSummary implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \GW2ledger\Database\ItemSummary (or compatible) type.
+     * @param      object $copyObj An object of \GW2Exchange\Database\ItemSummary (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
@@ -1168,7 +1168,7 @@ abstract class ItemSummary implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \GW2ledger\Database\ItemSummary Clone of current object.
+     * @return \GW2Exchange\Database\ItemSummary Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1185,7 +1185,7 @@ abstract class ItemSummary implements ActiveRecordInterface
      * Declares an association between this object and a ChildItem object.
      *
      * @param  ChildItem $v
-     * @return $this|\GW2ledger\Database\ItemSummary The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\ItemSummary The current object (for fluent API support)
      * @throws PropelException
      */
     public function setItem(ChildItem $v = null)

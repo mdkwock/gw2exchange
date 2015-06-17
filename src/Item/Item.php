@@ -1,10 +1,12 @@
 <?php
-namespace GW2ledger\Item;
+namespace GW2Exchange\Item;
 
-use \GW2ledger\Signature\Item\ItemInterface;
-use \GW2ledger\Database\Item as BaseItem;
-use \GW2ledger\Database\ItemInfo;
-use \GW2ledger\Signature\Item\ItemDetailsObjectInterface;
+use \GW2Exchange\Signature\Item\ItemInterface;
+use \GW2Exchange\Database\Item as BaseItem;
+use \GW2Exchange\Database\ItemInfo;
+use \GW2Exchange\Signature\Item\ItemDetailsObjectInterface;
+use \GW2Exchange\Signature\Database\DatabaseObjectInterface;
+use Propel\Runtime\Map\TableMap;
 
 /**
  * This class is a facade to simplify the Item hooks
@@ -24,11 +26,13 @@ class Item implements ItemInterface
    * @param [type] $itemInfo    [description]
    * @param [type] $itemDetails [description]
    */
-  public function __construct(BaseItem $baseItem,ItemInfo $itemInfo,ItemDetailsObjectInterface $itemDetails)
+  public function __construct(DatabaseObjectInterface $baseItem,DatabaseObjectInterface $itemInfo,ItemDetailsObjectInterface $itemDetails)
   {
     $this->baseItem = $baseItem;
     $this->itemInfo = $itemInfo;
     $this->itemDetails = $itemDetails;
+    //$this->baseItem->setItemInfo($this->itemInfo);
+    //$this->itemDetails->setItem($this->baseItem);
     //map all the attributes for each table
   }
 
@@ -108,6 +112,16 @@ class Item implements ItemInterface
     $this->baseItem->setAllFromArray($values);
     $this->itemInfo->setAllFromArray($values);
     $this->itemDetails->setAllFromArray($values);
+  }
+
+  /**
+   * gets an array representation for json and easy output handling
+   * @return array 
+   */
+  public function toArray()
+  {
+    $base = $this->baseItem->toArray(TableMap::TYPE_PHPNAME);
+    return $base;
   }
 
   public function save()

@@ -1,7 +1,7 @@
 <?php
-namespace GW2ledger\Signature\Item;
+namespace GW2Exchange\Signature\Item;
 
-use GW2ledger\Signature\Database\DatabaseObjectInterface;
+use GW2Exchange\Signature\Database\DatabaseObjectInterface;
 /**
  * This interface is for the item's details. it provides an easier to reason interface rather than dealing directly with the database model.
  * Allows the two tables to be hidden rather than deal with the issues of handling the detail and the value
@@ -16,12 +16,6 @@ interface ItemDetailsObjectInterface extends DatabaseObjectInterface
    * @return object             the object that is created using the array
    */
   public function setAll($item, $type,$attributes);
-
-  /**
-   * gets an associative array representation of the details
-   * @return string[]     the keys are the keys and the values are the corresponding values
-   */
-  public function getArray();
 
   /**
    * sets the value of a key if defined, true if success, false if not saved because the key doesn't exist, Exception if failure

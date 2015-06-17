@@ -1,12 +1,12 @@
 <?php
 
-namespace GW2ledger\Database\Base;
+namespace GW2Exchange\Database\Base;
 
 use \Exception;
 use \PDO;
-use GW2ledger\Database\ItemItemDetail as ChildItemItemDetail;
-use GW2ledger\Database\ItemItemDetailQuery as ChildItemItemDetailQuery;
-use GW2ledger\Database\Map\ItemItemDetailTableMap;
+use GW2Exchange\Database\ItemItemDetail as ChildItemItemDetail;
+use GW2Exchange\Database\ItemItemDetailQuery as ChildItemItemDetailQuery;
+use GW2Exchange\Database\Map\ItemItemDetailTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -40,7 +40,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItemItemDetailQuery rightJoinItemDetail($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ItemDetail relation
  * @method     ChildItemItemDetailQuery innerJoinItemDetail($relationAlias = null) Adds a INNER JOIN clause to the query using the ItemDetail relation
  *
- * @method     \GW2ledger\Database\ItemQuery|\GW2ledger\Database\ItemDetailQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \GW2Exchange\Database\ItemQuery|\GW2Exchange\Database\ItemDetailQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildItemItemDetail findOne(ConnectionInterface $con = null) Return the first ChildItemItemDetail matching the query
  * @method     ChildItemItemDetail findOneOrCreate(ConnectionInterface $con = null) Return the first ChildItemItemDetail matching the query, or a new ChildItemItemDetail object populated from the query conditions when no match is found
@@ -68,13 +68,13 @@ abstract class ItemItemDetailQuery extends ModelCriteria
     protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityNotFoundException';
 
     /**
-     * Initializes internal state of \GW2ledger\Database\Base\ItemItemDetailQuery object.
+     * Initializes internal state of \GW2Exchange\Database\Base\ItemItemDetailQuery object.
      *
      * @param     string $dbName The database name
      * @param     string $modelName The phpName of a model, e.g. 'Book'
      * @param     string $modelAlias The alias for the model in this query, e.g. 'b'
      */
-    public function __construct($dbName = 'gw2ledger', $modelName = '\\GW2ledger\\Database\\ItemItemDetail', $modelAlias = null)
+    public function __construct($dbName = 'GW2Exchange', $modelName = '\\GW2Exchange\\Database\\ItemItemDetail', $modelAlias = null)
     {
         parent::__construct($dbName, $modelName, $modelAlias);
     }
@@ -370,9 +370,9 @@ abstract class ItemItemDetailQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \GW2ledger\Database\Item object
+     * Filter the query by a related \GW2Exchange\Database\Item object
      *
-     * @param \GW2ledger\Database\Item|ObjectCollection $item The related object(s) to use as filter
+     * @param \GW2Exchange\Database\Item|ObjectCollection $item The related object(s) to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @throws \Propel\Runtime\Exception\PropelException
@@ -381,7 +381,7 @@ abstract class ItemItemDetailQuery extends ModelCriteria
      */
     public function filterByItem($item, $comparison = null)
     {
-        if ($item instanceof \GW2ledger\Database\Item) {
+        if ($item instanceof \GW2Exchange\Database\Item) {
             return $this
                 ->addUsingAlias(ItemItemDetailTableMap::COL_ITEM_ID, $item->getId(), $comparison);
         } elseif ($item instanceof ObjectCollection) {
@@ -392,7 +392,7 @@ abstract class ItemItemDetailQuery extends ModelCriteria
             return $this
                 ->addUsingAlias(ItemItemDetailTableMap::COL_ITEM_ID, $item->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByItem() only accepts arguments of type \GW2ledger\Database\Item or Collection');
+            throw new PropelException('filterByItem() only accepts arguments of type \GW2Exchange\Database\Item or Collection');
         }
     }
 
@@ -437,19 +437,19 @@ abstract class ItemItemDetailQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \GW2ledger\Database\ItemQuery A secondary query class using the current class as primary query
+     * @return \GW2Exchange\Database\ItemQuery A secondary query class using the current class as primary query
      */
     public function useItemQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinItem($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'Item', '\GW2ledger\Database\ItemQuery');
+            ->useQuery($relationAlias ? $relationAlias : 'Item', '\GW2Exchange\Database\ItemQuery');
     }
 
     /**
-     * Filter the query by a related \GW2ledger\Database\ItemDetail object
+     * Filter the query by a related \GW2Exchange\Database\ItemDetail object
      *
-     * @param \GW2ledger\Database\ItemDetail|ObjectCollection $itemDetail The related object(s) to use as filter
+     * @param \GW2Exchange\Database\ItemDetail|ObjectCollection $itemDetail The related object(s) to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @throws \Propel\Runtime\Exception\PropelException
@@ -458,7 +458,7 @@ abstract class ItemItemDetailQuery extends ModelCriteria
      */
     public function filterByItemDetail($itemDetail, $comparison = null)
     {
-        if ($itemDetail instanceof \GW2ledger\Database\ItemDetail) {
+        if ($itemDetail instanceof \GW2Exchange\Database\ItemDetail) {
             return $this
                 ->addUsingAlias(ItemItemDetailTableMap::COL_ITEM_DETAIL_ID, $itemDetail->getId(), $comparison);
         } elseif ($itemDetail instanceof ObjectCollection) {
@@ -469,7 +469,7 @@ abstract class ItemItemDetailQuery extends ModelCriteria
             return $this
                 ->addUsingAlias(ItemItemDetailTableMap::COL_ITEM_DETAIL_ID, $itemDetail->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByItemDetail() only accepts arguments of type \GW2ledger\Database\ItemDetail or Collection');
+            throw new PropelException('filterByItemDetail() only accepts arguments of type \GW2Exchange\Database\ItemDetail or Collection');
         }
     }
 
@@ -514,13 +514,13 @@ abstract class ItemItemDetailQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \GW2ledger\Database\ItemDetailQuery A secondary query class using the current class as primary query
+     * @return \GW2Exchange\Database\ItemDetailQuery A secondary query class using the current class as primary query
      */
     public function useItemDetailQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinItemDetail($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'ItemDetail', '\GW2ledger\Database\ItemDetailQuery');
+            ->useQuery($relationAlias ? $relationAlias : 'ItemDetail', '\GW2Exchange\Database\ItemDetailQuery');
     }
 
     /**

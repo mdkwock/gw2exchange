@@ -1,9 +1,9 @@
 <?php
-namespace GW2ledger\Database;
+namespace GW2Exchange\Database;
 
-use GW2ledger\Database\Base\ItemSummary as BaseItemSummary;
-use GW2ledger\Database\Map\ItemSummaryTableMap;
-use GW2ledger\Signature\Database\DatabaseObjectInterface;
+use GW2Exchange\Database\Base\ItemSummary as BaseItemSummary;
+use GW2Exchange\Database\Map\ItemSummaryTableMap;
+use GW2Exchange\Signature\Database\DatabaseObjectInterface;
 
 /**
  * Skeleton subclass for representing a row from the 'item_summary' table.

@@ -1,6 +1,6 @@
 <?php
 
-use GW2ledger\Item\ItemParser;
+use GW2Exchange\Item\ItemParser;
 
 
 class ItemParserTest extends PHPUnit_Framework_TestCase

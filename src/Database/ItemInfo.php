@@ -1,9 +1,9 @@
 <?php
-namespace GW2ledger\Database;
+namespace GW2Exchange\Database;
 
-use GW2ledger\Database\Base\ItemInfo as BaseItemInfo;
-use GW2ledger\Database\Map\ItemInfoTableMap;
-use GW2ledger\Signature\Database\DatabaseObjectInterface;
+use GW2Exchange\Database\Base\ItemInfo as BaseItemInfo;
+use GW2Exchange\Database\Map\ItemInfoTableMap;
+use GW2Exchange\Signature\Database\DatabaseObjectInterface;
 
 /**
  * Skeleton subclass for representing a row from the 'info' table.

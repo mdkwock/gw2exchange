@@ -1,41 +1,26 @@
 <?php
-namespace GW2ledger\Item;
+namespace GW2Exchange\Item;
 
-use GW2ledger\Signature\Item\ItemParserInterface;
-use GW2ledger\Item\ItemDetailsArrayObject;
-use GW2ledger\Signature\Item\ItemPiecesFactoryInterface;
+use GW2Exchange\Signature\Item\ItemParserInterface;
+use GW2Exchange\Item\ItemDetailsArrayObject;
+use GW2Exchange\Signature\Item\ItemPiecesFactoryInterface;
 
 /**
  * This class assembles a GW2Item
  */
 class ItemDetailsArrayObjectFactory implements ItemPiecesFactoryInterface
 {
-  protected $itemParser;
+  protected $itemDetailFactory;
+  protected $itemItemDetailFactory;
 
   /**
    * constructor, supplies the factory with the classes it needs to create items
    */
-  public function __construct(ItemParserInterface $ip)
+  public function __construct(ItemDetailFactory $itemDetailFactory, ItemItemDetailFactory $itemItemDetailFactory)
   {
-    $this->itemParser = $ip;
+    $this->itemDetailFactory = $itemDetailFactory;
+    $this->itemItemDetailFactory = $itemItemDetailFactory;
   }
-
-  /**
-   * this function will return an instance of GW2ItemInterface
-   * with values that are from the json string passed in
-   * @param   string  $json           a json string representing the Item
-   * @return  ItemDetailsArrayObject       the created object
-   */
-  public function createFromJson($json)
-  {
-    $attributes = $this->itemParser->parseJson($json); //take the string and make it into a formatted array
-    $returns = array();
-    foreach($attributes as $attribute){
-      $returns[$attribute['Id']] = $this->createFromArray($attribute);
-    }
-    return $returns;
-  }
-
 
   /** 
    * will create an object using an array
@@ -47,9 +32,9 @@ class ItemDetailsArrayObjectFactory implements ItemPiecesFactoryInterface
     $itemId = $attributes['Id'];
     $itemType = $attributes['Type'];
     //find the 'details' key
-    $details = $attributes['Details'];
+    $details = empty($attributes['Details'])?array():$attributes['Details'];
     //doing this so its more understandable to just look in the relevant array
-    $itemDetails = new ItemDetailsArrayObject();
+    $itemDetails = new ItemDetailsArrayObject($this->itemDetailFactory, $this->itemItemDetailFactory);
     $itemDetails->setAllFromArray(array('item_id'=>$itemId, 'item_type'=>$itemType, 'details'=>$details));
     return $itemDetails;
   }

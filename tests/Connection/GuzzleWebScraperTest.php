@@ -1,6 +1,6 @@
 <?php
 
-use GW2ledger\Connection\GuzzleWebScraper;
+use GW2Exchange\Connection\GuzzleWebScraper;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Message\AbstractMessage;

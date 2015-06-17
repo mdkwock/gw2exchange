@@ -1,7 +1,7 @@
 <?php
-namespace GW2ledger\Item;
+namespace GW2Exchange\Item;
 
-use GW2ledger\Signature\Item\ItemParserInterface;
+use GW2Exchange\Signature\Item\ItemParserInterface;
 
 /**
  * This class takes in a json string and creates an array
@@ -51,4 +51,5 @@ class ItemParser implements ItemParserInterface
     $arr = json_decode($json,true);
     return $arr;
   }
+
 }

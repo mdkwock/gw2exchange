@@ -1,7 +1,7 @@
 <?php
-namespace GW2ledger\Database;
+namespace GW2Exchange\Database;
 
-use GW2ledger\Signature\Database\DatabaseObjectInterface;
+use GW2Exchange\Signature\Database\DatabaseObjectInterface;
 
 interface ItemDetailInterface extends DatabaseObjectInterface
 {

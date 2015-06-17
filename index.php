@@ -1,39 +1,124 @@
 <?php
-$timeFirst = microtime(true);
-require './vendor/autoload.php';
+require 'vendor/autoload.php';
+
+session_start();
 
 require './database/generated-conf/config.php';
+use \Slim\Slim;
 
-
-use GW2ledger\Connection\GuzzleWebScraper,
+use GW2Exchange\Connection\GuzzleWebScraper,
   GuzzleHttp\Client;
 
-use GW2ledger\Item\ItemAssembler,
-  GW2ledger\Database\Item;
+use GW2Exchange\Item\ItemAssembler,
+  GW2Exchange\Item\ItemParser,
+  GW2Exchange\Item\BaseItemFactory,
+  GW2Exchange\Item\ItemInfoFactory,
+  GW2Exchange\Item\ItemDetailFactory,
+  GW2Exchange\Item\ItemItemDetailFactory,
+  GW2Exchange\Item\ItemDetailsArrayObjectFactory,
+  GW2Exchange\Item\ItemFactory,
+  GW2Exchange\Database\Item;
 
-use GW2ledger\Listing\ListingAssembler,
-  GW2ledger\Database\Listing;
+use GW2Exchange\Database\ItemQueryFactory,
+  GW2Exchange\Maintenance\ItemMaintenance;
 
-use GW2ledger\Price\PriceAssembler,
-  GW2ledger\Database\Price;
+use GW2Exchange\Item\ItemStorage;
 
-//'https://api.guildwars2.com/v2/commerce/prices';
+use GW2Exchange\Listing\ListingAssembler,
+  GW2Exchange\Listing\ListingParser,
+  GW2Exchange\Listing\ListingFactory,
+  GW2Exchange\Database\Listing;
 
-$client = new Client();
-$webScraper = new GuzzleWebScraper($client);
+use GW2Exchange\Database\ListingQueryFactory,
+  GW2Exchange\Maintenance\ListingMaintenance;
 
-$priceAssembler = new PriceAssembler($webScraper);
-$priceIds = $priceAssembler->getIdList();
-$i = 0;
-$requests = array_chunk($priceIds, 200);
-foreach($requests as $request)
+use GW2Exchange\Price\PriceAssembler,
+  GW2Exchange\Price\PriceParser,
+  GW2Exchange\Price\PriceFactory,
+  GW2Exchange\Database\Price;
+
+use GW2Exchange\Price\PriceStorage;
+
+use GW2Exchange\Database\PriceQueryFactory,
+  GW2Exchange\Database\PriceHistoryQueryFactory,
+  GW2Exchange\Maintenance\PriceMaintenance;
+
+$logger = new \Flynsarmy\SlimMonolog\Log\MonologWriter(array(
+    'handlers' => array(
+        new \Monolog\Handler\StreamHandler('./logs/'.date('Y-m-d').'.log'),
+    ),
+));
+
+$app = new Slim(array(
+    'mode' => 'development',
+    'log.writer' => $logger,
+    'debug' => true,
+));
+
+$app->setName("GW2Rest");
+
+$app->configureMode('development', function () use($app){
+  $client = new Client();
+  $webScraper = new GuzzleWebScraper($client);
+  $itemParser = new ItemParser();
+ 
+  $itemDetailFactory = new ItemDetailFactory();
+  $itemItemDetailFactory = new ItemItemDetailFactory();
+  $itemDetailsArrayObjectFactory = new ItemDetailsArrayObjectFactory($itemDetailFactory, $itemItemDetailFactory);
+ 
+  $baseItemFactory = new BaseItemFactory();
+  $itemInfoFactory = new ItemInfoFactory();
+
+  $itemFactory = new ItemFactory($baseItemFactory, $itemInfoFactory, $itemDetailsArrayObjectFactory);
+
+  $itemAssembler = new ItemAssembler($webScraper, $itemParser, $itemFactory);
+
+  $itemQueryFactory = new ItemQueryFactory();
+  $itemMaintenance = new ItemMaintenance($itemAssembler,$itemQueryFactory);
+
+  $itemStorage = new ItemStorage($itemQueryFactory, $itemFactory);
+
+
+  $listingParser = new ListingParser();
+  $listingFactory = new ListingFactory();
+  $listingAssembler = new ListingAssembler($webScraper, $listingParser, $listingFactory);
+
+  $listingQueryFactory = new ListingQueryFactory();
+  $listingMaintenance = new ListingMaintenance($listingAssembler,$listingQueryFactory, $itemQueryFactory);
+
+
+  $priceParser = new PriceParser();
+  $priceFactory = new PriceFactory();
+  $priceAssembler = new PriceAssembler($webScraper, $priceParser, $priceFactory);
+
+  $priceQueryFactory = new PriceQueryFactory();
+  $PriceHistoryQueryFactory = new PriceHistoryQueryFactory();
+  $priceMaintenance = new PriceMaintenance($priceAssembler, $itemAssembler,$priceQueryFactory, $itemQueryFactory);
+
+  $priceStorage = new PriceStorage($priceQueryFactory, $PriceHistoryQueryFactory, $priceFactory);
+  $app->config(array(
+    'Item'=>$itemAssembler, 
+    'Listing'=>$listingAssembler, 
+    'Price'=>$priceAssembler, 
+    'ItemMaintenance'=>$itemMaintenance,
+    'ListingMaintenance'=>$listingMaintenance,
+    'PriceMaintenance'=>$priceMaintenance,
+    'WebScraper'=>$webScraper,
+    'ItemStorage'=>$itemStorage,
+    'PriceStorage'=>$priceStorage
+  ));
+});
+
+$app->response->headers->set('Access-Control-Allow-Origin', '*');
+
+// Dynamically include all files in the routes directory
+foreach (new DirectoryIterator(__DIR__."/".'routes') as $file)
 {
-  $time_start = microtime(true);
-
-  $itemPrices = $priceAssembler->getByItemIds($request);
-  foreach($itemPrices as $price){
-    $price->save();      
-  }
-  $time_end = microtime(true);
+    if (!$file->isDot() && !$file->isDir() && $file->getFilename() != '.gitignore')
+    {
+        require_once __DIR__."/".'routes'."/".$file->getFilename();
+    }
 }
-dd(microtime(true)-$timeFirst);
+//*/
+//
+$app->run();

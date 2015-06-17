@@ -1,9 +1,9 @@
 <?php
 
-use GW2ledger\Item\Item;
-use \GW2ledger\Database\Item as BaseItem;
-use \GW2ledger\Database\ItemInfo;
-use \GW2ledger\Item\ItemDetailsArrayObject;
+use GW2Exchange\Item\Item;
+use \GW2Exchange\Database\Item as BaseItem;
+use \GW2Exchange\Database\ItemInfo;
+use \GW2Exchange\Item\ItemDetailsArrayObject;
 
 class ItemTest extends PHPUnit_Framework_TestCase
 {
@@ -11,21 +11,28 @@ class ItemTest extends PHPUnit_Framework_TestCase
   public function setUp()
   {    
     $this->itemFields = array("name");                                
-    $this->baseItem = $this->getMockBuilder('\GW2ledger\Database\Item')
+    $this->baseItem = $this->getMockBuilder('\GW2Exchange\Database\Item')
                     //->setConstructorArgs(array('404',array(),null,array()))
                     ->setMethods(array('getFields','setAllFromArray','save'))
                     ->getMock();
 
 
     $this->itemInfoFields = array("info1","info2");
-    $this->itemInfo = $this->getMockBuilder('\GW2ledger\Database\ItemInfo')
+    $this->itemInfo = $this->getMockBuilder('\GW2Exchange\Database\ItemInfo')
                     //->setConstructorArgs(array('404',array(),null,array()))
                     ->setMethods(array('getFields','getByName','setAllFromArray','save'))
                     ->getMock();
 
+    $this->itemDetailFactory = $this->getMockBuilder('GW2Exchange\Item\ItemDetailFactory')
+      ->setMethods(array('create'))
+      ->getMock();
+    $this->itemItemDetailFactory = $this->getMockBuilder('GW2Exchange\Item\ItemItemDetailFactory')
+      ->setMethods(array('create'))
+      ->getMock();
+
     $this->itemDetailsFields = array("detailed");
-    $this->itemDetails = $this->getMockBuilder('\GW2ledger\Item\ItemDetailsArrayObject')
-                    //->setConstructorArgs(array('404',array(),null,array()))
+    $this->itemDetails = $this->getMockBuilder('\GW2Exchange\Item\ItemDetailsArrayObject')
+                    ->setConstructorArgs(array($this->itemDetailFactory, $this->itemItemDetailFactory))
                     ->setMethods(array('getFields','setByName','setAllFromArray','save'))
                     ->getMock();
 

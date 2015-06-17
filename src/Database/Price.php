@@ -1,10 +1,12 @@
 <?php
-namespace GW2ledger\Database;
+namespace GW2Exchange\Database;
 
-use GW2ledger\Database\Base\Price as BasePrice;
-use GW2ledger\Database\Map\PriceTableMap;
-use GW2ledger\Signature\Database\DatabaseObjectInterface;
-
+use GW2Exchange\Database\Base\Price as BasePrice;
+use GW2Exchange\Database\PriceQuery;
+use GW2Exchange\Database\PriceHistoryQuery;
+use GW2Exchange\Database\Map\PriceTableMap;
+use GW2Exchange\Signature\Database\DatabaseObjectInterface;
+use Propel\Runtime\Connection\ConnectionInterface;
 /**
  * Skeleton subclass for representing a row from the 'item_summary' table.
  *
@@ -45,13 +47,17 @@ class Price extends BasePrice implements DatabaseObjectInterface
    * @param  [type] $sell_qty   [description]
    * @return [type]             [description]
    */
-  public function setAll($item_id, $buy_price, $sell_price, $buy_qty, $sell_qty)
+  public function setAll($item_id, $buy_price, $sell_price, $buy_qty, $sell_qty, $created_at=null)
   {
     $this->setItemId($item_id);
     $this->setBuyPrice($buy_price);
     $this->setSellPrice($sell_price);
     $this->setBuyQty($buy_qty);
     $this->setSellQty($sell_qty);
+    if($created_at != null){
+      //add created at to allow for importing old data
+      $this->setCreatedAt($created_at);
+    }
   }
   
   /**
@@ -61,6 +67,27 @@ class Price extends BasePrice implements DatabaseObjectInterface
    */
   public function setAllFromArray($values)
   {
-    return $this->setAll($values['ItemId'], $values['BuyPrice'], $values['SellPrice'], $values['BuyQty'], $values['SellQty']);
+    $createdAt = empty($values['CreatedAt'])?null:$values['CreatedAt'];
+    return $this->setAll($values['ItemId'], $values['BuyPrice'], $values['SellPrice'], $values['BuyQty'], $values['SellQty'], $createdAt);
+  }
+
+  /**
+   * Code to be run before persisting the object
+   * Creates a Price History Record of the previous value and saves it to the db
+   * @param  ConnectionInterface $con
+   * @return boolean
+   */
+  public function preSave(ConnectionInterface $con =  null)
+  {
+    $now = time();
+    //check to see if we have not already made this record
+    $priceHistoryQuery = new PriceHistoryQuery();
+    $priceHistory = $priceHistoryQuery->filterByItemId($this->item_id)->filterByCreatedAt($now)->findOneOrCreate();
+    if($priceHistory->isNew()){
+      $priceHistory->fromArray($this->toArray());
+      $priceHistory->setCreatedAt($now);
+      $this->addPriceHistory($priceHistory);  
+    }
+    return true;//continue with the save
   }
 }

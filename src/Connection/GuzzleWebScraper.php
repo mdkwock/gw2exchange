@@ -1,9 +1,9 @@
 <?php
-namespace GW2ledger\Connection;
+namespace GW2Exchange\Connection;
 
 use GuzzleHttp\Client;
 
-use \GW2ledger\Signature\Connection\WebScraperInterface;
+use \GW2Exchange\Signature\Connection\WebScraperInterface;
 
 /**
  * This class takes in a properly formatted url and retrieves the data

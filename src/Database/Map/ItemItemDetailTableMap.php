@@ -1,9 +1,9 @@
 <?php
 
-namespace GW2ledger\Database\Map;
+namespace GW2Exchange\Database\Map;
 
-use GW2ledger\Database\ItemItemDetail;
-use GW2ledger\Database\ItemItemDetailQuery;
+use GW2Exchange\Database\ItemItemDetail;
+use GW2Exchange\Database\ItemItemDetailQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -34,12 +34,12 @@ class ItemItemDetailTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'GW2ledger.Database.Map.ItemItemDetailTableMap';
+    const CLASS_NAME = 'GW2Exchange.Database.Map.ItemItemDetailTableMap';
 
     /**
      * The default database name for this class
      */
-    const DATABASE_NAME = 'gw2ledger';
+    const DATABASE_NAME = 'GW2Exchange';
 
     /**
      * The table name for this class
@@ -49,12 +49,12 @@ class ItemItemDetailTableMap extends TableMap
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\GW2ledger\\Database\\ItemItemDetail';
+    const OM_CLASS = '\\GW2Exchange\\Database\\ItemItemDetail';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'GW2ledger.Database.ItemItemDetail';
+    const CLASS_DEFAULT = 'GW2Exchange.Database.ItemItemDetail';
 
     /**
      * The total number of columns
@@ -132,8 +132,8 @@ class ItemItemDetailTableMap extends TableMap
         $this->setName('item_item_detail');
         $this->setPhpName('ItemItemDetail');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\GW2ledger\\Database\\ItemItemDetail');
-        $this->setPackage('GW2ledger.Database');
+        $this->setClassName('\\GW2Exchange\\Database\\ItemItemDetail');
+        $this->setPackage('GW2Exchange.Database');
         $this->setUseIdGenerator(false);
         $this->setIsCrossRef(true);
         // columns
@@ -147,14 +147,14 @@ class ItemItemDetailTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Item', '\\GW2ledger\\Database\\Item', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Item', '\\GW2Exchange\\Database\\Item', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':item_id',
     1 => ':id',
   ),
 ), null, null, null, false);
-        $this->addRelation('ItemDetail', '\\GW2ledger\\Database\\ItemDetail', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('ItemDetail', '\\GW2Exchange\\Database\\ItemDetail', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':item_detail_id',
@@ -171,7 +171,7 @@ class ItemItemDetailTableMap extends TableMap
      * to the cache in order to ensure that the same objects are always returned by find*()
      * and findPk*() calls.
      *
-     * @param \GW2ledger\Database\ItemItemDetail $obj A \GW2ledger\Database\ItemItemDetail object.
+     * @param \GW2Exchange\Database\ItemItemDetail $obj A \GW2Exchange\Database\ItemItemDetail object.
      * @param string $key             (optional) key to use for instance map (for performance boost if key was already calculated externally).
      */
     public static function addInstanceToPool($obj, $key = null)
@@ -192,12 +192,12 @@ class ItemItemDetailTableMap extends TableMap
      * methods in your stub classes -- you may need to explicitly remove objects
      * from the cache in order to prevent returning objects that no longer exist.
      *
-     * @param mixed $value A \GW2ledger\Database\ItemItemDetail object or a primary key value.
+     * @param mixed $value A \GW2Exchange\Database\ItemItemDetail object or a primary key value.
      */
     public static function removeInstanceFromPool($value)
     {
         if (Propel::isInstancePoolingEnabled() && null !== $value) {
-            if (is_object($value) && $value instanceof \GW2ledger\Database\ItemItemDetail) {
+            if (is_object($value) && $value instanceof \GW2Exchange\Database\ItemItemDetail) {
                 $key = serialize(array((string) $value->getItemId(), (string) $value->getItemDetailId()));
 
             } elseif (is_array($value) && count($value) === 2) {
@@ -208,7 +208,7 @@ class ItemItemDetailTableMap extends TableMap
 
                 return;
             } else {
-                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \GW2ledger\Database\ItemItemDetail object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
+                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \GW2Exchange\Database\ItemItemDetail object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
                 throw $e;
             }
 
@@ -419,7 +419,7 @@ class ItemItemDetailTableMap extends TableMap
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \GW2ledger\Database\ItemItemDetail) { // it's a model object
+        } elseif ($values instanceof \GW2Exchange\Database\ItemItemDetail) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks

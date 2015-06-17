@@ -1,5 +1,5 @@
 <?php
-namespace GW2ledger\Signature\Connection;
+namespace GW2Exchange\Signature\Connection;
 
 /**
  * This class takes in a properly formatted url and retrieves the data

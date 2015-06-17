@@ -1,38 +1,44 @@
 <?php
 
-namespace GW2ledger\Database\Base;
+namespace GW2Exchange\Database\Base;
 
+use \DateTime;
 use \Exception;
 use \PDO;
-use GW2ledger\Database\Item as ChildItem;
-use GW2ledger\Database\ItemQuery as ChildItemQuery;
-use GW2ledger\Database\PriceQuery as ChildPriceQuery;
-use GW2ledger\Database\Map\PriceTableMap;
+use GW2Exchange\Database\Item as ChildItem;
+use GW2Exchange\Database\ItemQuery as ChildItemQuery;
+use GW2Exchange\Database\Price as ChildPrice;
+use GW2Exchange\Database\PriceHistory as ChildPriceHistory;
+use GW2Exchange\Database\PriceHistoryQuery as ChildPriceHistoryQuery;
+use GW2Exchange\Database\PriceQuery as ChildPriceQuery;
+use GW2Exchange\Database\Map\PriceTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
+use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Propel\Runtime\Util\PropelDateTime;
 
 /**
  * Base class that represents a row from the 'price' table.
  *
  *
  *
-* @package    propel.generator.GW2ledger.Database.Base
+* @package    propel.generator.GW2Exchange.Database.Base
 */
 abstract class Price implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\GW2ledger\\Database\\Map\\PriceTableMap';
+    const TABLE_MAP = '\\GW2Exchange\\Database\\Map\\PriceTableMap';
 
 
     /**
@@ -92,9 +98,57 @@ abstract class Price implements ActiveRecordInterface
     protected $sell_qty;
 
     /**
+     * The value for the cache_time field.
+     * @var        int
+     */
+    protected $cache_time;
+
+    /**
+     * The value for the max_buy field.
+     * @var        int
+     */
+    protected $max_buy;
+
+    /**
+     * The value for the min_buy field.
+     * @var        int
+     */
+    protected $min_buy;
+
+    /**
+     * The value for the max_sell field.
+     * @var        int
+     */
+    protected $max_sell;
+
+    /**
+     * The value for the min_sell field.
+     * @var        int
+     */
+    protected $min_sell;
+
+    /**
+     * The value for the created_at field.
+     * @var        \DateTime
+     */
+    protected $created_at;
+
+    /**
+     * The value for the updated_at field.
+     * @var        \DateTime
+     */
+    protected $updated_at;
+
+    /**
      * @var        ChildItem
      */
     protected $aItem;
+
+    /**
+     * @var        ObjectCollection|ChildPriceHistory[] Collection to store aggregation of ChildPriceHistory objects.
+     */
+    protected $collPriceHistories;
+    protected $collPriceHistoriesPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -105,7 +159,13 @@ abstract class Price implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Initializes internal state of GW2ledger\Database\Base\Price object.
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildPriceHistory[]
+     */
+    protected $priceHistoriesScheduledForDeletion = null;
+
+    /**
+     * Initializes internal state of GW2Exchange\Database\Base\Price object.
      */
     public function __construct()
     {
@@ -372,10 +432,100 @@ abstract class Price implements ActiveRecordInterface
     }
 
     /**
+     * Get the [cache_time] column value.
+     *
+     * @return int
+     */
+    public function getCacheTime()
+    {
+        return $this->cache_time;
+    }
+
+    /**
+     * Get the [max_buy] column value.
+     *
+     * @return int
+     */
+    public function getMaxBuy()
+    {
+        return $this->max_buy;
+    }
+
+    /**
+     * Get the [min_buy] column value.
+     *
+     * @return int
+     */
+    public function getMinBuy()
+    {
+        return $this->min_buy;
+    }
+
+    /**
+     * Get the [max_sell] column value.
+     *
+     * @return int
+     */
+    public function getMaxSell()
+    {
+        return $this->max_sell;
+    }
+
+    /**
+     * Get the [min_sell] column value.
+     *
+     * @return int
+     */
+    public function getMinSell()
+    {
+        return $this->min_sell;
+    }
+
+    /**
+     * Get the [optionally formatted] temporal [created_at] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw DateTime object will be returned.
+     *
+     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getCreatedAt($format = NULL)
+    {
+        if ($format === null) {
+            return $this->created_at;
+        } else {
+            return $this->created_at instanceof \DateTime ? $this->created_at->format($format) : null;
+        }
+    }
+
+    /**
+     * Get the [optionally formatted] temporal [updated_at] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw DateTime object will be returned.
+     *
+     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getUpdatedAt($format = NULL)
+    {
+        if ($format === null) {
+            return $this->updated_at;
+        } else {
+            return $this->updated_at instanceof \DateTime ? $this->updated_at->format($format) : null;
+        }
+    }
+
+    /**
      * Set the value of [item_id] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\Price The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Price The current object (for fluent API support)
      */
     public function setItemId($v)
     {
@@ -399,7 +549,7 @@ abstract class Price implements ActiveRecordInterface
      * Set the value of [buy_price] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\Price The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Price The current object (for fluent API support)
      */
     public function setBuyPrice($v)
     {
@@ -419,7 +569,7 @@ abstract class Price implements ActiveRecordInterface
      * Set the value of [sell_price] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\Price The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Price The current object (for fluent API support)
      */
     public function setSellPrice($v)
     {
@@ -439,7 +589,7 @@ abstract class Price implements ActiveRecordInterface
      * Set the value of [buy_qty] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\Price The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Price The current object (for fluent API support)
      */
     public function setBuyQty($v)
     {
@@ -459,7 +609,7 @@ abstract class Price implements ActiveRecordInterface
      * Set the value of [sell_qty] column.
      *
      * @param int $v new value
-     * @return $this|\GW2ledger\Database\Price The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Price The current object (for fluent API support)
      */
     public function setSellQty($v)
     {
@@ -474,6 +624,146 @@ abstract class Price implements ActiveRecordInterface
 
         return $this;
     } // setSellQty()
+
+    /**
+     * Set the value of [cache_time] column.
+     *
+     * @param int $v new value
+     * @return $this|\GW2Exchange\Database\Price The current object (for fluent API support)
+     */
+    public function setCacheTime($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->cache_time !== $v) {
+            $this->cache_time = $v;
+            $this->modifiedColumns[PriceTableMap::COL_CACHE_TIME] = true;
+        }
+
+        return $this;
+    } // setCacheTime()
+
+    /**
+     * Set the value of [max_buy] column.
+     *
+     * @param int $v new value
+     * @return $this|\GW2Exchange\Database\Price The current object (for fluent API support)
+     */
+    public function setMaxBuy($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->max_buy !== $v) {
+            $this->max_buy = $v;
+            $this->modifiedColumns[PriceTableMap::COL_MAX_BUY] = true;
+        }
+
+        return $this;
+    } // setMaxBuy()
+
+    /**
+     * Set the value of [min_buy] column.
+     *
+     * @param int $v new value
+     * @return $this|\GW2Exchange\Database\Price The current object (for fluent API support)
+     */
+    public function setMinBuy($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->min_buy !== $v) {
+            $this->min_buy = $v;
+            $this->modifiedColumns[PriceTableMap::COL_MIN_BUY] = true;
+        }
+
+        return $this;
+    } // setMinBuy()
+
+    /**
+     * Set the value of [max_sell] column.
+     *
+     * @param int $v new value
+     * @return $this|\GW2Exchange\Database\Price The current object (for fluent API support)
+     */
+    public function setMaxSell($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->max_sell !== $v) {
+            $this->max_sell = $v;
+            $this->modifiedColumns[PriceTableMap::COL_MAX_SELL] = true;
+        }
+
+        return $this;
+    } // setMaxSell()
+
+    /**
+     * Set the value of [min_sell] column.
+     *
+     * @param int $v new value
+     * @return $this|\GW2Exchange\Database\Price The current object (for fluent API support)
+     */
+    public function setMinSell($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->min_sell !== $v) {
+            $this->min_sell = $v;
+            $this->modifiedColumns[PriceTableMap::COL_MIN_SELL] = true;
+        }
+
+        return $this;
+    } // setMinSell()
+
+    /**
+     * Sets the value of [created_at] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\GW2Exchange\Database\Price The current object (for fluent API support)
+     */
+    public function setCreatedAt($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->created_at !== null || $dt !== null) {
+            if ($this->created_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->created_at->format("Y-m-d H:i:s")) {
+                $this->created_at = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[PriceTableMap::COL_CREATED_AT] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // setCreatedAt()
+
+    /**
+     * Sets the value of [updated_at] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\GW2Exchange\Database\Price The current object (for fluent API support)
+     */
+    public function setUpdatedAt($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->updated_at !== null || $dt !== null) {
+            if ($this->updated_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->updated_at->format("Y-m-d H:i:s")) {
+                $this->updated_at = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[PriceTableMap::COL_UPDATED_AT] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // setUpdatedAt()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -525,6 +815,33 @@ abstract class Price implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : PriceTableMap::translateFieldName('SellQty', TableMap::TYPE_PHPNAME, $indexType)];
             $this->sell_qty = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PriceTableMap::translateFieldName('CacheTime', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->cache_time = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : PriceTableMap::translateFieldName('MaxBuy', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->max_buy = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : PriceTableMap::translateFieldName('MinBuy', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->min_buy = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : PriceTableMap::translateFieldName('MaxSell', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->max_sell = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : PriceTableMap::translateFieldName('MinSell', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->min_sell = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : PriceTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : PriceTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->updated_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -533,10 +850,10 @@ abstract class Price implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 5; // 5 = PriceTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 12; // 12 = PriceTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\GW2ledger\\Database\\Price'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\GW2Exchange\\Database\\Price'), 0, $e);
         }
     }
 
@@ -598,6 +915,8 @@ abstract class Price implements ActiveRecordInterface
         if ($deep) {  // also de-associate any related objects?
 
             $this->aItem = null;
+            $this->collPriceHistories = null;
+
         } // if (deep)
     }
 
@@ -660,8 +979,20 @@ abstract class Price implements ActiveRecordInterface
             $ret = $this->preSave($con);
             if ($isInsert) {
                 $ret = $ret && $this->preInsert($con);
+                // timestampable behavior
+
+                if (!$this->isColumnModified(PriceTableMap::COL_CREATED_AT)) {
+                    $this->setCreatedAt(time());
+                }
+                if (!$this->isColumnModified(PriceTableMap::COL_UPDATED_AT)) {
+                    $this->setUpdatedAt(time());
+                }
             } else {
                 $ret = $ret && $this->preUpdate($con);
+                // timestampable behavior
+                if ($this->isModified() && !$this->isColumnModified(PriceTableMap::COL_UPDATED_AT)) {
+                    $this->setUpdatedAt(time());
+                }
             }
             if ($ret) {
                 $affectedRows = $this->doSave($con);
@@ -720,6 +1051,24 @@ abstract class Price implements ActiveRecordInterface
                 $this->resetModified();
             }
 
+            if ($this->priceHistoriesScheduledForDeletion !== null) {
+                if (!$this->priceHistoriesScheduledForDeletion->isEmpty()) {
+                    foreach ($this->priceHistoriesScheduledForDeletion as $priceHistory) {
+                        // need to save related object because we set the relation to null
+                        $priceHistory->save($con);
+                    }
+                    $this->priceHistoriesScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collPriceHistories !== null) {
+                foreach ($this->collPriceHistories as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
             $this->alreadyInSave = false;
 
         }
@@ -757,6 +1106,27 @@ abstract class Price implements ActiveRecordInterface
         if ($this->isColumnModified(PriceTableMap::COL_SELL_QTY)) {
             $modifiedColumns[':p' . $index++]  = 'sell_qty';
         }
+        if ($this->isColumnModified(PriceTableMap::COL_CACHE_TIME)) {
+            $modifiedColumns[':p' . $index++]  = 'cache_time';
+        }
+        if ($this->isColumnModified(PriceTableMap::COL_MAX_BUY)) {
+            $modifiedColumns[':p' . $index++]  = 'max_buy';
+        }
+        if ($this->isColumnModified(PriceTableMap::COL_MIN_BUY)) {
+            $modifiedColumns[':p' . $index++]  = 'min_buy';
+        }
+        if ($this->isColumnModified(PriceTableMap::COL_MAX_SELL)) {
+            $modifiedColumns[':p' . $index++]  = 'max_sell';
+        }
+        if ($this->isColumnModified(PriceTableMap::COL_MIN_SELL)) {
+            $modifiedColumns[':p' . $index++]  = 'min_sell';
+        }
+        if ($this->isColumnModified(PriceTableMap::COL_CREATED_AT)) {
+            $modifiedColumns[':p' . $index++]  = 'created_at';
+        }
+        if ($this->isColumnModified(PriceTableMap::COL_UPDATED_AT)) {
+            $modifiedColumns[':p' . $index++]  = 'updated_at';
+        }
 
         $sql = sprintf(
             'INSERT INTO price (%s) VALUES (%s)',
@@ -782,6 +1152,27 @@ abstract class Price implements ActiveRecordInterface
                         break;
                     case 'sell_qty':
                         $stmt->bindValue($identifier, $this->sell_qty, PDO::PARAM_INT);
+                        break;
+                    case 'cache_time':
+                        $stmt->bindValue($identifier, $this->cache_time, PDO::PARAM_INT);
+                        break;
+                    case 'max_buy':
+                        $stmt->bindValue($identifier, $this->max_buy, PDO::PARAM_INT);
+                        break;
+                    case 'min_buy':
+                        $stmt->bindValue($identifier, $this->min_buy, PDO::PARAM_INT);
+                        break;
+                    case 'max_sell':
+                        $stmt->bindValue($identifier, $this->max_sell, PDO::PARAM_INT);
+                        break;
+                    case 'min_sell':
+                        $stmt->bindValue($identifier, $this->min_sell, PDO::PARAM_INT);
+                        break;
+                    case 'created_at':
+                        $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
+                        break;
+                    case 'updated_at':
+                        $stmt->bindValue($identifier, $this->updated_at ? $this->updated_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -853,6 +1244,27 @@ abstract class Price implements ActiveRecordInterface
             case 4:
                 return $this->getSellQty();
                 break;
+            case 5:
+                return $this->getCacheTime();
+                break;
+            case 6:
+                return $this->getMaxBuy();
+                break;
+            case 7:
+                return $this->getMinBuy();
+                break;
+            case 8:
+                return $this->getMaxSell();
+                break;
+            case 9:
+                return $this->getMinSell();
+                break;
+            case 10:
+                return $this->getCreatedAt();
+                break;
+            case 11:
+                return $this->getUpdatedAt();
+                break;
             default:
                 return null;
                 break;
@@ -888,7 +1300,28 @@ abstract class Price implements ActiveRecordInterface
             $keys[2] => $this->getSellPrice(),
             $keys[3] => $this->getBuyQty(),
             $keys[4] => $this->getSellQty(),
+            $keys[5] => $this->getCacheTime(),
+            $keys[6] => $this->getMaxBuy(),
+            $keys[7] => $this->getMinBuy(),
+            $keys[8] => $this->getMaxSell(),
+            $keys[9] => $this->getMinSell(),
+            $keys[10] => $this->getCreatedAt(),
+            $keys[11] => $this->getUpdatedAt(),
         );
+
+        $utc = new \DateTimeZone('utc');
+        if ($result[$keys[10]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[10]];
+            $result[$keys[10]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[11]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[11]];
+            $result[$keys[11]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
@@ -910,6 +1343,21 @@ abstract class Price implements ActiveRecordInterface
 
                 $result[$key] = $this->aItem->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
+            if (null !== $this->collPriceHistories) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'priceHistories';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'price_histories';
+                        break;
+                    default:
+                        $key = 'PriceHistories';
+                }
+
+                $result[$key] = $this->collPriceHistories->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
         }
 
         return $result;
@@ -924,7 +1372,7 @@ abstract class Price implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\GW2ledger\Database\Price
+     * @return $this|\GW2Exchange\Database\Price
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
@@ -939,7 +1387,7 @@ abstract class Price implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\GW2ledger\Database\Price
+     * @return $this|\GW2Exchange\Database\Price
      */
     public function setByPosition($pos, $value)
     {
@@ -958,6 +1406,27 @@ abstract class Price implements ActiveRecordInterface
                 break;
             case 4:
                 $this->setSellQty($value);
+                break;
+            case 5:
+                $this->setCacheTime($value);
+                break;
+            case 6:
+                $this->setMaxBuy($value);
+                break;
+            case 7:
+                $this->setMinBuy($value);
+                break;
+            case 8:
+                $this->setMaxSell($value);
+                break;
+            case 9:
+                $this->setMinSell($value);
+                break;
+            case 10:
+                $this->setCreatedAt($value);
+                break;
+            case 11:
+                $this->setUpdatedAt($value);
                 break;
         } // switch()
 
@@ -1000,6 +1469,27 @@ abstract class Price implements ActiveRecordInterface
         if (array_key_exists($keys[4], $arr)) {
             $this->setSellQty($arr[$keys[4]]);
         }
+        if (array_key_exists($keys[5], $arr)) {
+            $this->setCacheTime($arr[$keys[5]]);
+        }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setMaxBuy($arr[$keys[6]]);
+        }
+        if (array_key_exists($keys[7], $arr)) {
+            $this->setMinBuy($arr[$keys[7]]);
+        }
+        if (array_key_exists($keys[8], $arr)) {
+            $this->setMaxSell($arr[$keys[8]]);
+        }
+        if (array_key_exists($keys[9], $arr)) {
+            $this->setMinSell($arr[$keys[9]]);
+        }
+        if (array_key_exists($keys[10], $arr)) {
+            $this->setCreatedAt($arr[$keys[10]]);
+        }
+        if (array_key_exists($keys[11], $arr)) {
+            $this->setUpdatedAt($arr[$keys[11]]);
+        }
     }
 
      /**
@@ -1019,7 +1509,7 @@ abstract class Price implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\GW2ledger\Database\Price The current object, for fluid interface
+     * @return $this|\GW2Exchange\Database\Price The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1055,6 +1545,27 @@ abstract class Price implements ActiveRecordInterface
         }
         if ($this->isColumnModified(PriceTableMap::COL_SELL_QTY)) {
             $criteria->add(PriceTableMap::COL_SELL_QTY, $this->sell_qty);
+        }
+        if ($this->isColumnModified(PriceTableMap::COL_CACHE_TIME)) {
+            $criteria->add(PriceTableMap::COL_CACHE_TIME, $this->cache_time);
+        }
+        if ($this->isColumnModified(PriceTableMap::COL_MAX_BUY)) {
+            $criteria->add(PriceTableMap::COL_MAX_BUY, $this->max_buy);
+        }
+        if ($this->isColumnModified(PriceTableMap::COL_MIN_BUY)) {
+            $criteria->add(PriceTableMap::COL_MIN_BUY, $this->min_buy);
+        }
+        if ($this->isColumnModified(PriceTableMap::COL_MAX_SELL)) {
+            $criteria->add(PriceTableMap::COL_MAX_SELL, $this->max_sell);
+        }
+        if ($this->isColumnModified(PriceTableMap::COL_MIN_SELL)) {
+            $criteria->add(PriceTableMap::COL_MIN_SELL, $this->min_sell);
+        }
+        if ($this->isColumnModified(PriceTableMap::COL_CREATED_AT)) {
+            $criteria->add(PriceTableMap::COL_CREATED_AT, $this->created_at);
+        }
+        if ($this->isColumnModified(PriceTableMap::COL_UPDATED_AT)) {
+            $criteria->add(PriceTableMap::COL_UPDATED_AT, $this->updated_at);
         }
 
         return $criteria;
@@ -1142,7 +1653,7 @@ abstract class Price implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \GW2ledger\Database\Price (or compatible) type.
+     * @param      object $copyObj An object of \GW2Exchange\Database\Price (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
@@ -1154,6 +1665,27 @@ abstract class Price implements ActiveRecordInterface
         $copyObj->setSellPrice($this->getSellPrice());
         $copyObj->setBuyQty($this->getBuyQty());
         $copyObj->setSellQty($this->getSellQty());
+        $copyObj->setCacheTime($this->getCacheTime());
+        $copyObj->setMaxBuy($this->getMaxBuy());
+        $copyObj->setMinBuy($this->getMinBuy());
+        $copyObj->setMaxSell($this->getMaxSell());
+        $copyObj->setMinSell($this->getMinSell());
+        $copyObj->setCreatedAt($this->getCreatedAt());
+        $copyObj->setUpdatedAt($this->getUpdatedAt());
+
+        if ($deepCopy) {
+            // important: temporarily setNew(false) because this affects the behavior of
+            // the getter/setter methods for fkey referrer objects.
+            $copyObj->setNew(false);
+
+            foreach ($this->getPriceHistories() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addPriceHistory($relObj->copy($deepCopy));
+                }
+            }
+
+        } // if ($deepCopy)
+
         if ($makeNew) {
             $copyObj->setNew(true);
         }
@@ -1168,7 +1700,7 @@ abstract class Price implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \GW2ledger\Database\Price Clone of current object.
+     * @return \GW2Exchange\Database\Price Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1185,7 +1717,7 @@ abstract class Price implements ActiveRecordInterface
      * Declares an association between this object and a ChildItem object.
      *
      * @param  ChildItem $v
-     * @return $this|\GW2ledger\Database\Price The current object (for fluent API support)
+     * @return $this|\GW2Exchange\Database\Price The current object (for fluent API support)
      * @throws PropelException
      */
     public function setItem(ChildItem $v = null)
@@ -1226,6 +1758,265 @@ abstract class Price implements ActiveRecordInterface
         return $this->aItem;
     }
 
+
+    /**
+     * Initializes a collection based on the name of a relation.
+     * Avoids crafting an 'init[$relationName]s' method name
+     * that wouldn't work when StandardEnglishPluralizer is used.
+     *
+     * @param      string $relationName The name of the relation to initialize
+     * @return void
+     */
+    public function initRelation($relationName)
+    {
+        if ('PriceHistory' == $relationName) {
+            return $this->initPriceHistories();
+        }
+    }
+
+    /**
+     * Clears out the collPriceHistories collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addPriceHistories()
+     */
+    public function clearPriceHistories()
+    {
+        $this->collPriceHistories = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collPriceHistories collection loaded partially.
+     */
+    public function resetPartialPriceHistories($v = true)
+    {
+        $this->collPriceHistoriesPartial = $v;
+    }
+
+    /**
+     * Initializes the collPriceHistories collection.
+     *
+     * By default this just sets the collPriceHistories collection to an empty array (like clearcollPriceHistories());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initPriceHistories($overrideExisting = true)
+    {
+        if (null !== $this->collPriceHistories && !$overrideExisting) {
+            return;
+        }
+        $this->collPriceHistories = new ObjectCollection();
+        $this->collPriceHistories->setModel('\GW2Exchange\Database\PriceHistory');
+    }
+
+    /**
+     * Gets an array of ChildPriceHistory objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildPrice is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildPriceHistory[] List of ChildPriceHistory objects
+     * @throws PropelException
+     */
+    public function getPriceHistories(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPriceHistoriesPartial && !$this->isNew();
+        if (null === $this->collPriceHistories || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collPriceHistories) {
+                // return empty collection
+                $this->initPriceHistories();
+            } else {
+                $collPriceHistories = ChildPriceHistoryQuery::create(null, $criteria)
+                    ->filterByPrice($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collPriceHistoriesPartial && count($collPriceHistories)) {
+                        $this->initPriceHistories(false);
+
+                        foreach ($collPriceHistories as $obj) {
+                            if (false == $this->collPriceHistories->contains($obj)) {
+                                $this->collPriceHistories->append($obj);
+                            }
+                        }
+
+                        $this->collPriceHistoriesPartial = true;
+                    }
+
+                    return $collPriceHistories;
+                }
+
+                if ($partial && $this->collPriceHistories) {
+                    foreach ($this->collPriceHistories as $obj) {
+                        if ($obj->isNew()) {
+                            $collPriceHistories[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collPriceHistories = $collPriceHistories;
+                $this->collPriceHistoriesPartial = false;
+            }
+        }
+
+        return $this->collPriceHistories;
+    }
+
+    /**
+     * Sets a collection of ChildPriceHistory objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $priceHistories A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildPrice The current object (for fluent API support)
+     */
+    public function setPriceHistories(Collection $priceHistories, ConnectionInterface $con = null)
+    {
+        /** @var ChildPriceHistory[] $priceHistoriesToDelete */
+        $priceHistoriesToDelete = $this->getPriceHistories(new Criteria(), $con)->diff($priceHistories);
+
+
+        $this->priceHistoriesScheduledForDeletion = $priceHistoriesToDelete;
+
+        foreach ($priceHistoriesToDelete as $priceHistoryRemoved) {
+            $priceHistoryRemoved->setPrice(null);
+        }
+
+        $this->collPriceHistories = null;
+        foreach ($priceHistories as $priceHistory) {
+            $this->addPriceHistory($priceHistory);
+        }
+
+        $this->collPriceHistories = $priceHistories;
+        $this->collPriceHistoriesPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related PriceHistory objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related PriceHistory objects.
+     * @throws PropelException
+     */
+    public function countPriceHistories(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPriceHistoriesPartial && !$this->isNew();
+        if (null === $this->collPriceHistories || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collPriceHistories) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getPriceHistories());
+            }
+
+            $query = ChildPriceHistoryQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByPrice($this)
+                ->count($con);
+        }
+
+        return count($this->collPriceHistories);
+    }
+
+    /**
+     * Method called to associate a ChildPriceHistory object to this object
+     * through the ChildPriceHistory foreign key attribute.
+     *
+     * @param  ChildPriceHistory $l ChildPriceHistory
+     * @return $this|\GW2Exchange\Database\Price The current object (for fluent API support)
+     */
+    public function addPriceHistory(ChildPriceHistory $l)
+    {
+        if ($this->collPriceHistories === null) {
+            $this->initPriceHistories();
+            $this->collPriceHistoriesPartial = true;
+        }
+
+        if (!$this->collPriceHistories->contains($l)) {
+            $this->doAddPriceHistory($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildPriceHistory $priceHistory The ChildPriceHistory object to add.
+     */
+    protected function doAddPriceHistory(ChildPriceHistory $priceHistory)
+    {
+        $this->collPriceHistories[]= $priceHistory;
+        $priceHistory->setPrice($this);
+    }
+
+    /**
+     * @param  ChildPriceHistory $priceHistory The ChildPriceHistory object to remove.
+     * @return $this|ChildPrice The current object (for fluent API support)
+     */
+    public function removePriceHistory(ChildPriceHistory $priceHistory)
+    {
+        if ($this->getPriceHistories()->contains($priceHistory)) {
+            $pos = $this->collPriceHistories->search($priceHistory);
+            $this->collPriceHistories->remove($pos);
+            if (null === $this->priceHistoriesScheduledForDeletion) {
+                $this->priceHistoriesScheduledForDeletion = clone $this->collPriceHistories;
+                $this->priceHistoriesScheduledForDeletion->clear();
+            }
+            $this->priceHistoriesScheduledForDeletion[]= $priceHistory;
+            $priceHistory->setPrice(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Price is new, it will return
+     * an empty collection; or if this Price has previously
+     * been saved, it will retrieve related PriceHistories from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Price.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildPriceHistory[] List of ChildPriceHistory objects
+     */
+    public function getPriceHistoriesJoinItem(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildPriceHistoryQuery::create(null, $criteria);
+        $query->joinWith('Item', $joinBehavior);
+
+        return $this->getPriceHistories($query, $con);
+    }
+
     /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
@@ -1241,6 +2032,13 @@ abstract class Price implements ActiveRecordInterface
         $this->sell_price = null;
         $this->buy_qty = null;
         $this->sell_qty = null;
+        $this->cache_time = null;
+        $this->max_buy = null;
+        $this->min_buy = null;
+        $this->max_sell = null;
+        $this->min_sell = null;
+        $this->created_at = null;
+        $this->updated_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -1259,8 +2057,14 @@ abstract class Price implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collPriceHistories) {
+                foreach ($this->collPriceHistories as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
+        $this->collPriceHistories = null;
         $this->aItem = null;
     }
 
@@ -1272,6 +2076,20 @@ abstract class Price implements ActiveRecordInterface
     public function __toString()
     {
         return (string) $this->exportTo(PriceTableMap::DEFAULT_STRING_FORMAT);
+    }
+
+    // timestampable behavior
+
+    /**
+     * Mark the current object so that the update date doesn't get updated during next save
+     *
+     * @return     $this|ChildPrice The current object (for fluent API support)
+     */
+    public function keepUpdateDateUnchanged()
+    {
+        $this->modifiedColumns[PriceTableMap::COL_UPDATED_AT] = true;
+
+        return $this;
     }
 
     /**

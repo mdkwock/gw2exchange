@@ -1,39 +1,21 @@
 <?php
-namespace GW2ledger\Item;
+namespace GW2Exchange\Item;
 
-use GW2ledger\Signature\Item\ItemParserInterface;
-use GW2ledger\Database\ItemQuery as DBItemQuery;
-use GW2ledger\Signature\Item\ItemPiecesFactoryInterface;
+use GW2Exchange\Signature\Item\ItemParserInterface;
+use GW2Exchange\Database\ItemQuery as DBItemQuery;
+use GW2Exchange\Signature\Item\ItemPiecesFactoryInterface;
 
 /**
  * This class assembles a GW2Item
  */
 class BaseItemFactory implements ItemPiecesFactoryInterface
 {
-  protected $itemParser;
 
   /**
    * constructor, supplies the factory with the classes it needs to create items
    */
-  public function __construct(ItemParserInterface $ip)
+  public function __construct()
   {
-    $this->itemParser = $ip;
-  }
-
-  /**
-   * this function will return an instance of GW2ItemInterface
-   * with values that are from the json string passed in
-   * @param   string  $json           a json string representing the Item
-   * @return  Item            the created object
-   */
-  public function createFromJson($json)
-  {
-    $attributes = $this->itemParser->parseJson($json); //take the string and make it into a formatted array
-    $returns = array();
-    foreach($attributes as $attribute){
-      $returns[$attribute['Id']] = $this->createFromArray($attribute);
-    }
-    return $returns;
   }
 
   /** 
@@ -42,9 +24,15 @@ class BaseItemFactory implements ItemPiecesFactoryInterface
    * @return  object                the object that was created with this process
    */
   public function createFromArray($attributes)
-  {    
-    $item = DBItemQuery::create()->filterById($attributes['Id'])->findOneOrCreate();
-    $item->setAllFromArray($attributes);
-    return $item;
+  {
+    try{
+      $item = DBItemQuery::create()->filterById($attributes['Id'])->findOneOrCreate();
+      $item->setAllFromArray($attributes);
+      return $item;
+    }catch(\Exception $e){
+      d($e);
+      d(DBItemQuery::create()->filterById($attributes['Id'])->toString());
+      dd($attributes);
+    }
   }
 }

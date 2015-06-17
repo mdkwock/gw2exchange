@@ -1,7 +1,7 @@
 <?php
-namespace GW2ledger\Price;
+namespace GW2Exchange\Price;
 
-use GW2ledger\Signature\Price\PriceParserInterface;
+use GW2Exchange\Signature\Price\PriceParserInterface;
 
 /**
  * This class takes in a json string and creates an array
