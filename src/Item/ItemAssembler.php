@@ -72,7 +72,6 @@ class ItemAssembler implements ItemAssemblerInterface
     //if the server hands the same object back, then double the cache time
     //else reset the cache time
 
-
     $url = "https://api.guildwars2.com/v2/items?ids=".$itemId;//this has a very simple result
     try{//try catch just in case we ask for an item that doesn't exist
       $result = $this->webScraper->getInfo($url);  

@@ -50,7 +50,6 @@ class ItemItemDetail extends BaseItemItemDetail implements DatabaseObjectInterfa
     if(!empty($item_detail_id)){
       $this->setItemDetailId($item_detail_id);
     }
-    //we arent sure what we're getting so serialize it always
     $this->setValue($value);
   }
   
@@ -73,11 +72,11 @@ class ItemItemDetail extends BaseItemItemDetail implements DatabaseObjectInterfa
 
   public function getValue()
   {
-    return unserialize(parent::getValue());
+    return json_decode(parent::getValue());
   }
 
   public function setValue($value)
   {
-    parent::setValue(serialize($value));
+    parent::setValue(json_encode($value));
   }
 }

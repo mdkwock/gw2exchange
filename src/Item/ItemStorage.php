@@ -70,4 +70,31 @@ class ItemStorage
     ->endUse();
     return $query;
   }
+
+  public function filterBySubType($query, $subtype)
+  {
+    $query->useItemItemDetailQuery()
+      ->useItemDetailQuery()
+        ->filterByLabel('type')
+      ->endUse()
+      ->filterByValue($subtype)
+    ->endUse();
+    return $query;
+  }
+
+  public function filterByRarity($query, $rarity)
+  {
+    $query->useItemInfoQuery()
+      ->filterByRarity($rarity)
+    ->endUse();
+    return $query;
+  }
+
+  public function filterByLevel($query, $level)
+  {
+    $query->useItemInfoQuery()
+      ->filterByLevel($level)
+    ->endUse();
+    return $query;
+  }
 }

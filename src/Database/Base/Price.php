@@ -99,6 +99,7 @@ abstract class Price implements ActiveRecordInterface
 
     /**
      * The value for the cache_time field.
+     * Note: this column has a database default value of: 1
      * @var        int
      */
     protected $cache_time;
@@ -165,10 +166,23 @@ abstract class Price implements ActiveRecordInterface
     protected $priceHistoriesScheduledForDeletion = null;
 
     /**
+     * Applies default values to this object.
+     * This method should be called from the object's constructor (or
+     * equivalent initialization method).
+     * @see __construct()
+     */
+    public function applyDefaultValues()
+    {
+        $this->cache_time = 1;
+    }
+
+    /**
      * Initializes internal state of GW2Exchange\Database\Base\Price object.
+     * @see applyDefaults()
      */
     public function __construct()
     {
+        $this->applyDefaultValues();
     }
 
     /**
@@ -775,6 +789,10 @@ abstract class Price implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
+            if ($this->cache_time !== 1) {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -2041,6 +2059,7 @@ abstract class Price implements ActiveRecordInterface
         $this->updated_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
+        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);

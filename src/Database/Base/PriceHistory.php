@@ -762,6 +762,7 @@ abstract class PriceHistory implements ActiveRecordInterface
         if ($con === null) {
             $con = Propel::getServiceContainer()->getWriteConnection(PriceHistoryTableMap::DATABASE_NAME);
         }
+
         return $con->transaction(function () use ($con) {
             $isInsert = $this->isNew();
             $ret = $this->preSave($con);

@@ -94,7 +94,7 @@ abstract class PriceHistoryQuery extends ModelCriteria
      * @param     string $modelName The phpName of a model, e.g. 'Book'
      * @param     string $modelAlias The alias for the model in this query, e.g. 'b'
      */
-    public function __construct($dbName = 'GW2Exchange', $modelName = '\\GW2Exchange\\Database\\PriceHistory', $modelAlias = null)
+    public function __construct($dbName = 'gw2exchange', $modelName = '\\GW2Exchange\\Database\\PriceHistory', $modelAlias = null)
     {
         parent::__construct($dbName, $modelName, $modelAlias);
     }

@@ -2,9 +2,8 @@
 namespace GW2Exchange\Item;
 
 use GW2Exchange\Signature\Item\ItemDetailsObjectInterface;
-use GW2Exchange\Database\ItemDetailQuery;
-use GW2Exchange\Database\ItemItemDetailQuery;
-use GW2Exchange\Database\ItemItemDetail;
+use GW2Exchange\Database\ItemDetailQueryFactory;
+use GW2Exchange\Database\ItemItemDetailQueryFactory;
 use GW2Exchange\Item\ItemDetailFactory;
 use GW2Exchange\Item\ItemItemDetailFactory;
 use GW2Exchange\Database\Map\ItemItemDetailTableMap as TableMap;
@@ -56,12 +55,8 @@ class ItemDetailsArrayObject implements ItemDetailsObjectInterface
         //save it so that we know one exists if we look a second time
         //this shouldn't really get called them that often
         $itemDetail->save();
-        $itemItemDetail = new ItemItemDetail();
-      }else{
-        //only check if a detail already exists if the item detail existed before
-        $itemItemDetail = $this->itemItemDetailFactory->create($itemId, $itemDetail);
       }
-        $itemDetail = $this->itemItemDetailFactory->create($itemId, $itemDetail);
+      $itemItemDetail = $this->itemItemDetailFactory->create($itemId, $itemDetail);
       $itemItemDetail->setAllFromArray(array('value'=>$detailValue));
       $this->data[$detailLabel] = $itemItemDetail;
     }

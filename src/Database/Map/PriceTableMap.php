@@ -39,7 +39,7 @@ class PriceTableMap extends TableMap
     /**
      * The default database name for this class
      */
-    const DATABASE_NAME = 'GW2Exchange';
+    const DATABASE_NAME = 'gw2exchange';
 
     /**
      * The table name for this class
@@ -186,7 +186,7 @@ class PriceTableMap extends TableMap
         $this->addColumn('sell_price', 'SellPrice', 'INTEGER', false, null, null);
         $this->addColumn('buy_qty', 'BuyQty', 'INTEGER', false, null, null);
         $this->addColumn('sell_qty', 'SellQty', 'INTEGER', false, null, null);
-        $this->addColumn('cache_time', 'CacheTime', 'INTEGER', false, null, null);
+        $this->addColumn('cache_time', 'CacheTime', 'INTEGER', false, null, 1);
         $this->addColumn('max_buy', 'MaxBuy', 'INTEGER', false, null, null);
         $this->addColumn('min_buy', 'MinBuy', 'INTEGER', false, null, null);
         $this->addColumn('max_sell', 'MaxSell', 'INTEGER', false, null, null);

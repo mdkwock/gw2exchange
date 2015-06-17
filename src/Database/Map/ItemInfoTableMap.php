@@ -39,7 +39,7 @@ class ItemInfoTableMap extends TableMap
     /**
      * The default database name for this class
      */
-    const DATABASE_NAME = 'GW2Exchange';
+    const DATABASE_NAME = 'gw2exchange';
 
     /**
      * The table name for this class

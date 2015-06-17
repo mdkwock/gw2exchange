@@ -66,16 +66,16 @@ class ItemInfo extends BaseItemInfo implements DatabaseObjectInterface
       $this->setDefaultSkin($default_skin);
     }
 
-    //flags is an array of strings, so serialize them
-    $flagsStr = serialize($flags);
+    //flags is an array of strings, so json_encode them
+    $flagsStr = json_encode($flags);
     $this->setFlags($flagsStr);
 
     //game_types is an array of strings
-    $gameTypesStr = serialize($game_types);
+    $gameTypesStr = json_encode($game_types);
     $this->setGameTypes($gameTypesStr);
 
     //restrictions is an array of strings
-    $restrictionsStr = serialize($restrictions);
+    $restrictionsStr = json_encode($restrictions);
     $this->setRestrictions($restrictionsStr);
   }
   
@@ -93,19 +93,19 @@ class ItemInfo extends BaseItemInfo implements DatabaseObjectInterface
 
   public function getFlags(){
     $flagsStr = parent::getFlags();
-    $flags = unserialize($flagsStr);
+    $flags = json_decode($flagsStr);
     return $flags;
   }
 
   public function getGameTypes(){
     $gameTypesStr = parent::getGameTypes();
-    $game_types = unserialize($gameTypesStr);
+    $game_types = json_decode($gameTypesStr);
     return $game_types;
   }
 
   public function getRestrictions(){
     $restrictionsStr = parent::getRestrictions();
-    $restrictions = unserialize($restrictionsStr);
+    $restrictions = json_decode($restrictionsStr);
     return $restrictions;
   }
 }

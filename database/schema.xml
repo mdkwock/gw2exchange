@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<database name="GW2Exchange" defaultIdMethod="native" namespace="GW2Exchange\Database">
+<database name="gw2exchange" defaultIdMethod="native" namespace="GW2Exchange\Database">
   <!--
     A table of items, using a minimal representation because most attributes are not going to be used
   -->
@@ -55,7 +55,7 @@
     The Item's detail, it varies based on the item's type
     this table will most likely not change very often, because it is all of the attributes that
     GW decides to add into the game
-    It is only the label, will not be imported from guildwar's servers because
+    It is only the label, the actual values for the detail will be in the itemitemdetails table
   -->
   <table name="item_detail">
     <column name="id" type="integer" primaryKey="true"  autoIncrement="true" />
