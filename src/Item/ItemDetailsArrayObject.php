@@ -2,7 +2,8 @@
 namespace GW2ledger\Item;
 
 use GW2ledger\Signature\Item\ItemDetailsObjectInterface;
-use GW2ledger\Database\ItemDetail;
+use GW2ledger\Database\ItemDetailQuery;
+use GW2ledger\Database\ItemItemDetailQuery;
 use GW2ledger\Database\ItemItemDetail;
 use GW2ledger\Database\Map\ItemItemDetailTableMap as TableMap;
 
@@ -16,7 +17,7 @@ class ItemDetailsArrayObject implements ItemDetailsObjectInterface
      */
     const TABLE_MAP = '';
 
-  //a touple of itemDetail, itemItemDetail
+  //a array of ['itemDetailLabel'] => itemItemDetail
   protected $data;
 
   /**
@@ -36,10 +37,25 @@ class ItemDetailsArrayObject implements ItemDetailsObjectInterface
   {
     $this->data = array();
     foreach($details as $detailLabel=>$detailValue){
-      //create the item detail
-      $itemDetail = new ItemDetail();
+      //look for an existing item detail or create a new one so we dont duplicate
+      $itemDetail = ItemDetailQuery::create()
+       ->filterByItemType($itemType)
+       ->filterByLabel($detailLabel)
+       ->findOneOrCreate();
       $itemDetail->setAllFromArray(array('item_type'=>$itemType, 'label'=>$detailLabel));
-      $itemItemDetail = new ItemItemDetail();
+      if($itemDetail->isNew()){
+        //if the detail attribute has not been created before
+        //save it so that we know one exists if we look a second time
+        //this shouldn't really get called them that often
+        $itemDetail->save();
+        $itemItemDetail = new ItemItemDetail();
+      }else{
+        //only check if a detail already exists if the item detail existed before
+        $itemItemDetail = ItemItemDetailQuery::create()
+         ->filterByItemId($itemId)
+         ->filterByItemDetail($itemDetail)
+         ->findOneOrCreate();
+      }
       $itemItemDetail->setAllFromArray(array('value'=>$detailValue));
       $itemItemDetail->setItemId($itemId);
       $itemItemDetail->setItemDetail($itemDetail);
@@ -61,8 +77,8 @@ class ItemDetailsArrayObject implements ItemDetailsObjectInterface
   public function getByName($name, $type = null)
   {
     if(!empty($this->data[$name])){
-      $touple = $this->data[$name];
-      return $touple->getValue();
+      $detail = $this->data[$name];
+      return $detail->getValue();
     }else{
       return null;
     }
@@ -80,8 +96,8 @@ class ItemDetailsArrayObject implements ItemDetailsObjectInterface
   public function getArray()
   {
     $arr = array();
-    foreach($this->data as $key=>$touple){
-      $arr[$key] = $touple->getValue();
+    foreach($this->data as $key=>$detail){
+      $arr[$key] = $detail->getValue();
     }
     return $arr;
   }
@@ -95,8 +111,8 @@ class ItemDetailsArrayObject implements ItemDetailsObjectInterface
    */
   public function setValue($key,$value)
   {
-    $touple = $this->data[$key];
-    $touple->setValue($value);
+    $detail = $this->data[$key];
+    $detail->setValue($value);
   }
 
   /**
@@ -105,10 +121,12 @@ class ItemDetailsArrayObject implements ItemDetailsObjectInterface
    */
   public function save()
   {
-    foreach($this->data as $touple)
+    foreach($this->data as $detail)
     {
-      $touple['itemDetail']->save();
-      $touple->save();
+
+ //     $itemItemDetail->setItemDetail($itemDetail);
+      $detail->save();
+
     }
   }
 }

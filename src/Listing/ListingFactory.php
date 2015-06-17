@@ -1,7 +1,7 @@
 <?php
 namespace GW2ledger\Listing;
 
-use GW2ledger\Database\Listing;
+use GW2ledger\Database\ListingQuery;
 use GW2ledger\Signature\Listing\ListingFactoryInterface;
 use GW2ledger\Signature\Listing\ListingParserInterface;
 
@@ -29,12 +29,20 @@ class ListingFactory implements ListingFactoryInterface
   {
     if(!empty($arr[1])){
       //if there is more than one listing, only return the first
-      $listing = new Listing();
+      $listing = ListingQuery::create()
+       ->filterByItemId($arr['ItemId'])
+       ->filterByType($arr['Type'])
+       ->filterByUnitPrice($arr['UnitPrice'])
+       ->findOneOrCreate();
       $listing->setAllFromArray($arr[0]);
       return $listing;
     }else{
       //assume it's an array for a single listing
-      $listing = new Listing();
+      $listing = ListingQuery::create()
+       ->filterByItemId($arr['ItemId'])
+       ->filterByType($arr['Type'])
+       ->filterByUnitPrice($arr['UnitPrice'])
+       ->findOneOrCreate();
       $listing->setAllFromArray($arr);
       return $listing;
     }
@@ -83,6 +91,13 @@ class ListingFactory implements ListingFactoryInterface
   public function createManyFromJson($json)
   {
     $objs = $this->listingParser->parseJson($json); //take the string and make it into a formatted array
-    return $this->createManyFromArray($objs);
+    $returns = array();
+    foreach($objs as $itemList){
+      //for every item get all of the listings associated
+      $temp = $this->createManyFromArray($itemList);
+      $itemId = reset($itemList)['ItemId'];//get the item id from the first listing
+      $returns[$itemId] = $temp;
+    }
+    return $returns;
   }
 }

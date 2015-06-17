@@ -29,7 +29,11 @@ class ItemDetailsArrayObjectFactory implements ItemPiecesFactoryInterface
   public function createFromJson($json)
   {
     $attributes = $this->itemParser->parseJson($json); //take the string and make it into a formatted array
-    return $this->createFromArray($attributes);
+    $returns = array();
+    foreach($attributes as $attribute){
+      $returns[$attribute['Id']] = $this->createFromArray($attribute);
+    }
+    return $returns;
   }
 
 

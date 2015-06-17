@@ -39,25 +39,36 @@ class ListingAssembler implements ListingAssemblerInterface
 
   /**
    * gets an array of listings for a particular item, optionally restrained by the number and the starting point
-   * @param  int    $itemId  the id of the item that we are looking up
+   * @param  int|int[]    $itemIds  the id of the item that we are looking up
    * @param  int    $count   the number of listings we are returning, -1 means all of them
    * @param  int    $start   the number of listings that we are skipping
-   * @return Listing[]       an array of listing objects for the item
+   * @return Listing[][]       an matrix of listing objects for the item where the first key is the item key
    */
-  public function getByItemId($itemId, $count = -1, $start = 0)
+  public function getByItemIds($itemIds, $count = -1, $start = 0)
   {
+    if(is_array($itemIds)){
+      //if they passed more than one id in
+      $itemId = implode(",", $itemIds);
+    }elseif(is_numeric($itemIds)){
+      //if it looks like a number id
+      $itemId = intval($itemIds);
+    }
     if($count == 0){
       //idk why you would request 0 but if you do, just skip the whole thing
       return [];
     }
-    $url = "https://api.guildwars2.com/v2/commerce/listings/".$itemId;//this has a very simple result
+    $url = "https://api.guildwars2.com/v2/commerce/listings?ids=".$itemId;//this has a very simple result
     $result = $this->webScraper->getInfo($url);
     
-    $listings = $this->listingFactory->createManyFromJson($result);
-    if($count === -1){
-      return $listings;
-    }else{
-      return array_slice($listings, $start, $count);
-    }      
+    $return = array();//this is the matrix that gets returned by the function
+    $temps = $this->listingFactory->createManyFromJson($result);
+    foreach($temps as $id=>$temp){
+      if($count === -1){
+        $return[$id] = $temp;
+      }else{
+        $return[$id] = array_slice($temp, $start, $count);
+      }      
+    }
+    return $return;  
   }
 }

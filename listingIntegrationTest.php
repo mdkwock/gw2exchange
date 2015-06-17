@@ -17,22 +17,24 @@ use GW2ledger\Listing\ListingAssembler,
 use GW2ledger\Price\PriceAssembler,
   GW2ledger\Database\Price;
 
-//'https://api.guildwars2.com/v2/commerce/prices';
+//'https://api.guildwars2.com/v2/commerce/listings';
 
 $client = new Client();
 $webScraper = new GuzzleWebScraper($client);
 
-$priceAssembler = new PriceAssembler($webScraper);
-$priceIds = $priceAssembler->getIdList();
+$listingAssembler = new ListingAssembler($webScraper);
+$listingIds = $listingAssembler->getIdList();
 $i = 0;
-$requests = array_chunk($priceIds, 200);
+$requests = array_chunk($listingIds, 10);
 foreach($requests as $request)
 {
   $time_start = microtime(true);
 
-  $itemPrices = $priceAssembler->getByItemIds($request);
-  foreach($itemPrices as $price){
-    $price->save();      
+  $itemListings = $listingAssembler->getByItemIds($request);
+  foreach($itemListings as $itemList){
+    foreach($itemList as $listing){
+      $listing->save();      
+    }
   }
   $time_end = microtime(true);
 }

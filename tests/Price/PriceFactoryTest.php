@@ -32,13 +32,15 @@ class PriceFactoryTest extends PHPUnit_Framework_TestCase
   public function testCreateFromJson(){
     //make sure only one price gets creative
     
-    $json = '{"id":24,"buys":{"quantity":18719,"unit_price":114},"sells":{"quantity":20115,"unit_price":189}}';//price for item 24
+    $json = '[{"id":24,"buys":{"quantity":18719,"unit_price":114},"sells":{"quantity":20115,"unit_price":189}}]';//price for item 24
     $object = array(
-      "ItemId"=>24,
-      "BuyQty"=>18719,
-      "BuyPrice"=>114,
-      "SellQty"=>20115,
-      "SellPrice"=>189
+      "24"=>array(
+        "ItemId"=>24,
+        "BuyQty"=>18719,
+        "BuyPrice"=>114,
+        "SellQty"=>20115,
+        "SellPrice"=>189
+      )
     );
 
     $priceParser = $this->getMockBuilder('\GW2ledger\Price\PriceParser')
@@ -56,7 +58,8 @@ class PriceFactoryTest extends PHPUnit_Framework_TestCase
         ->with($this->equalTo($json));
 
     $priceFactory = new PriceFactory($priceParser);
-    $price = $priceFactory->createFromJson($json);
+    $prices = $priceFactory->createFromJson($json);
+    $price = $prices[24];
     $this->assertTrue($price instanceof DatabaseObjectInterface);
   }
 }

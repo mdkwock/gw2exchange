@@ -15,23 +15,28 @@ class ItemParser implements ItemParserInterface
   /**
    * takes a json string and finds the variables which are used in the item object.
    *
-   * at the moment it doesn't do any processing on the json string, just converts it into a php array
-   * possibly later it could do preprocessing on the array to make it easier to work with
+   * converts the keys into PascalCase because that is the default for propel getByName
+   *
+   * Assume that we are handed an array of items
    *
    * @param  string $json the json string sent by the server, which is being processed
    * @return array  a mixed array which contains all the parts necessary to making an item
    */
   public function parseJson($json)
   {
-    $obj = json_decode($json,true);
-    $parsed = array();
-    foreach($obj as $key=>$value){
-      //for each item convert from snake_case to PascalCase
-      $pattern = '/_(\w)/';
-      $nKey = ucfirst(preg_replace_callback($pattern, function($matches){ return strtoupper($matches[1]);}, $key));
-      $parsed[$nKey] = $value;
+    $objs = json_decode($json,true);
+    $return = array();//the returned array value
+    foreach ($objs as $one) {
+      $parsed = array();      
+      foreach($one as $key=>$value){
+        //for each item convert from snake_case to PascalCase
+        $pattern = '/_(\w)/';
+        $nKey = ucfirst(preg_replace_callback($pattern, function($matches){ return strtoupper($matches[1]);}, $key));
+        $parsed[$nKey] = $value;
+      }
+      $return[$parsed['Id']] = $parsed;
     }
-    return $parsed;
+    return $return;
   }
 
   /**

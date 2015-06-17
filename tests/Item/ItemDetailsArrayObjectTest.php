@@ -79,4 +79,17 @@ class ItemDetailsArrayObjectTest extends PHPUnit_Framework_TestCase
     $this->assertEquals($value,$itemDetails->getByName($key));
     
   }
+/*
+Im not sure how to inject mocks into this
+  public function testSave()
+  {
+    $itemId = 1;
+    $itemDetails = new ItemDetailsArrayObject();
+    $itemDetails->setAll($itemId, $this->type, $this->details);
+    $this->assertNotEmpty($itemDetails);
+    $this->assertEquals($this->details['damage_type'],$itemDetails->getByName('damage_type'));
+    $this->assertEquals($this->details['infix_upgrade'],$itemDetails->getByName('infix_upgrade'));
+    return $itemDetails;
+  }
+  */
 }

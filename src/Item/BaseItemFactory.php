@@ -2,7 +2,7 @@
 namespace GW2ledger\Item;
 
 use GW2ledger\Signature\Item\ItemParserInterface;
-use GW2ledger\Database\Item as DBItem;
+use GW2ledger\Database\ItemQuery as DBItemQuery;
 use GW2ledger\Signature\Item\ItemPiecesFactoryInterface;
 
 /**
@@ -29,7 +29,11 @@ class BaseItemFactory implements ItemPiecesFactoryInterface
   public function createFromJson($json)
   {
     $attributes = $this->itemParser->parseJson($json); //take the string and make it into a formatted array
-    return $this->createFromArray($attributes);
+    $returns = array();
+    foreach($attributes as $attribute){
+      $returns[$attribute['Id']] = $this->createFromArray($attribute);
+    }
+    return $returns;
   }
 
   /** 
@@ -38,8 +42,8 @@ class BaseItemFactory implements ItemPiecesFactoryInterface
    * @return  object                the object that was created with this process
    */
   public function createFromArray($attributes)
-  {
-    $item = new DBItem();
+  {    
+    $item = DBItemQuery::create()->filterById($attributes['Id'])->findOneOrCreate();
     $item->setAllFromArray($attributes);
     return $item;
   }

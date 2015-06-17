@@ -30,56 +30,59 @@ class ListingAssemblerTest extends PHPUnit_Framework_TestCase
     $webScraper = new GuzzleWebScraper($client);
 
     $listingAssembler = new ListingAssembler($webScraper);
-    $itemIds = $listingAssembler->getIdList();    
+    $itemIds = $listingAssembler->getIdList();
     $this->assertNotEmpty($itemIds);
     $this->assertEquals($return, $itemIds);
   }
 
-  public function testGetByItemId(){
-    $json = '{"id": 24, "buys": [{"listings": 1, "unit_price": 110, "quantity": 250 }, { "listings": 1, "unit_price": 109, "quantity": 170 }, {"listings": 1, "unit_price": 108, "quantity": 243 }], "sells": [{"listings": 2, "unit_price": 187, "quantity": 66 }, {"listings": 1, "unit_price": 188, "quantity": 6}, {"listings": 1, "unit_price": 189, "quantity": 221}]}';//listing for item 24
-    $arr = array(
-      array ( 
+  public function testGetByItemIds(){
+    $json = '[{"id": 24, "buys": [{"listings": 1, "unit_price": 110, "quantity": 250 }, { "listings": 1, "unit_price": 109, "quantity": 170 }, {"listings": 1, "unit_price": 108, "quantity": 243 }], "sells": [{"listings": 2, "unit_price": 187, "quantity": 66 }, {"listings": 1, "unit_price": 188, "quantity": 6}, {"listings": 1, "unit_price": 189, "quantity": 221}]}]';//listing for item 24
+    $arr =
+    array("24"=>
+    array(
+      array (
       "Id"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 110,
       "Quantity"=> 250,
       "Type"=>"buy"
       ),
-      array ( 
+      array (
       "Id"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 109,
       "Quantity"=> 170,
       "Type"=>"buy"
       ),
-      array ( 
+      array (
       "Id"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 108,
       "Quantity"=> 243,
       "Type"=>"buy"
       ),
-      array ( 
+      array (
       "Id"=>24,
       "Orders"=> 2,
       "UnitPrice"=> 187,
       "Quantity"=> 66,
       "Type"=>"sell"
       ),
-      array ( 
+      array (
       "Id"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 188,
       "Quantity"=> 6,
       "Type"=>"sell"
       ),
-      array ( 
+      array (
       "Id"=>24,
       "Orders"=> 1,
       "UnitPrice"=> 189,
       "Quantity"=> 221,
       "Type"=>"sell"
       )
+    )
     );
     $response = $this->getMockBuilder('GuzzleHttp\Message\AbstractMessage')
                     //->setConstructorArgs(array('404',array(),null,array()))
@@ -97,10 +100,12 @@ class ListingAssemblerTest extends PHPUnit_Framework_TestCase
     $webScraper = new GuzzleWebScraper($client);
 
     $listingAssembler = new ListingAssembler($webScraper);
-    $listings = $listingAssembler->getByItemId(1);    
+    $listings = $listingAssembler->getByItemIds(24);
     $this->assertNotEmpty($listings);
-    $this->assertEquals(6, count($listings));
-    $this->assertTrue($listings[0] instanceof Listing);
-    $this->assertEquals($arr[0]['Orders'], $listings[0]->getOrders());
+    $this->assertEquals(1, count($listings));//we only looked for a single id
+    $listing = reset($listings);
+    $this->assertEquals(6,count($listing));
+    $this->assertTrue($listing[0] instanceof Listing);
+    $this->assertEquals($arr[24][0]['Orders'], $listing[0]->getOrders());
   }
 }

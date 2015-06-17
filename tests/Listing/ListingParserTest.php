@@ -7,7 +7,7 @@ class ListingParserTest extends PHPUnit_Framework_TestCase
 {
   public function testParseJson()
   {
-  $json = '{
+  $json = '[{
     "id": 24,
     "buys": [{
       "listings": 1,
@@ -35,49 +35,51 @@ class ListingParserTest extends PHPUnit_Framework_TestCase
       "unit_price": 189,
       "quantity": 221
     }]
-  }';//listing for item 24
+  }]';//listing for item 24
   $object = array(
-    array ( 
-    "ItemId"=>24,
-    "Orders"=> 1,
-    "UnitPrice"=> 110,
-    "Quantity"=> 250,
-    "Type"=>"buy"
-    ),
-    array ( 
-    "ItemId"=>24,
-    "Orders"=> 1,
-    "UnitPrice"=> 109,
-    "Quantity"=> 170,
-    "Type"=>"buy"
-    ),
-    array ( 
-    "ItemId"=>24,
-    "Orders"=> 1,
-    "UnitPrice"=> 108,
-    "Quantity"=> 243,
-    "Type"=>"buy"
-    ),
-    array ( 
-    "ItemId"=>24,
-    "Orders"=> 2,
-    "UnitPrice"=> 187,
-    "Quantity"=> 66,
-    "Type"=>"sell"
-    ),
-    array ( 
-    "ItemId"=>24,
-    "Orders"=> 1,
-    "UnitPrice"=> 188,
-    "Quantity"=> 6,
-    "Type"=>"sell"
-    ),
-    array ( 
-    "ItemId"=>24,
-    "Orders"=> 1,
-    "UnitPrice"=> 189,
-    "Quantity"=> 221,
-    "Type"=>"sell"
+    "24"=>array(
+      array ( 
+      "ItemId"=>24,
+      "Orders"=> 1,
+      "UnitPrice"=> 110,
+      "Quantity"=> 250,
+      "Type"=>"buy"
+      ),
+      array ( 
+      "ItemId"=>24,
+      "Orders"=> 1,
+      "UnitPrice"=> 109,
+      "Quantity"=> 170,
+      "Type"=>"buy"
+      ),
+      array ( 
+      "ItemId"=>24,
+      "Orders"=> 1,
+      "UnitPrice"=> 108,
+      "Quantity"=> 243,
+      "Type"=>"buy"
+      ),
+      array ( 
+      "ItemId"=>24,
+      "Orders"=> 2,
+      "UnitPrice"=> 187,
+      "Quantity"=> 66,
+      "Type"=>"sell"
+      ),
+      array ( 
+      "ItemId"=>24,
+      "Orders"=> 1,
+      "UnitPrice"=> 188,
+      "Quantity"=> 6,
+      "Type"=>"sell"
+      ),
+      array ( 
+      "ItemId"=>24,
+      "Orders"=> 1,
+      "UnitPrice"=> 189,
+      "Quantity"=> 221,
+      "Type"=>"sell"
+      )
     )
   );
   $listingParser = new ListingParser();

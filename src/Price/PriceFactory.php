@@ -1,7 +1,7 @@
 <?php
 namespace GW2ledger\Price;
 
-use GW2ledger\Database\Price;
+use GW2ledger\Database\PriceQuery;
 use GW2ledger\Signature\Price\PriceFactoryInterface;
 use GW2ledger\Signature\Price\PriceParserInterface;
 
@@ -27,7 +27,9 @@ class PriceFactory implements PriceFactoryInterface
    */
   public function createFromArray($arr)
   {
-    $price = new Price();
+    $price = PriceQuery::create()
+       ->filterByItemId($arr['ItemId'])
+       ->findOneOrCreate();
     $price->setAllFromArray($arr);
     return $price;
   }
@@ -41,6 +43,10 @@ class PriceFactory implements PriceFactoryInterface
   public function createFromJson($json)
   {
     $objs = $this->priceParser->parseJson($json); //take the string and make it into a formatted array
-      return $this->createFromArray($objs);
+    $returns = array();
+    foreach($objs as $attribute){
+      $returns[$attribute['ItemId']] = $this->createFromArray($attribute);
+    }
+    return $returns;
   }
 }

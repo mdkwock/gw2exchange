@@ -23,26 +23,30 @@ class ListingParser implements ListingParserInterface
    */
   public function parseJson($json)
   {
-    $obj = json_decode($json,true);
-    $itemId = $obj['id'];//the item id the listing is for
-    $parsed = array();
-    foreach($obj['buys'] as $listing){
-      //for each buy listing
-      $list = array("ItemId"=>$itemId,"Type"=>"buy");//the starting data for each listing in this set
-      $list["Orders"] = $listing['listings'];//the number of orders for this price
-      $list["UnitPrice"] = $listing["unit_price"];
-      $list['Quantity'] = $listing['quantity'];
-      $parsed[] = $list;
+    $objs = json_decode($json,true);
+    $return = array();//the returned array value
+    foreach ($objs as $obj) {    
+      $itemId = $obj['id'];//the item id the listing is for
+      $parsed = array();
+      foreach($obj['buys'] as $listing){
+        //for each buy listing
+        $list = array("ItemId"=>$itemId,"Type"=>"buy");//the starting data for each listing in this set
+        $list["Orders"] = $listing['listings'];//the number of orders for this price
+        $list["UnitPrice"] = $listing["unit_price"];
+        $list['Quantity'] = $listing['quantity'];
+        $parsed[] = $list;
+      }
+      foreach($obj['sells'] as $listing){
+        //for each sell listing
+        $list = array("ItemId"=>$itemId,"Type"=>"sell");//the starting data for each listing in this set
+        $list["Orders"] = $listing['listings'];//the number of orders for this price
+        $list["UnitPrice"] = $listing["unit_price"];
+        $list['Quantity'] = $listing['quantity'];
+        $parsed[] = $list;
+      }
+      $return[$itemId] = $parsed;
     }
-    foreach($obj['sells'] as $listing){
-      //for each sell listing
-      $list = array("ItemId"=>$itemId,"Type"=>"sell");//the starting data for each listing in this set
-      $list["Orders"] = $listing['listings'];//the number of orders for this price
-      $list["UnitPrice"] = $listing["unit_price"];
-      $list['Quantity'] = $listing['quantity'];
-      $parsed[] = $list;
-    }
-    return $parsed;
+    return $return;
   }
 
   /**

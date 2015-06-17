@@ -1,5 +1,4 @@
 <?php
-$timeFirst = microtime(true);
 require './vendor/autoload.php';
 
 require './database/generated-conf/config.php';
@@ -17,23 +16,22 @@ use GW2ledger\Listing\ListingAssembler,
 use GW2ledger\Price\PriceAssembler,
   GW2ledger\Database\Price;
 
-//'https://api.guildwars2.com/v2/commerce/prices';
+//'https://api.guildwars2.com/v2/commerce/price/24';
 
 $client = new Client();
 $webScraper = new GuzzleWebScraper($client);
 
-$priceAssembler = new PriceAssembler($webScraper);
-$priceIds = $priceAssembler->getIdList();
+$itemAssembler = new ItemAssembler($webScraper);
+$itemIds = $itemAssembler->getIdList();
 $i = 0;
-$requests = array_chunk($priceIds, 200);
+$requests = array_chunk($itemIds, 200);
 foreach($requests as $request)
 {
   $time_start = microtime(true);
 
-  $itemPrices = $priceAssembler->getByItemIds($request);
-  foreach($itemPrices as $price){
-    $price->save();      
+  $items = $itemAssembler->getByIds($request);
+  foreach($items as $item){
+    $item->save();
   }
   $time_end = microtime(true);
 }
-dd(microtime(true)-$timeFirst);

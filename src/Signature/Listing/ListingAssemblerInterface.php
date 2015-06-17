@@ -10,10 +10,10 @@ interface ListingAssemblerInterface extends AssemblerInterface
 {
   /**
    * gets an array of listings for a particular item, optionally restrained by the number and the starting point
-   * @param  int    $itemId  the id of the item that we are looking up
+   * @param  int|int[]    $itemIds  the ids of the item that we are looking up
    * @param  int    $count   the number of listings we are returning, -1 means all of them
    * @param  int    $start   the number of listings that we are skipping
    * @return Listing[]       an array of listing objects for the item
    */
-  public function getByItemId($itemId, $count = -1, $start = 0);
+  public function getByItemIds($itemId, $count = -1, $start = 0);
 }

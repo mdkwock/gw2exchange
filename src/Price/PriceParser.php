@@ -23,14 +23,18 @@ class PriceParser implements PriceParserInterface
    */
   public function parseJson($json)
   {
-    $obj = json_decode($json,true);
-    $itemId = $obj['id'];//the item id the price is for
-    $price = array("ItemId"=>$itemId);//the starting data for each price in this set
-    $price['BuyPrice'] = $obj['buys']['unit_price'];
-    $price['BuyQty'] = $obj['buys']['quantity'];
-    $price['SellPrice'] = $obj['sells']['unit_price'];
-    $price['SellQty'] = $obj['sells']['quantity'];
-    return $price;
+    $objs = json_decode($json,true);
+    $return = array();//the returned array value
+    foreach ($objs as $obj) {    
+      $itemId = $obj['id'];//the item id the price is for
+      $price = array("ItemId"=>$itemId);//the starting data for each price in this set
+      $price['BuyPrice'] = $obj['buys']['unit_price'];
+      $price['BuyQty'] = $obj['buys']['quantity'];
+      $price['SellPrice'] = $obj['sells']['unit_price'];
+      $price['SellQty'] = $obj['sells']['quantity'];
+      $return[$itemId] = $price;
+    }
+    return $return;
   }
 
 

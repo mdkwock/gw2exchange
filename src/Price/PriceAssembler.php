@@ -39,12 +39,18 @@ class PriceAssembler implements PriceAssemblerInterface
 
   /**
    * gets an array of prices for a particular item, optionally restrained by the number and the starting point
-   * @param  int    $itemId  the id of the item that we are looking up
-   * @return Price       a price objects for the item
+   * @param  int|int[]    $itemIds  the ids of the item that we are looking up
+   * @return Price[]       a price objects for each of the items
    */
-  public function getByItemId($itemId)
+  public function getByItemIds($itemIds)
   {
-    $url = "https://api.guildwars2.com/v2/commerce/prices/".$itemId;//this has a very simple result
+    if(is_array($itemIds)){
+      $itemId = implode(",", $itemIds);
+    }elseif(is_numeric($itemIds)){
+      //if it looks like a number id
+      $itemId = intval($itemIds);
+    }
+    $url = "https://api.guildwars2.com/v2/commerce/prices?ids=".$itemId;//this has a very simple result
     $result = $this->webScraper->getInfo($url);
     
     $price = $this->priceFactory->createFromJson($result);

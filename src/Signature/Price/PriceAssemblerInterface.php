@@ -10,10 +10,8 @@ interface PriceAssemblerInterface extends AssemblerInterface
 {
   /**
    * gets an array of prices for a particular item, optionally restrained by the number and the starting point
-   * @param  int    $itemId  the id of the item that we are looking up
-   * @param  int    $count   the number of prices we are returning, -1 means all of them
-   * @param  int    $start   the number of prices that we are skipping
+   * @param  int|int[]    $itemIds  the id of the item that we are looking up
    * @return Price[]       an array of price objects for the item
    */
-  public function getByItemId($itemId);
+  public function getByItemIds($itemId);
 }
