@@ -7,6 +7,8 @@ use \GW2Exchange\Signature\Item\ItemPiecesFactoryInterface;
 use \GW2Exchange\Signature\Item\ItemFactoryInterface;
 use \Propel\Runtime\ActiveQuery\ModelCriteria;
 
+use Propel\Runtime\Propel;
+use GW2Exchange\Database\Map\ItemTableMap;
 /**
  * 
  */
@@ -22,14 +24,40 @@ class ItemStorage
   }
 
   /**
-   * search for items using the name
-   * @param  string  $query  the query we are looking for
-   * @return string[]        the item names and ids
+   * a general search function that will call the applicable filters
+   * @param  string[]  $filters    an array of the filters, with the key being the type the value being the search
+   * @param  integer $page         the results page that we are retrieving
+   * @param  integer $maxPerPage   the number of results returned
+   * @return array                 an array of the results
    */
-  public function searchByName($query, $page=1, $maxPerPage=10){   
+  public function search($filters, $order=null, $direction=null, $page=1, $maxPerPage=10){
     $itemQuery = $this->itemQueryFactory->createQuery();
-    //get all the items, as well as getting the price info
-    $itemQuery = $this->filterByName($itemQuery, '%'.$partial.'%');
+
+$con = Propel::getWriteConnection(ItemTableMap::DATABASE_NAME);
+$con->useDebug(true);
+    foreach ($filters as $searchType => $query) {
+      switch ($searchType) {
+        case 'type':
+          $itemQuery = $this->filterByType($itemQuery,$query);
+        break;
+        case 'subtype':
+          $itemQuery = $this->filterBySubType($itemQuery,$query);
+        break;
+        case 'rarity':
+          $itemQuery = $this->filterByRarity($itemQuery,$query);
+        break;
+        case 'minLevel':
+          $itemQuery = $this->filterByMinLevel($itemQuery,$query);
+        break;
+        case 'maxLevel':
+          $itemQuery = $this->filterByMaxLevel($itemQuery,$query);
+        break;
+        case 'name':
+        default:
+          $itemQuery = $this->filterByName($itemQuery,$query);
+        break;
+      }
+    }
     $itemPager = $itemQuery->paginate($page, $maxPerPage);
     $items = $itemPager->getNbResults();
     $lastPage = ceil($items / $maxPerPage);
@@ -73,6 +101,8 @@ class ItemStorage
 
   public function filterBySubType($query, $subtype)
   {
+    //subtypes are details, which are all json_encoded before entered into the db
+    $subtype = json_encode($subtype);
     $query->useItemItemDetailQuery()
       ->useItemDetailQuery()
         ->filterByLabel('type')
@@ -90,11 +120,32 @@ class ItemStorage
     return $query;
   }
 
-  public function filterByLevel($query, $level)
+  public function filterByMinLevel($query, $minLvl)
   {
     $query->useItemInfoQuery()
-      ->filterByLevel($level)
+      ->filterByLevel(array("min"=>$minLvl))
     ->endUse();
+    return $query;
+  }
+
+  public function filterByMaxLevel($query, $maxLvl)
+  {
+    $query->useItemInfoQuery()
+      ->filterByLevel(array("max"=>$maxLvl))
+    ->endUse();
+    return $query;
+  }
+
+  public function orderBy($query,$order='name', $direction='ASC')
+  {
+    $direction = $direction!='ASC'?'DESC':'ASC';
+    if(!empty($order)){
+      switch ($order) {
+        case 'name':
+          $query = $query->orderByName($direction);
+        break;
+      }
+    }
     return $query;
   }
 }

@@ -43,6 +43,8 @@ use GW2Exchange\Database\PriceQueryFactory,
   GW2Exchange\Database\PriceHistoryQueryFactory,
   GW2Exchange\Maintenance\PriceMaintenance;
 
+use GW2Exchange\Metadata\SearchMetadata;
+
 $logger = new \Flynsarmy\SlimMonolog\Log\MonologWriter(array(
     'handlers' => array(
         new \Monolog\Handler\StreamHandler('./logs/'.date('Y-m-d').'.log'),
@@ -96,6 +98,9 @@ $app->configureMode('development', function () use($app){
   $priceMaintenance = new PriceMaintenance($priceAssembler, $itemAssembler,$priceQueryFactory, $itemQueryFactory);
 
   $priceStorage = new PriceStorage($priceQueryFactory, $PriceHistoryQueryFactory, $priceFactory);
+
+  $metadata = new SearchMetadata($itemQueryFactory);
+
   $app->config(array(
     'Item'=>$itemAssembler, 
     'Listing'=>$listingAssembler, 
@@ -105,7 +110,8 @@ $app->configureMode('development', function () use($app){
     'PriceMaintenance'=>$priceMaintenance,
     'WebScraper'=>$webScraper,
     'ItemStorage'=>$itemStorage,
-    'PriceStorage'=>$priceStorage
+    'PriceStorage'=>$priceStorage,
+    'Metadata'=>$metadata
   ));
 });
 

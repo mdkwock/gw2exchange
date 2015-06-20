@@ -45,31 +45,54 @@ $app->delete('/item/:id',function() use ($app){
   echo json_encode($items);
 });
 */
-$app->get('/item/search(/:itemName)', function($itemName = "") use ($app){
-  if(empty($itemName)){
-    //favor using the parameters over the request variables, for possible seo reasons
-    //may change if decide that they are going to send options, with the chance to rename
-    $itemName = $app->request->params('itemName');
+$app->get('/search/item', function() use ($app){
+  $request = $app->request;
+  $filters = array();
+  $itemName = $request->get('name');
+  if(!empty($itemName)){
+    //look for partials
+    $filters['name'] = '%'.$itemName.'%';
   }
 
-  if(empty($itemName)){
-    //if they arent searching anything in particular just send the most +____
-  }else{
-    $page = $app->request->get('p');
-    $page = empty($page)?1:intval($page);
-    $maxPerPage = $app->request->get('s');
-    $maxPerPage = empty($maxPerPage)?10:intval($maxPerPage);
-    $results = $app->config('ItemStorage')->searchByName($itemName, $page, $maxPerPage);
-    $returns = array();
-    foreach($results as $id=>$price){
-      if(method_exists($price,'toArray')){
-        $returns[$id] = $price->toArray();
-      }else{
-        $returns[$id] = $price;
-      }
-    }
-    echo(json_encode($returns));
+  $itemType = $request->get('type');
+  if(!empty($itemType)){
+    $filters['type'] = $itemType;
   }
+
+  $itemSubtype = $request->get('subtype');
+  if(!empty($itemSubtype)){
+    $filters['subtype'] = $itemSubtype;
+  }
+
+  $itemRarity = $request->get('rarity');
+  if(!empty($itemRarity))
+  {
+    $filters['rarity'] = $itemRarity;
+  }  
+
+  $itemLevel = $request->get('minLevel');
+  if(!empty($itemLevel)){
+    $filters['minLevel'] = $itemLevel;
+  }
+
+  $itemLevel = $request->get('maxLevel');
+  if(!empty($itemLevel)){
+    $filters['maxLevel'] = $itemLevel;
+  }
+  $page = $request->get('p');
+  $page = empty($page)?1:intval($page);
+  $maxPerPage = $request->get('s');
+  $maxPerPage = empty($maxPerPage)?10:intval($maxPerPage);
+  $results = $app->config('ItemStorage')->search($filters, $page, $maxPerPage);
+  $returns = array();
+  foreach($results as $id=>$price){
+    if(method_exists($price,'toArray')){
+      $returns[$id] = $price->toArray();
+    }else{
+      $returns[$id] = $price;
+    }
+  }
+  echo(json_encode($returns));
 });
 
 $app->get('/item/search/suggest(/:itemName)', function($itemName = "") use ($app){
@@ -160,9 +183,4 @@ $app->get('/maintenance/price',function() use($app){
       $app->response->redirect('/GW2Exchange/maintenance/price', 303);
     }
   }
-});
-
-$app->get('/search/item/:query', function($query) use($app){
-  $returns = $app->config('ItemStorage')->searchByName($query);
-  echo(json_encode($returns));
 });

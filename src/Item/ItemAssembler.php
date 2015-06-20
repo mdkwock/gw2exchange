@@ -74,7 +74,7 @@ class ItemAssembler implements ItemAssemblerInterface
 
     $url = "https://api.guildwars2.com/v2/items?ids=".$itemId;//this has a very simple result
     try{//try catch just in case we ask for an item that doesn't exist
-      $result = $this->webScraper->getInfo($url);  
+      $result = $this->webScraper->getInfo($url);
     }catch(ClientException $e){
       if($e->getCode() == 404){
         //if the item doesn't exist
