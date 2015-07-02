@@ -46,7 +46,9 @@ class PriceAssembler implements PriceAssemblerInterface
    */
   public function getByItemIds($itemIds)
   {
-    if(is_array($itemIds)){
+    if(empty($itemIds)){//if they aren't asking for any dont even attempt to return any
+      return array();
+    }elseif(is_array($itemIds)){
       //if it's an array
       if(count($itemIds)>200){
         //cap the number of ids given at 200

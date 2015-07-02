@@ -25,6 +25,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceQuery orderBySellPrice($order = Criteria::ASC) Order by the sell_price column
  * @method     ChildPriceQuery orderByBuyQty($order = Criteria::ASC) Order by the buy_qty column
  * @method     ChildPriceQuery orderBySellQty($order = Criteria::ASC) Order by the sell_qty column
+ * @method     ChildPriceQuery orderByProfit($order = Criteria::ASC) Order by the profit column
+ * @method     ChildPriceQuery orderByRoi($order = Criteria::ASC) Order by the roi column
  * @method     ChildPriceQuery orderByCacheTime($order = Criteria::ASC) Order by the cache_time column
  * @method     ChildPriceQuery orderByMaxBuy($order = Criteria::ASC) Order by the max_buy column
  * @method     ChildPriceQuery orderByMinBuy($order = Criteria::ASC) Order by the min_buy column
@@ -38,6 +40,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceQuery groupBySellPrice() Group by the sell_price column
  * @method     ChildPriceQuery groupByBuyQty() Group by the buy_qty column
  * @method     ChildPriceQuery groupBySellQty() Group by the sell_qty column
+ * @method     ChildPriceQuery groupByProfit() Group by the profit column
+ * @method     ChildPriceQuery groupByRoi() Group by the roi column
  * @method     ChildPriceQuery groupByCacheTime() Group by the cache_time column
  * @method     ChildPriceQuery groupByMaxBuy() Group by the max_buy column
  * @method     ChildPriceQuery groupByMinBuy() Group by the min_buy column
@@ -68,6 +72,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPrice findOneBySellPrice(int $sell_price) Return the first ChildPrice filtered by the sell_price column
  * @method     ChildPrice findOneByBuyQty(int $buy_qty) Return the first ChildPrice filtered by the buy_qty column
  * @method     ChildPrice findOneBySellQty(int $sell_qty) Return the first ChildPrice filtered by the sell_qty column
+ * @method     ChildPrice findOneByProfit(int $profit) Return the first ChildPrice filtered by the profit column
+ * @method     ChildPrice findOneByRoi(double $roi) Return the first ChildPrice filtered by the roi column
  * @method     ChildPrice findOneByCacheTime(int $cache_time) Return the first ChildPrice filtered by the cache_time column
  * @method     ChildPrice findOneByMaxBuy(int $max_buy) Return the first ChildPrice filtered by the max_buy column
  * @method     ChildPrice findOneByMinBuy(int $min_buy) Return the first ChildPrice filtered by the min_buy column
@@ -84,6 +90,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPrice requireOneBySellPrice(int $sell_price) Return the first ChildPrice filtered by the sell_price column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPrice requireOneByBuyQty(int $buy_qty) Return the first ChildPrice filtered by the buy_qty column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPrice requireOneBySellQty(int $sell_qty) Return the first ChildPrice filtered by the sell_qty column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPrice requireOneByProfit(int $profit) Return the first ChildPrice filtered by the profit column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPrice requireOneByRoi(double $roi) Return the first ChildPrice filtered by the roi column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPrice requireOneByCacheTime(int $cache_time) Return the first ChildPrice filtered by the cache_time column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPrice requireOneByMaxBuy(int $max_buy) Return the first ChildPrice filtered by the max_buy column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPrice requireOneByMinBuy(int $min_buy) Return the first ChildPrice filtered by the min_buy column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -98,6 +106,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPrice[]|ObjectCollection findBySellPrice(int $sell_price) Return ChildPrice objects filtered by the sell_price column
  * @method     ChildPrice[]|ObjectCollection findByBuyQty(int $buy_qty) Return ChildPrice objects filtered by the buy_qty column
  * @method     ChildPrice[]|ObjectCollection findBySellQty(int $sell_qty) Return ChildPrice objects filtered by the sell_qty column
+ * @method     ChildPrice[]|ObjectCollection findByProfit(int $profit) Return ChildPrice objects filtered by the profit column
+ * @method     ChildPrice[]|ObjectCollection findByRoi(double $roi) Return ChildPrice objects filtered by the roi column
  * @method     ChildPrice[]|ObjectCollection findByCacheTime(int $cache_time) Return ChildPrice objects filtered by the cache_time column
  * @method     ChildPrice[]|ObjectCollection findByMaxBuy(int $max_buy) Return ChildPrice objects filtered by the max_buy column
  * @method     ChildPrice[]|ObjectCollection findByMinBuy(int $min_buy) Return ChildPrice objects filtered by the min_buy column
@@ -197,7 +207,7 @@ abstract class PriceQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT item_id, buy_price, sell_price, buy_qty, sell_qty, cache_time, max_buy, min_buy, max_sell, min_sell, created_at, updated_at FROM price WHERE item_id = :p0';
+        $sql = 'SELECT item_id, buy_price, sell_price, buy_qty, sell_qty, profit, roi, cache_time, max_buy, min_buy, max_sell, min_sell, created_at, updated_at FROM price WHERE item_id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -492,6 +502,88 @@ abstract class PriceQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(PriceTableMap::COL_SELL_QTY, $sellQty, $comparison);
+    }
+
+    /**
+     * Filter the query on the profit column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByProfit(1234); // WHERE profit = 1234
+     * $query->filterByProfit(array(12, 34)); // WHERE profit IN (12, 34)
+     * $query->filterByProfit(array('min' => 12)); // WHERE profit > 12
+     * </code>
+     *
+     * @param     mixed $profit The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function filterByProfit($profit = null, $comparison = null)
+    {
+        if (is_array($profit)) {
+            $useMinMax = false;
+            if (isset($profit['min'])) {
+                $this->addUsingAlias(PriceTableMap::COL_PROFIT, $profit['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($profit['max'])) {
+                $this->addUsingAlias(PriceTableMap::COL_PROFIT, $profit['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PriceTableMap::COL_PROFIT, $profit, $comparison);
+    }
+
+    /**
+     * Filter the query on the roi column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByRoi(1234); // WHERE roi = 1234
+     * $query->filterByRoi(array(12, 34)); // WHERE roi IN (12, 34)
+     * $query->filterByRoi(array('min' => 12)); // WHERE roi > 12
+     * </code>
+     *
+     * @param     mixed $roi The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function filterByRoi($roi = null, $comparison = null)
+    {
+        if (is_array($roi)) {
+            $useMinMax = false;
+            if (isset($roi['min'])) {
+                $this->addUsingAlias(PriceTableMap::COL_ROI, $roi['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($roi['max'])) {
+                $this->addUsingAlias(PriceTableMap::COL_ROI, $roi['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PriceTableMap::COL_ROI, $roi, $comparison);
     }
 
     /**

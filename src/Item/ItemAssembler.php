@@ -53,8 +53,7 @@ class ItemAssembler implements ItemAssemblerInterface
     if(empty($itemIds)){
       //if there arent any ids passed to the function 
       return array();
-    }
-    if(is_array($itemIds)){
+    }elseif(is_array($itemIds)){
       //if it's an array
       if(count($itemIds)>200){
         //cap the number of ids given at 200

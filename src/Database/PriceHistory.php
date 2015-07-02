@@ -19,47 +19,23 @@ use Propel\Runtime\Connection\ConnectionInterface;
 class PriceHistory extends BasePriceHistory
 {
 
+
+
   /**
-   * Code to be run before persisting the object
-   * Creates a Price History Record of the previous value and saves it to the db
-   * @param  ConnectionInterface $con
-   * @return boolean
+   * this function creates a hash of the data contained in this object, to allow for quick checks of whether or not the object has been updated
+   * @return [type] [description]
    */
-  public function preSave(ConnectionInterface $con = null){
-    $price = $this->getPrice();
-    if(!empty($price)){
+  public function hash($arr = array()){
+    if(empty($arr)){
+      $arr = array(
+        'buy_price'=>$this->getBuyPrice(),
+        'buy_qty'=>$this->getBuyQty(),
+        'sell_price'=>$this->getSellPrice(),
+        'sell_qty'=>$this->getSellQty(),
+      );
 
-      if(empty($price->getMaxBuy())){
-        //if there is not already a max buy set
-        //then we have to calculate and set all of them
-        $stmt = $con->prepare('SELECT MAX(buy_price), MIN(buy_price), MAX(sell_price), MIN(sell_price) FROM price_history WHERE price_history.ITEM_ID = :p1');
-        $stmt->bindValue(':p1', $this->getItemId());
-        $stmt->execute();
-        $aggregates = $stmt->fetch();
-
-        $price->setMaxBuy($aggregates['MAX(buy_price)']);
-        $price->setMinBuy($aggregates['MIN(buy_price)']);
-        $price->setMaxSell($aggregates['MAX(sell_price)']);
-        $price->setMinSell($aggregates['MIN(sell_price)']);
-      }else{
-        //else they are already set so we can just update if necessary
-        if($this->buy_price > $price->getMaxBuy()){
-          //if the new price is higher than the previous max
-          $price->setMaxBuy($this->buy_price);
-        }elseif($this->buy_price < $price->getMinBuy()){
-          //if the new price is higher than the previous max
-          $price->setMinBuy($this->buy_price);
-        }
-
-        if($this->sell_price > $price->getMaxSell()){
-          //if the new price is higher than the previous max
-          $price->setMaxSell($this->sell_price);
-        }elseif($this->sell_price < $price->getMinSell()){
-          //if the new price is higher than the previous max
-          $price->setMinSell($this->sell_price);
-        }
-      }
-    }
-    return true;
+    }    
+    $hash = md5(json_encode($arr));
+    return $hash;
   }
 }

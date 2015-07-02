@@ -124,6 +124,18 @@ class Item implements ItemInterface
     return $base;
   }
 
+  /**
+   * this function creates a hash of the data contained in this object, to allow for quick checks of whether or not the object has been updated
+   * @return [type] [description]
+   */
+  public function hash($arr = array()){
+    if(empty($arr)){
+      $arr = $this->toArray();  
+    }    
+    $hash = md5(json_encode($arr));
+    return $hash;
+  }
+
   public function save()
   {
     //calls the save command on each element, letting each component deal with saving

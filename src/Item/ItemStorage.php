@@ -6,7 +6,9 @@ use GW2Exchange\Signature\Database\DatabaseQueryFactoryInterface;
 use \GW2Exchange\Signature\Item\ItemPiecesFactoryInterface;
 use \GW2Exchange\Signature\Item\ItemFactoryInterface;
 use \Propel\Runtime\ActiveQuery\ModelCriteria;
+use GW2Exchange\Database\ItemQuery;
 
+use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Propel;
 use GW2Exchange\Database\Map\ItemTableMap;
 /**
@@ -24,54 +26,6 @@ class ItemStorage
   }
 
   /**
-   * a general search function that will call the applicable filters
-   * @param  string[]  $filters    an array of the filters, with the key being the type the value being the search
-   * @param  integer $page         the results page that we are retrieving
-   * @param  integer $maxPerPage   the number of results returned
-   * @return array                 an array of the results
-   */
-  public function search($filters, $order=null, $direction=null, $page=1, $maxPerPage=10){
-    $itemQuery = $this->itemQueryFactory->createQuery();
-
-$con = Propel::getWriteConnection(ItemTableMap::DATABASE_NAME);
-$con->useDebug(true);
-    foreach ($filters as $searchType => $query) {
-      switch ($searchType) {
-        case 'type':
-          $itemQuery = $this->filterByType($itemQuery,$query);
-        break;
-        case 'subtype':
-          $itemQuery = $this->filterBySubType($itemQuery,$query);
-        break;
-        case 'rarity':
-          $itemQuery = $this->filterByRarity($itemQuery,$query);
-        break;
-        case 'minLevel':
-          $itemQuery = $this->filterByMinLevel($itemQuery,$query);
-        break;
-        case 'maxLevel':
-          $itemQuery = $this->filterByMaxLevel($itemQuery,$query);
-        break;
-        case 'name':
-        default:
-          $itemQuery = $this->filterByName($itemQuery,$query);
-        break;
-      }
-    }
-    $itemPager = $itemQuery->paginate($page, $maxPerPage);
-    $items = $itemPager->getNbResults();
-    $lastPage = ceil($items / $maxPerPage);
-    $returns = array(
-      "lastPage"=>$lastPage,
-      "pageList"=>$itemPager->getLinks(5)
-    );
-    foreach ($itemPager as $item) {
-      $returns[] = $item;
-    }
-    return $returns;
-  }
-
-  /**
    * suggests a name from the given partial
    * searches for wildcards on both sides
    * @param  [type] $partial [description]
@@ -85,13 +39,57 @@ $con->useDebug(true);
     return $items;
   }
 
-  public function filterByName($query, $itemName)
+
+  /**
+   * a general search function that will call the applicable filters
+   * @param  string[]  $filters    an array of the filters, with the key being the type the value being the search
+   * @return array                 an array of the results
+   */
+  public function itemSearchQuery($query, $filters, $order="name",$dir="asc"){
+    if(!($query instanceof ItemQuery)){
+      //if its an item query then we dont need the useItemQuery
+      $itemQuery = $query->useItemQuery();
+    }else{
+      $itemQuery = $query;
+    }
+    
+    foreach ($filters as $searchType => $search) {
+      switch ($searchType) {
+        case 'type':
+          $itemQuery = $this->filterByType($itemQuery,$search);
+        break;
+        case 'subtype':
+          $itemQuery = $this->filterBySubType($itemQuery,$search);
+        break;
+        case 'rarity':
+          $itemQuery = $this->filterByRarity($itemQuery,$search);
+        break;
+        case 'minLevel':
+          $itemQuery = $this->filterByMinLevel($itemQuery,$search);
+        break;
+        case 'maxLevel':
+          $itemQuery = $this->filterByMaxLevel($itemQuery,$search);
+        break;
+        case 'name':
+          $itemQuery = $this->filterByName($itemQuery,$search);
+        break;
+      }
+    }
+    $itemQuery = $this->orderBy($itemQuery,$order,$dir);
+    if(!($query instanceof ItemQuery)){
+      $itemQuery->endUse();
+      $itemQuery = $query;
+    }
+    return $itemQuery;
+  }
+
+  private function filterByName($query, $itemName)
   {
     $query->filterByName($itemName);
     return $query;
   }
 
-  public function filterByType($query, $typeName)
+  private function filterByType($query, $typeName)
   {
     $query->useItemInfoQuery()
       ->filterByType($typeName)
@@ -99,7 +97,7 @@ $con->useDebug(true);
     return $query;
   }
 
-  public function filterBySubType($query, $subtype)
+  private function filterBySubType($query, $subtype)
   {
     //subtypes are details, which are all json_encoded before entered into the db
     $subtype = json_encode($subtype);
@@ -112,7 +110,7 @@ $con->useDebug(true);
     return $query;
   }
 
-  public function filterByRarity($query, $rarity)
+  private function filterByRarity($query, $rarity)
   {
     $query->useItemInfoQuery()
       ->filterByRarity($rarity)
@@ -120,7 +118,7 @@ $con->useDebug(true);
     return $query;
   }
 
-  public function filterByMinLevel($query, $minLvl)
+  private function filterByMinLevel($query, $minLvl)
   {
     $query->useItemInfoQuery()
       ->filterByLevel(array("min"=>$minLvl))
@@ -128,7 +126,7 @@ $con->useDebug(true);
     return $query;
   }
 
-  public function filterByMaxLevel($query, $maxLvl)
+  private function filterByMaxLevel($query, $maxLvl)
   {
     $query->useItemInfoQuery()
       ->filterByLevel(array("max"=>$maxLvl))
@@ -136,9 +134,10 @@ $con->useDebug(true);
     return $query;
   }
 
-  public function orderBy($query,$order='name', $direction='ASC')
+  private function orderBy($query,$order='name', $direction='ASC')
   {
-    $direction = $direction!='ASC'?'DESC':'ASC';
+    $direction = strtoupper($direction);
+    $direction = $direction=='ASC'?Criteria::ASC:Criteria::DESC;
     if(!empty($order)){
       switch ($order) {
         case 'name':

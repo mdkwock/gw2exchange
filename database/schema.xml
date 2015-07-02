@@ -2,6 +2,7 @@
 <database name="gw2exchange" defaultIdMethod="native" namespace="GW2Exchange\Database">
   <!--
     A table of items, using a minimal representation because most attributes are not going to be used
+    (7/02/2015) at the moment dont care about item history because we aren't using the info in any way other than simple displaying
   -->
   <table name="item">
     <column name="id" type="integer" required="true" primaryKey="true" />
@@ -9,11 +10,6 @@
     <column name="icon" type="varchar" size="255" required="true" />
     <column name="cache_time" type="integer" required="true" />
     <behavior name="timestampable" />
-    <behavior name="archivable">
-      <parameter name="archive_on_insert" value="false" />
-      <parameter name="archive_on_update" value="false" />
-      <parameter name="archive_on_delete" value="true" />
-    </behavior>
   </table>
 
   <!--
@@ -89,11 +85,6 @@
       <unique-column name="unit_price" />
     </unique>
     <behavior name="timestampable" />
-    <behavior name="archivable">
-      <parameter name="archive_on_insert" value="false" />
-      <parameter name="archive_on_update" value="true" />
-      <parameter name="archive_on_delete" value="true" />
-    </behavior>
   </table>
     <!--
       This table has the information that would be visible from the trading place's screen.
@@ -107,6 +98,8 @@
     <column name="sell_price" type="integer" required="required" />
     <column name="buy_qty" type="integer" required="required" />
     <column name="sell_qty" type="integer" required="required" />
+    <column name="profit" type="integer" required="required" />
+    <column name="roi" type="float" required="required" />
     <column name="cache_time" type="integer" defaultValue="1" />
     <column name="max_buy" type="integer" />
     <column name="min_buy" type="integer" />
@@ -141,6 +134,8 @@
     <column name="sell_price" type="integer" required="required" />
     <column name="buy_qty" type="integer" required="required" />
     <column name="sell_qty" type="integer" required="required" />
+    <column name="profit" type="integer" required="required" />
+    <column name="roi" type="float" required="required" />
     <unique>
       <unique-column name="item_id" />
       <unique-column name="created_at" />

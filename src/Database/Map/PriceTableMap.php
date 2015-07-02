@@ -59,7 +59,7 @@ class PriceTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 12;
+    const NUM_COLUMNS = 14;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class PriceTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 12;
+    const NUM_HYDRATE_COLUMNS = 14;
 
     /**
      * the column name for the item_id field
@@ -95,6 +95,16 @@ class PriceTableMap extends TableMap
      * the column name for the sell_qty field
      */
     const COL_SELL_QTY = 'price.sell_qty';
+
+    /**
+     * the column name for the profit field
+     */
+    const COL_PROFIT = 'price.profit';
+
+    /**
+     * the column name for the roi field
+     */
+    const COL_ROI = 'price.roi';
 
     /**
      * the column name for the cache_time field
@@ -143,11 +153,11 @@ class PriceTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('ItemId', 'BuyPrice', 'SellPrice', 'BuyQty', 'SellQty', 'CacheTime', 'MaxBuy', 'MinBuy', 'MaxSell', 'MinSell', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('itemId', 'buyPrice', 'sellPrice', 'buyQty', 'sellQty', 'cacheTime', 'maxBuy', 'minBuy', 'maxSell', 'minSell', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(PriceTableMap::COL_ITEM_ID, PriceTableMap::COL_BUY_PRICE, PriceTableMap::COL_SELL_PRICE, PriceTableMap::COL_BUY_QTY, PriceTableMap::COL_SELL_QTY, PriceTableMap::COL_CACHE_TIME, PriceTableMap::COL_MAX_BUY, PriceTableMap::COL_MIN_BUY, PriceTableMap::COL_MAX_SELL, PriceTableMap::COL_MIN_SELL, PriceTableMap::COL_CREATED_AT, PriceTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('item_id', 'buy_price', 'sell_price', 'buy_qty', 'sell_qty', 'cache_time', 'max_buy', 'min_buy', 'max_sell', 'min_sell', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, )
+        self::TYPE_PHPNAME       => array('ItemId', 'BuyPrice', 'SellPrice', 'BuyQty', 'SellQty', 'Profit', 'Roi', 'CacheTime', 'MaxBuy', 'MinBuy', 'MaxSell', 'MinSell', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('itemId', 'buyPrice', 'sellPrice', 'buyQty', 'sellQty', 'profit', 'roi', 'cacheTime', 'maxBuy', 'minBuy', 'maxSell', 'minSell', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(PriceTableMap::COL_ITEM_ID, PriceTableMap::COL_BUY_PRICE, PriceTableMap::COL_SELL_PRICE, PriceTableMap::COL_BUY_QTY, PriceTableMap::COL_SELL_QTY, PriceTableMap::COL_PROFIT, PriceTableMap::COL_ROI, PriceTableMap::COL_CACHE_TIME, PriceTableMap::COL_MAX_BUY, PriceTableMap::COL_MIN_BUY, PriceTableMap::COL_MAX_SELL, PriceTableMap::COL_MIN_SELL, PriceTableMap::COL_CREATED_AT, PriceTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('item_id', 'buy_price', 'sell_price', 'buy_qty', 'sell_qty', 'profit', 'roi', 'cache_time', 'max_buy', 'min_buy', 'max_sell', 'min_sell', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, )
     );
 
     /**
@@ -157,11 +167,11 @@ class PriceTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('ItemId' => 0, 'BuyPrice' => 1, 'SellPrice' => 2, 'BuyQty' => 3, 'SellQty' => 4, 'CacheTime' => 5, 'MaxBuy' => 6, 'MinBuy' => 7, 'MaxSell' => 8, 'MinSell' => 9, 'CreatedAt' => 10, 'UpdatedAt' => 11, ),
-        self::TYPE_CAMELNAME     => array('itemId' => 0, 'buyPrice' => 1, 'sellPrice' => 2, 'buyQty' => 3, 'sellQty' => 4, 'cacheTime' => 5, 'maxBuy' => 6, 'minBuy' => 7, 'maxSell' => 8, 'minSell' => 9, 'createdAt' => 10, 'updatedAt' => 11, ),
-        self::TYPE_COLNAME       => array(PriceTableMap::COL_ITEM_ID => 0, PriceTableMap::COL_BUY_PRICE => 1, PriceTableMap::COL_SELL_PRICE => 2, PriceTableMap::COL_BUY_QTY => 3, PriceTableMap::COL_SELL_QTY => 4, PriceTableMap::COL_CACHE_TIME => 5, PriceTableMap::COL_MAX_BUY => 6, PriceTableMap::COL_MIN_BUY => 7, PriceTableMap::COL_MAX_SELL => 8, PriceTableMap::COL_MIN_SELL => 9, PriceTableMap::COL_CREATED_AT => 10, PriceTableMap::COL_UPDATED_AT => 11, ),
-        self::TYPE_FIELDNAME     => array('item_id' => 0, 'buy_price' => 1, 'sell_price' => 2, 'buy_qty' => 3, 'sell_qty' => 4, 'cache_time' => 5, 'max_buy' => 6, 'min_buy' => 7, 'max_sell' => 8, 'min_sell' => 9, 'created_at' => 10, 'updated_at' => 11, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, )
+        self::TYPE_PHPNAME       => array('ItemId' => 0, 'BuyPrice' => 1, 'SellPrice' => 2, 'BuyQty' => 3, 'SellQty' => 4, 'Profit' => 5, 'Roi' => 6, 'CacheTime' => 7, 'MaxBuy' => 8, 'MinBuy' => 9, 'MaxSell' => 10, 'MinSell' => 11, 'CreatedAt' => 12, 'UpdatedAt' => 13, ),
+        self::TYPE_CAMELNAME     => array('itemId' => 0, 'buyPrice' => 1, 'sellPrice' => 2, 'buyQty' => 3, 'sellQty' => 4, 'profit' => 5, 'roi' => 6, 'cacheTime' => 7, 'maxBuy' => 8, 'minBuy' => 9, 'maxSell' => 10, 'minSell' => 11, 'createdAt' => 12, 'updatedAt' => 13, ),
+        self::TYPE_COLNAME       => array(PriceTableMap::COL_ITEM_ID => 0, PriceTableMap::COL_BUY_PRICE => 1, PriceTableMap::COL_SELL_PRICE => 2, PriceTableMap::COL_BUY_QTY => 3, PriceTableMap::COL_SELL_QTY => 4, PriceTableMap::COL_PROFIT => 5, PriceTableMap::COL_ROI => 6, PriceTableMap::COL_CACHE_TIME => 7, PriceTableMap::COL_MAX_BUY => 8, PriceTableMap::COL_MIN_BUY => 9, PriceTableMap::COL_MAX_SELL => 10, PriceTableMap::COL_MIN_SELL => 11, PriceTableMap::COL_CREATED_AT => 12, PriceTableMap::COL_UPDATED_AT => 13, ),
+        self::TYPE_FIELDNAME     => array('item_id' => 0, 'buy_price' => 1, 'sell_price' => 2, 'buy_qty' => 3, 'sell_qty' => 4, 'profit' => 5, 'roi' => 6, 'cache_time' => 7, 'max_buy' => 8, 'min_buy' => 9, 'max_sell' => 10, 'min_sell' => 11, 'created_at' => 12, 'updated_at' => 13, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, )
     );
 
     /**
@@ -186,6 +196,8 @@ class PriceTableMap extends TableMap
         $this->addColumn('sell_price', 'SellPrice', 'INTEGER', false, null, null);
         $this->addColumn('buy_qty', 'BuyQty', 'INTEGER', false, null, null);
         $this->addColumn('sell_qty', 'SellQty', 'INTEGER', false, null, null);
+        $this->addColumn('profit', 'Profit', 'INTEGER', false, null, null);
+        $this->addColumn('roi', 'Roi', 'FLOAT', false, null, null);
         $this->addColumn('cache_time', 'CacheTime', 'INTEGER', false, null, 1);
         $this->addColumn('max_buy', 'MaxBuy', 'INTEGER', false, null, null);
         $this->addColumn('min_buy', 'MinBuy', 'INTEGER', false, null, null);
@@ -375,6 +387,8 @@ class PriceTableMap extends TableMap
             $criteria->addSelectColumn(PriceTableMap::COL_SELL_PRICE);
             $criteria->addSelectColumn(PriceTableMap::COL_BUY_QTY);
             $criteria->addSelectColumn(PriceTableMap::COL_SELL_QTY);
+            $criteria->addSelectColumn(PriceTableMap::COL_PROFIT);
+            $criteria->addSelectColumn(PriceTableMap::COL_ROI);
             $criteria->addSelectColumn(PriceTableMap::COL_CACHE_TIME);
             $criteria->addSelectColumn(PriceTableMap::COL_MAX_BUY);
             $criteria->addSelectColumn(PriceTableMap::COL_MIN_BUY);
@@ -388,6 +402,8 @@ class PriceTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.sell_price');
             $criteria->addSelectColumn($alias . '.buy_qty');
             $criteria->addSelectColumn($alias . '.sell_qty');
+            $criteria->addSelectColumn($alias . '.profit');
+            $criteria->addSelectColumn($alias . '.roi');
             $criteria->addSelectColumn($alias . '.cache_time');
             $criteria->addSelectColumn($alias . '.max_buy');
             $criteria->addSelectColumn($alias . '.min_buy');

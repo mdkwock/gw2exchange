@@ -79,11 +79,75 @@ $app->get('/search/item', function() use ($app){
   if(!empty($itemLevel)){
     $filters['maxLevel'] = $itemLevel;
   }
+  
+  $itemBuy = $request->get('minBuy');
+  if(!empty($itemBuy)){
+    $filters['minBuy'] = $itemBuy;
+  }
+
+  $itemBuy = $request->get('maxBuy');
+  if(!empty($itemBuy)){
+    $filters['maxBuy'] = $itemBuy;
+  }
+  
+  $itemSell = $request->get('minSell');
+  if(!empty($itemSell)){
+    $filters['minSell'] = $itemSell;
+  }
+
+  $itemSell = $request->get('maxSell');
+  if(!empty($itemSell)){
+    $filters['maxSell'] = $itemSell;
+  }
+  
+  $itemProfit = $request->get('minProfit');
+  if(!empty($itemProfit)){
+    $filters['minProfit'] = $itemProfit;
+  }
+
+  $itemProfit = $request->get('maxProfit');
+  if(!empty($itemProfit)){
+    $filters['maxProfit'] = $itemProfit;
+  }
+  
+  $itemROI = $request->get('minROI');
+  if(!empty($itemROI)){
+    $filters['minROI'] = $itemROI;
+  }
+
+  $itemROI = $request->get('maxROI');
+  if(!empty($itemROI)){
+    $filters['maxROI'] = $itemROI;
+  }
+  
+  $itemSupply = $request->get('minSupply');
+  if(!empty($itemSupply)){
+    $filters['minSupply'] = $itemSupply;
+  }
+
+  $itemSupply = $request->get('maxSupply');
+  if(!empty($itemSupply)){
+    $filters['maxSupply'] = $itemSupply;
+  }
+  
+  $itemDemand = $request->get('minDemand');
+  if(!empty($itemDemand)){
+    $filters['minDemand'] = $itemDemand;
+  }
+
+  $itemDemand = $request->get('maxDemand');
+  if(!empty($itemDemand)){
+    $filters['maxDemand'] = $itemDemand;
+  }
   $page = $request->get('p');
   $page = empty($page)?1:intval($page);
   $maxPerPage = $request->get('s');
   $maxPerPage = empty($maxPerPage)?10:intval($maxPerPage);
-  $results = $app->config('ItemStorage')->search($filters, $page, $maxPerPage);
+  $order = $request->get('order');
+  $order = empty($order)?'name':$order;
+  $direction = $request->get('dir');
+  $direction = empty($direction)?'asc':$direction;
+  $results = $app->config('ItemSearch')->searchItems($filters, $order, $direction, $page, $maxPerPage);
   $returns = array();
   foreach($results as $id=>$price){
     if(method_exists($price,'toArray')){
@@ -171,7 +235,7 @@ $app->get('/maintenance/item',function() use($app){
 
 $app->get('/maintenance/price',function() use($app){
   $staleTime = new DateTime();
-  $staleTime->modify('-1 day');
+  $staleTime->modify('-3 hour');
   $toDo = $app->config('PriceMaintenance')->runMaintenance(null,$staleTime);
   if($toDo>0){
     //count the number of redirects to eliminate too many redirects break

@@ -6,8 +6,6 @@ use \DateTime;
 use \Exception;
 use \PDO;
 use GW2Exchange\Database\Item as ChildItem;
-use GW2Exchange\Database\ItemArchive as ChildItemArchive;
-use GW2Exchange\Database\ItemArchiveQuery as ChildItemArchiveQuery;
 use GW2Exchange\Database\ItemDetail as ChildItemDetail;
 use GW2Exchange\Database\ItemDetailQuery as ChildItemDetailQuery;
 use GW2Exchange\Database\ItemInfo as ChildItemInfo;
@@ -158,9 +156,6 @@ abstract class Item implements ActiveRecordInterface
      * @var boolean
      */
     protected $alreadyInSave = false;
-
-    // archivable behavior
-    protected $archiveOnDelete = true;
 
     /**
      * An array of objects scheduled for deletion.
@@ -768,16 +763,6 @@ abstract class Item implements ActiveRecordInterface
             $deleteQuery = ChildItemQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
-            // archivable behavior
-            if ($ret) {
-                if ($this->archiveOnDelete) {
-                    // do nothing yet. The object will be archived later when calling ChildItemQuery::delete().
-                } else {
-                    $deleteQuery->setArchiveOnDelete(false);
-                    $this->archiveOnDelete = true;
-                }
-            }
-
             if ($ret) {
                 $deleteQuery->delete($con);
                 $this->postDelete($con);
@@ -2684,106 +2669,6 @@ abstract class Item implements ActiveRecordInterface
         $this->modifiedColumns[ItemTableMap::COL_UPDATED_AT] = true;
 
         return $this;
-    }
-
-    // archivable behavior
-
-    /**
-     * Get an archived version of the current object.
-     *
-     * @param ConnectionInterface $con Optional connection object
-     *
-     * @return     ChildItemArchive An archive object, or null if the current object was never archived
-     */
-    public function getArchive(ConnectionInterface $con = null)
-    {
-        if ($this->isNew()) {
-            return null;
-        }
-        $archive = ChildItemArchiveQuery::create()
-            ->filterByPrimaryKey($this->getPrimaryKey())
-            ->findOne($con);
-
-        return $archive;
-    }
-    /**
-     * Copy the data of the current object into a $archiveTablePhpName archive object.
-     * The archived object is then saved.
-     * If the current object has already been archived, the archived object
-     * is updated and not duplicated.
-     *
-     * @param ConnectionInterface $con Optional connection object
-     *
-     * @throws PropelException If the object is new
-     *
-     * @return     ChildItemArchive The archive object based on this object
-     */
-    public function archive(ConnectionInterface $con = null)
-    {
-        if ($this->isNew()) {
-            throw new PropelException('New objects cannot be archived. You must save the current object before calling archive().');
-        }
-        if (!$archive = $this->getArchive($con)) {
-            $archive = new ChildItemArchive();
-            $archive->setPrimaryKey($this->getPrimaryKey());
-        }
-        $this->copyInto($archive, $deepCopy = false, $makeNew = false);
-        $archive->setArchivedAt(time());
-        $archive->save($con);
-
-        return $archive;
-    }
-
-    /**
-     * Revert the the current object to the state it had when it was last archived.
-     * The object must be saved afterwards if the changes must persist.
-     *
-     * @param ConnectionInterface $con Optional connection object
-     *
-     * @throws PropelException If the object has no corresponding archive.
-     *
-     * @return $this|ChildItem The current object (for fluent API support)
-     */
-    public function restoreFromArchive(ConnectionInterface $con = null)
-    {
-        if (!$archive = $this->getArchive($con)) {
-            throw new PropelException('The current object has never been archived and cannot be restored');
-        }
-        $this->populateFromArchive($archive);
-
-        return $this;
-    }
-
-    /**
-     * Populates the the current object based on a $archiveTablePhpName archive object.
-     *
-     * @param      ChildItemArchive $archive An archived object based on the same class
-      *
-     * @return     ChildItem The current object (for fluent API support)
-     */
-    public function populateFromArchive($archive) {
-        $this->setId($archive->getId());
-        $this->setName($archive->getName());
-        $this->setIcon($archive->getIcon());
-        $this->setCacheTime($archive->getCacheTime());
-        $this->setCreatedAt($archive->getCreatedAt());
-        $this->setUpdatedAt($archive->getUpdatedAt());
-
-        return $this;
-    }
-
-    /**
-     * Removes the object from the database without archiving it.
-     *
-     * @param ConnectionInterface $con Optional connection object
-     *
-     * @return $this|ChildItem The current object (for fluent API support)
-     */
-    public function deleteWithoutArchive(ConnectionInterface $con = null)
-    {
-        $this->archiveOnDelete = false;
-
-        return $this->delete($con);
     }
 
     /**

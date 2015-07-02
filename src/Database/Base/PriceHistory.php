@@ -102,6 +102,18 @@ abstract class PriceHistory implements ActiveRecordInterface
     protected $sell_qty;
 
     /**
+     * The value for the profit field.
+     * @var        int
+     */
+    protected $profit;
+
+    /**
+     * The value for the roi field.
+     * @var        double
+     */
+    protected $roi;
+
+    /**
      * The value for the created_at field.
      * @var        \DateTime
      */
@@ -403,6 +415,26 @@ abstract class PriceHistory implements ActiveRecordInterface
     }
 
     /**
+     * Get the [profit] column value.
+     *
+     * @return int
+     */
+    public function getProfit()
+    {
+        return $this->profit;
+    }
+
+    /**
+     * Get the [roi] column value.
+     *
+     * @return double
+     */
+    public function getRoi()
+    {
+        return $this->roi;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
@@ -551,6 +583,46 @@ abstract class PriceHistory implements ActiveRecordInterface
     } // setSellQty()
 
     /**
+     * Set the value of [profit] column.
+     *
+     * @param int $v new value
+     * @return $this|\GW2Exchange\Database\PriceHistory The current object (for fluent API support)
+     */
+    public function setProfit($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->profit !== $v) {
+            $this->profit = $v;
+            $this->modifiedColumns[PriceHistoryTableMap::COL_PROFIT] = true;
+        }
+
+        return $this;
+    } // setProfit()
+
+    /**
+     * Set the value of [roi] column.
+     *
+     * @param double $v new value
+     * @return $this|\GW2Exchange\Database\PriceHistory The current object (for fluent API support)
+     */
+    public function setRoi($v)
+    {
+        if ($v !== null) {
+            $v = (double) $v;
+        }
+
+        if ($this->roi !== $v) {
+            $this->roi = $v;
+            $this->modifiedColumns[PriceHistoryTableMap::COL_ROI] = true;
+        }
+
+        return $this;
+    } // setRoi()
+
+    /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
@@ -624,7 +696,13 @@ abstract class PriceHistory implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PriceHistoryTableMap::translateFieldName('SellQty', TableMap::TYPE_PHPNAME, $indexType)];
             $this->sell_qty = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : PriceHistoryTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : PriceHistoryTableMap::translateFieldName('Profit', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->profit = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : PriceHistoryTableMap::translateFieldName('Roi', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->roi = (null !== $col) ? (double) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : PriceHistoryTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -637,7 +715,7 @@ abstract class PriceHistory implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 7; // 7 = PriceHistoryTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 9; // 9 = PriceHistoryTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\GW2Exchange\\Database\\PriceHistory'), 0, $e);
@@ -884,6 +962,12 @@ abstract class PriceHistory implements ActiveRecordInterface
         if ($this->isColumnModified(PriceHistoryTableMap::COL_SELL_QTY)) {
             $modifiedColumns[':p' . $index++]  = 'sell_qty';
         }
+        if ($this->isColumnModified(PriceHistoryTableMap::COL_PROFIT)) {
+            $modifiedColumns[':p' . $index++]  = 'profit';
+        }
+        if ($this->isColumnModified(PriceHistoryTableMap::COL_ROI)) {
+            $modifiedColumns[':p' . $index++]  = 'roi';
+        }
         if ($this->isColumnModified(PriceHistoryTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
@@ -915,6 +999,12 @@ abstract class PriceHistory implements ActiveRecordInterface
                         break;
                     case 'sell_qty':
                         $stmt->bindValue($identifier, $this->sell_qty, PDO::PARAM_INT);
+                        break;
+                    case 'profit':
+                        $stmt->bindValue($identifier, $this->profit, PDO::PARAM_INT);
+                        break;
+                    case 'roi':
+                        $stmt->bindValue($identifier, $this->roi, PDO::PARAM_STR);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1000,6 +1090,12 @@ abstract class PriceHistory implements ActiveRecordInterface
                 return $this->getSellQty();
                 break;
             case 6:
+                return $this->getProfit();
+                break;
+            case 7:
+                return $this->getRoi();
+                break;
+            case 8:
                 return $this->getCreatedAt();
                 break;
             default:
@@ -1038,14 +1134,16 @@ abstract class PriceHistory implements ActiveRecordInterface
             $keys[3] => $this->getSellPrice(),
             $keys[4] => $this->getBuyQty(),
             $keys[5] => $this->getSellQty(),
-            $keys[6] => $this->getCreatedAt(),
+            $keys[6] => $this->getProfit(),
+            $keys[7] => $this->getRoi(),
+            $keys[8] => $this->getCreatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[6]] instanceof \DateTime) {
+        if ($result[$keys[8]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[6]];
-            $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+            $dateTime = clone $result[$keys[8]];
+            $result[$keys[8]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1137,6 +1235,12 @@ abstract class PriceHistory implements ActiveRecordInterface
                 $this->setSellQty($value);
                 break;
             case 6:
+                $this->setProfit($value);
+                break;
+            case 7:
+                $this->setRoi($value);
+                break;
+            case 8:
                 $this->setCreatedAt($value);
                 break;
         } // switch()
@@ -1184,7 +1288,13 @@ abstract class PriceHistory implements ActiveRecordInterface
             $this->setSellQty($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setCreatedAt($arr[$keys[6]]);
+            $this->setProfit($arr[$keys[6]]);
+        }
+        if (array_key_exists($keys[7], $arr)) {
+            $this->setRoi($arr[$keys[7]]);
+        }
+        if (array_key_exists($keys[8], $arr)) {
+            $this->setCreatedAt($arr[$keys[8]]);
         }
     }
 
@@ -1244,6 +1354,12 @@ abstract class PriceHistory implements ActiveRecordInterface
         }
         if ($this->isColumnModified(PriceHistoryTableMap::COL_SELL_QTY)) {
             $criteria->add(PriceHistoryTableMap::COL_SELL_QTY, $this->sell_qty);
+        }
+        if ($this->isColumnModified(PriceHistoryTableMap::COL_PROFIT)) {
+            $criteria->add(PriceHistoryTableMap::COL_PROFIT, $this->profit);
+        }
+        if ($this->isColumnModified(PriceHistoryTableMap::COL_ROI)) {
+            $criteria->add(PriceHistoryTableMap::COL_ROI, $this->roi);
         }
         if ($this->isColumnModified(PriceHistoryTableMap::COL_CREATED_AT)) {
             $criteria->add(PriceHistoryTableMap::COL_CREATED_AT, $this->created_at);
@@ -1339,6 +1455,8 @@ abstract class PriceHistory implements ActiveRecordInterface
         $copyObj->setSellPrice($this->getSellPrice());
         $copyObj->setBuyQty($this->getBuyQty());
         $copyObj->setSellQty($this->getSellQty());
+        $copyObj->setProfit($this->getProfit());
+        $copyObj->setRoi($this->getRoi());
         $copyObj->setCreatedAt($this->getCreatedAt());
         if ($makeNew) {
             $copyObj->setNew(true);
@@ -1489,6 +1607,8 @@ abstract class PriceHistory implements ActiveRecordInterface
         $this->sell_price = null;
         $this->buy_qty = null;
         $this->sell_qty = null;
+        $this->profit = null;
+        $this->roi = null;
         $this->created_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();

@@ -8,8 +8,6 @@ use \PDO;
 use GW2Exchange\Database\Item as ChildItem;
 use GW2Exchange\Database\ItemQuery as ChildItemQuery;
 use GW2Exchange\Database\Listing as ChildListing;
-use GW2Exchange\Database\ListingArchive as ChildListingArchive;
-use GW2Exchange\Database\ListingArchiveQuery as ChildListingArchiveQuery;
 use GW2Exchange\Database\ListingQuery as ChildListingQuery;
 use GW2Exchange\Database\Map\ListingTableMap;
 use Propel\Runtime\Propel;
@@ -132,10 +130,6 @@ abstract class Listing implements ActiveRecordInterface
      * @var boolean
      */
     protected $alreadyInSave = false;
-
-    // archivable behavior
-    protected $archiveOnUpdate = true;
-    protected $archiveOnDelete = true;
 
     /**
      * Initializes internal state of GW2Exchange\Database\Base\Listing object.
@@ -815,16 +809,6 @@ abstract class Listing implements ActiveRecordInterface
             $deleteQuery = ChildListingQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
-            // archivable behavior
-            if ($ret) {
-                if ($this->archiveOnDelete) {
-                    // do nothing yet. The object will be archived later when calling ChildListingQuery::delete().
-                } else {
-                    $deleteQuery->setArchiveOnDelete(false);
-                    $this->archiveOnDelete = true;
-                }
-            }
-
             if ($ret) {
                 $deleteQuery->delete($con);
                 $this->postDelete($con);
@@ -882,12 +866,6 @@ abstract class Listing implements ActiveRecordInterface
                     $this->postInsert($con);
                 } else {
                     $this->postUpdate($con);
-                    // archivable behavior
-                    if ($this->archiveOnUpdate) {
-                        $this->archive($con);
-                    } else {
-                        $this->archiveOnUpdate = true;
-                    }
                 }
                 $this->postSave($con);
                 ListingTableMap::addInstanceToPool($this);
@@ -1613,130 +1591,6 @@ abstract class Listing implements ActiveRecordInterface
         $this->modifiedColumns[ListingTableMap::COL_UPDATED_AT] = true;
 
         return $this;
-    }
-
-    // archivable behavior
-
-    /**
-     * Get an archived version of the current object.
-     *
-     * @param ConnectionInterface $con Optional connection object
-     *
-     * @return     ChildListingArchive An archive object, or null if the current object was never archived
-     */
-    public function getArchive(ConnectionInterface $con = null)
-    {
-        if ($this->isNew()) {
-            return null;
-        }
-        $archive = ChildListingArchiveQuery::create()
-            ->filterByPrimaryKey($this->getPrimaryKey())
-            ->findOne($con);
-
-        return $archive;
-    }
-    /**
-     * Copy the data of the current object into a $archiveTablePhpName archive object.
-     * The archived object is then saved.
-     * If the current object has already been archived, the archived object
-     * is updated and not duplicated.
-     *
-     * @param ConnectionInterface $con Optional connection object
-     *
-     * @throws PropelException If the object is new
-     *
-     * @return     ChildListingArchive The archive object based on this object
-     */
-    public function archive(ConnectionInterface $con = null)
-    {
-        if ($this->isNew()) {
-            throw new PropelException('New objects cannot be archived. You must save the current object before calling archive().');
-        }
-        if (!$archive = $this->getArchive($con)) {
-            $archive = new ChildListingArchive();
-            $archive->setPrimaryKey($this->getPrimaryKey());
-        }
-        $this->copyInto($archive, $deepCopy = false, $makeNew = false);
-        $archive->setArchivedAt(time());
-        $archive->save($con);
-
-        return $archive;
-    }
-
-    /**
-     * Revert the the current object to the state it had when it was last archived.
-     * The object must be saved afterwards if the changes must persist.
-     *
-     * @param ConnectionInterface $con Optional connection object
-     *
-     * @throws PropelException If the object has no corresponding archive.
-     *
-     * @return $this|ChildListing The current object (for fluent API support)
-     */
-    public function restoreFromArchive(ConnectionInterface $con = null)
-    {
-        if (!$archive = $this->getArchive($con)) {
-            throw new PropelException('The current object has never been archived and cannot be restored');
-        }
-        $this->populateFromArchive($archive);
-
-        return $this;
-    }
-
-    /**
-     * Populates the the current object based on a $archiveTablePhpName archive object.
-     *
-     * @param      ChildListingArchive $archive An archived object based on the same class
-      * @param      Boolean $populateAutoIncrementPrimaryKeys
-     *               If true, autoincrement columns are copied from the archive object.
-     *               If false, autoincrement columns are left intact.
-      *
-     * @return     ChildListing The current object (for fluent API support)
-     */
-    public function populateFromArchive($archive, $populateAutoIncrementPrimaryKeys = false) {
-        if ($populateAutoIncrementPrimaryKeys) {
-            $this->setId($archive->getId());
-        }
-        $this->setItemId($archive->getItemId());
-        $this->setType($archive->getType());
-        $this->setOrders($archive->getOrders());
-        $this->setUnitPrice($archive->getUnitPrice());
-        $this->setQuantity($archive->getQuantity());
-        $this->setCacheTime($archive->getCacheTime());
-        $this->setCreatedAt($archive->getCreatedAt());
-        $this->setUpdatedAt($archive->getUpdatedAt());
-
-        return $this;
-    }
-
-    /**
-     * Persists the object to the database without archiving it.
-     *
-     * @param ConnectionInterface $con Optional connection object
-     *
-     * @return $this|ChildListing The current object (for fluent API support)
-     */
-    public function saveWithoutArchive(ConnectionInterface $con = null)
-    {
-        if (!$this->isNew()) {
-            $this->archiveOnUpdate = false;
-        }
-
-        return $this->save($con);
-    }
-
-    /**
-     * Removes the object from the database without archiving it.
-     *
-     * @param ConnectionInterface $con Optional connection object
-     *
-     * @return $this|ChildListing The current object (for fluent API support)
-     */
-    public function deleteWithoutArchive(ConnectionInterface $con = null)
-    {
-        $this->archiveOnDelete = false;
-
-        return $this->delete($con);
     }
 
     /**

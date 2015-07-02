@@ -43,7 +43,8 @@ use GW2Exchange\Database\PriceQueryFactory,
   GW2Exchange\Database\PriceHistoryQueryFactory,
   GW2Exchange\Maintenance\PriceMaintenance;
 
-use GW2Exchange\Metadata\SearchMetadata;
+use GW2Exchange\Metadata\SearchMetadata,
+  GW2Exchange\Search\ItemSearch;
 
 $logger = new \Flynsarmy\SlimMonolog\Log\MonologWriter(array(
     'handlers' => array(
@@ -100,6 +101,7 @@ $app->configureMode('development', function () use($app){
   $priceStorage = new PriceStorage($priceQueryFactory, $PriceHistoryQueryFactory, $priceFactory);
 
   $metadata = new SearchMetadata($itemQueryFactory);
+  $itemSearch = new ItemSearch($itemQueryFactory, $priceQueryFactory,$itemStorage,$priceStorage);
 
   $app->config(array(
     'Item'=>$itemAssembler, 
@@ -111,8 +113,9 @@ $app->configureMode('development', function () use($app){
     'WebScraper'=>$webScraper,
     'ItemStorage'=>$itemStorage,
     'PriceStorage'=>$priceStorage,
-    'Metadata'=>$metadata
-  ));
+    'Metadata'=>$metadata,
+    'ItemSearch'=>$itemSearch
+      ));
 });
 
 $app->response->headers->set('Access-Control-Allow-Origin', '*');

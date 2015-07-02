@@ -26,6 +26,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceHistoryQuery orderBySellPrice($order = Criteria::ASC) Order by the sell_price column
  * @method     ChildPriceHistoryQuery orderByBuyQty($order = Criteria::ASC) Order by the buy_qty column
  * @method     ChildPriceHistoryQuery orderBySellQty($order = Criteria::ASC) Order by the sell_qty column
+ * @method     ChildPriceHistoryQuery orderByProfit($order = Criteria::ASC) Order by the profit column
+ * @method     ChildPriceHistoryQuery orderByRoi($order = Criteria::ASC) Order by the roi column
  * @method     ChildPriceHistoryQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  *
  * @method     ChildPriceHistoryQuery groupById() Group by the id column
@@ -34,6 +36,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceHistoryQuery groupBySellPrice() Group by the sell_price column
  * @method     ChildPriceHistoryQuery groupByBuyQty() Group by the buy_qty column
  * @method     ChildPriceHistoryQuery groupBySellQty() Group by the sell_qty column
+ * @method     ChildPriceHistoryQuery groupByProfit() Group by the profit column
+ * @method     ChildPriceHistoryQuery groupByRoi() Group by the roi column
  * @method     ChildPriceHistoryQuery groupByCreatedAt() Group by the created_at column
  *
  * @method     ChildPriceHistoryQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
@@ -59,6 +63,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceHistory findOneBySellPrice(int $sell_price) Return the first ChildPriceHistory filtered by the sell_price column
  * @method     ChildPriceHistory findOneByBuyQty(int $buy_qty) Return the first ChildPriceHistory filtered by the buy_qty column
  * @method     ChildPriceHistory findOneBySellQty(int $sell_qty) Return the first ChildPriceHistory filtered by the sell_qty column
+ * @method     ChildPriceHistory findOneByProfit(int $profit) Return the first ChildPriceHistory filtered by the profit column
+ * @method     ChildPriceHistory findOneByRoi(double $roi) Return the first ChildPriceHistory filtered by the roi column
  * @method     ChildPriceHistory findOneByCreatedAt(string $created_at) Return the first ChildPriceHistory filtered by the created_at column *
 
  * @method     ChildPriceHistory requirePk($key, ConnectionInterface $con = null) Return the ChildPriceHistory by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -70,6 +76,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceHistory requireOneBySellPrice(int $sell_price) Return the first ChildPriceHistory filtered by the sell_price column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPriceHistory requireOneByBuyQty(int $buy_qty) Return the first ChildPriceHistory filtered by the buy_qty column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPriceHistory requireOneBySellQty(int $sell_qty) Return the first ChildPriceHistory filtered by the sell_qty column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPriceHistory requireOneByProfit(int $profit) Return the first ChildPriceHistory filtered by the profit column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPriceHistory requireOneByRoi(double $roi) Return the first ChildPriceHistory filtered by the roi column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPriceHistory requireOneByCreatedAt(string $created_at) Return the first ChildPriceHistory filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildPriceHistory[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildPriceHistory objects based on current ModelCriteria
@@ -79,6 +87,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceHistory[]|ObjectCollection findBySellPrice(int $sell_price) Return ChildPriceHistory objects filtered by the sell_price column
  * @method     ChildPriceHistory[]|ObjectCollection findByBuyQty(int $buy_qty) Return ChildPriceHistory objects filtered by the buy_qty column
  * @method     ChildPriceHistory[]|ObjectCollection findBySellQty(int $sell_qty) Return ChildPriceHistory objects filtered by the sell_qty column
+ * @method     ChildPriceHistory[]|ObjectCollection findByProfit(int $profit) Return ChildPriceHistory objects filtered by the profit column
+ * @method     ChildPriceHistory[]|ObjectCollection findByRoi(double $roi) Return ChildPriceHistory objects filtered by the roi column
  * @method     ChildPriceHistory[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildPriceHistory objects filtered by the created_at column
  * @method     ChildPriceHistory[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
@@ -172,7 +182,7 @@ abstract class PriceHistoryQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, item_id, buy_price, sell_price, buy_qty, sell_qty, created_at FROM price_history WHERE id = :p0';
+        $sql = 'SELECT id, item_id, buy_price, sell_price, buy_qty, sell_qty, profit, roi, created_at FROM price_history WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -510,6 +520,88 @@ abstract class PriceHistoryQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(PriceHistoryTableMap::COL_SELL_QTY, $sellQty, $comparison);
+    }
+
+    /**
+     * Filter the query on the profit column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByProfit(1234); // WHERE profit = 1234
+     * $query->filterByProfit(array(12, 34)); // WHERE profit IN (12, 34)
+     * $query->filterByProfit(array('min' => 12)); // WHERE profit > 12
+     * </code>
+     *
+     * @param     mixed $profit The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPriceHistoryQuery The current query, for fluid interface
+     */
+    public function filterByProfit($profit = null, $comparison = null)
+    {
+        if (is_array($profit)) {
+            $useMinMax = false;
+            if (isset($profit['min'])) {
+                $this->addUsingAlias(PriceHistoryTableMap::COL_PROFIT, $profit['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($profit['max'])) {
+                $this->addUsingAlias(PriceHistoryTableMap::COL_PROFIT, $profit['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PriceHistoryTableMap::COL_PROFIT, $profit, $comparison);
+    }
+
+    /**
+     * Filter the query on the roi column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByRoi(1234); // WHERE roi = 1234
+     * $query->filterByRoi(array(12, 34)); // WHERE roi IN (12, 34)
+     * $query->filterByRoi(array('min' => 12)); // WHERE roi > 12
+     * </code>
+     *
+     * @param     mixed $roi The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPriceHistoryQuery The current query, for fluid interface
+     */
+    public function filterByRoi($roi = null, $comparison = null)
+    {
+        if (is_array($roi)) {
+            $useMinMax = false;
+            if (isset($roi['min'])) {
+                $this->addUsingAlias(PriceHistoryTableMap::COL_ROI, $roi['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($roi['max'])) {
+                $this->addUsingAlias(PriceHistoryTableMap::COL_ROI, $roi['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(PriceHistoryTableMap::COL_ROI, $roi, $comparison);
     }
 
     /**

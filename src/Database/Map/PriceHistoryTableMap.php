@@ -59,7 +59,7 @@ class PriceHistoryTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 7;
+    const NUM_COLUMNS = 9;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class PriceHistoryTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 7;
+    const NUM_HYDRATE_COLUMNS = 9;
 
     /**
      * the column name for the id field
@@ -102,6 +102,16 @@ class PriceHistoryTableMap extends TableMap
     const COL_SELL_QTY = 'price_history.sell_qty';
 
     /**
+     * the column name for the profit field
+     */
+    const COL_PROFIT = 'price_history.profit';
+
+    /**
+     * the column name for the roi field
+     */
+    const COL_ROI = 'price_history.roi';
+
+    /**
      * the column name for the created_at field
      */
     const COL_CREATED_AT = 'price_history.created_at';
@@ -118,11 +128,11 @@ class PriceHistoryTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'ItemId', 'BuyPrice', 'SellPrice', 'BuyQty', 'SellQty', 'CreatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'itemId', 'buyPrice', 'sellPrice', 'buyQty', 'sellQty', 'createdAt', ),
-        self::TYPE_COLNAME       => array(PriceHistoryTableMap::COL_ID, PriceHistoryTableMap::COL_ITEM_ID, PriceHistoryTableMap::COL_BUY_PRICE, PriceHistoryTableMap::COL_SELL_PRICE, PriceHistoryTableMap::COL_BUY_QTY, PriceHistoryTableMap::COL_SELL_QTY, PriceHistoryTableMap::COL_CREATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'item_id', 'buy_price', 'sell_price', 'buy_qty', 'sell_qty', 'created_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id', 'ItemId', 'BuyPrice', 'SellPrice', 'BuyQty', 'SellQty', 'Profit', 'Roi', 'CreatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'itemId', 'buyPrice', 'sellPrice', 'buyQty', 'sellQty', 'profit', 'roi', 'createdAt', ),
+        self::TYPE_COLNAME       => array(PriceHistoryTableMap::COL_ID, PriceHistoryTableMap::COL_ITEM_ID, PriceHistoryTableMap::COL_BUY_PRICE, PriceHistoryTableMap::COL_SELL_PRICE, PriceHistoryTableMap::COL_BUY_QTY, PriceHistoryTableMap::COL_SELL_QTY, PriceHistoryTableMap::COL_PROFIT, PriceHistoryTableMap::COL_ROI, PriceHistoryTableMap::COL_CREATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'item_id', 'buy_price', 'sell_price', 'buy_qty', 'sell_qty', 'profit', 'roi', 'created_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -132,11 +142,11 @@ class PriceHistoryTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'ItemId' => 1, 'BuyPrice' => 2, 'SellPrice' => 3, 'BuyQty' => 4, 'SellQty' => 5, 'CreatedAt' => 6, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'itemId' => 1, 'buyPrice' => 2, 'sellPrice' => 3, 'buyQty' => 4, 'sellQty' => 5, 'createdAt' => 6, ),
-        self::TYPE_COLNAME       => array(PriceHistoryTableMap::COL_ID => 0, PriceHistoryTableMap::COL_ITEM_ID => 1, PriceHistoryTableMap::COL_BUY_PRICE => 2, PriceHistoryTableMap::COL_SELL_PRICE => 3, PriceHistoryTableMap::COL_BUY_QTY => 4, PriceHistoryTableMap::COL_SELL_QTY => 5, PriceHistoryTableMap::COL_CREATED_AT => 6, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'item_id' => 1, 'buy_price' => 2, 'sell_price' => 3, 'buy_qty' => 4, 'sell_qty' => 5, 'created_at' => 6, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'ItemId' => 1, 'BuyPrice' => 2, 'SellPrice' => 3, 'BuyQty' => 4, 'SellQty' => 5, 'Profit' => 6, 'Roi' => 7, 'CreatedAt' => 8, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'itemId' => 1, 'buyPrice' => 2, 'sellPrice' => 3, 'buyQty' => 4, 'sellQty' => 5, 'profit' => 6, 'roi' => 7, 'createdAt' => 8, ),
+        self::TYPE_COLNAME       => array(PriceHistoryTableMap::COL_ID => 0, PriceHistoryTableMap::COL_ITEM_ID => 1, PriceHistoryTableMap::COL_BUY_PRICE => 2, PriceHistoryTableMap::COL_SELL_PRICE => 3, PriceHistoryTableMap::COL_BUY_QTY => 4, PriceHistoryTableMap::COL_SELL_QTY => 5, PriceHistoryTableMap::COL_PROFIT => 6, PriceHistoryTableMap::COL_ROI => 7, PriceHistoryTableMap::COL_CREATED_AT => 8, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'item_id' => 1, 'buy_price' => 2, 'sell_price' => 3, 'buy_qty' => 4, 'sell_qty' => 5, 'profit' => 6, 'roi' => 7, 'created_at' => 8, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -163,6 +173,8 @@ class PriceHistoryTableMap extends TableMap
         $this->addColumn('sell_price', 'SellPrice', 'INTEGER', false, null, null);
         $this->addColumn('buy_qty', 'BuyQty', 'INTEGER', false, null, null);
         $this->addColumn('sell_qty', 'SellQty', 'INTEGER', false, null, null);
+        $this->addColumn('profit', 'Profit', 'INTEGER', false, null, null);
+        $this->addColumn('roi', 'Roi', 'FLOAT', false, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
 
@@ -347,6 +359,8 @@ class PriceHistoryTableMap extends TableMap
             $criteria->addSelectColumn(PriceHistoryTableMap::COL_SELL_PRICE);
             $criteria->addSelectColumn(PriceHistoryTableMap::COL_BUY_QTY);
             $criteria->addSelectColumn(PriceHistoryTableMap::COL_SELL_QTY);
+            $criteria->addSelectColumn(PriceHistoryTableMap::COL_PROFIT);
+            $criteria->addSelectColumn(PriceHistoryTableMap::COL_ROI);
             $criteria->addSelectColumn(PriceHistoryTableMap::COL_CREATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
@@ -355,6 +369,8 @@ class PriceHistoryTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.sell_price');
             $criteria->addSelectColumn($alias . '.buy_qty');
             $criteria->addSelectColumn($alias . '.sell_qty');
+            $criteria->addSelectColumn($alias . '.profit');
+            $criteria->addSelectColumn($alias . '.roi');
             $criteria->addSelectColumn($alias . '.created_at');
         }
     }
