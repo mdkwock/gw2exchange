@@ -94,6 +94,12 @@ abstract class Item implements ActiveRecordInterface
     protected $icon;
 
     /**
+     * The value for the hash field.
+     * @var        string
+     */
+    protected $hash;
+
+    /**
      * The value for the cache_time field.
      * @var        int
      */
@@ -429,6 +435,16 @@ abstract class Item implements ActiveRecordInterface
     }
 
     /**
+     * Get the [hash] column value.
+     *
+     * @return string
+     */
+    public function getHash()
+    {
+        return $this->hash;
+    }
+
+    /**
      * Get the [cache_time] column value.
      *
      * @return int
@@ -539,6 +555,26 @@ abstract class Item implements ActiveRecordInterface
     } // setIcon()
 
     /**
+     * Set the value of [hash] column.
+     *
+     * @param string $v new value
+     * @return $this|\GW2Exchange\Database\Item The current object (for fluent API support)
+     */
+    public function setHash($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->hash !== $v) {
+            $this->hash = $v;
+            $this->modifiedColumns[ItemTableMap::COL_HASH] = true;
+        }
+
+        return $this;
+    } // setHash()
+
+    /**
      * Set the value of [cache_time] column.
      *
      * @param int $v new value
@@ -643,16 +679,19 @@ abstract class Item implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ItemTableMap::translateFieldName('Icon', TableMap::TYPE_PHPNAME, $indexType)];
             $this->icon = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ItemTableMap::translateFieldName('CacheTime', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ItemTableMap::translateFieldName('Hash', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->hash = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ItemTableMap::translateFieldName('CacheTime', TableMap::TYPE_PHPNAME, $indexType)];
             $this->cache_time = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ItemTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ItemTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ItemTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ItemTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -665,7 +704,7 @@ abstract class Item implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = ItemTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 7; // 7 = ItemTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\GW2Exchange\\Database\\Item'), 0, $e);
@@ -984,6 +1023,9 @@ abstract class Item implements ActiveRecordInterface
         if ($this->isColumnModified(ItemTableMap::COL_ICON)) {
             $modifiedColumns[':p' . $index++]  = 'icon';
         }
+        if ($this->isColumnModified(ItemTableMap::COL_HASH)) {
+            $modifiedColumns[':p' . $index++]  = 'hash';
+        }
         if ($this->isColumnModified(ItemTableMap::COL_CACHE_TIME)) {
             $modifiedColumns[':p' . $index++]  = 'cache_time';
         }
@@ -1012,6 +1054,9 @@ abstract class Item implements ActiveRecordInterface
                         break;
                     case 'icon':
                         $stmt->bindValue($identifier, $this->icon, PDO::PARAM_STR);
+                        break;
+                    case 'hash':
+                        $stmt->bindValue($identifier, $this->hash, PDO::PARAM_STR);
                         break;
                     case 'cache_time':
                         $stmt->bindValue($identifier, $this->cache_time, PDO::PARAM_INT);
@@ -1087,12 +1132,15 @@ abstract class Item implements ActiveRecordInterface
                 return $this->getIcon();
                 break;
             case 3:
-                return $this->getCacheTime();
+                return $this->getHash();
                 break;
             case 4:
-                return $this->getCreatedAt();
+                return $this->getCacheTime();
                 break;
             case 5:
+                return $this->getCreatedAt();
+                break;
+            case 6:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1128,22 +1176,23 @@ abstract class Item implements ActiveRecordInterface
             $keys[0] => $this->getId(),
             $keys[1] => $this->getName(),
             $keys[2] => $this->getIcon(),
-            $keys[3] => $this->getCacheTime(),
-            $keys[4] => $this->getCreatedAt(),
-            $keys[5] => $this->getUpdatedAt(),
+            $keys[3] => $this->getHash(),
+            $keys[4] => $this->getCacheTime(),
+            $keys[5] => $this->getCreatedAt(),
+            $keys[6] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[4]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[4]];
-            $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[5]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[5]];
             $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[6]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[6]];
+            $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1271,12 +1320,15 @@ abstract class Item implements ActiveRecordInterface
                 $this->setIcon($value);
                 break;
             case 3:
-                $this->setCacheTime($value);
+                $this->setHash($value);
                 break;
             case 4:
-                $this->setCreatedAt($value);
+                $this->setCacheTime($value);
                 break;
             case 5:
+                $this->setCreatedAt($value);
+                break;
+            case 6:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1315,13 +1367,16 @@ abstract class Item implements ActiveRecordInterface
             $this->setIcon($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setCacheTime($arr[$keys[3]]);
+            $this->setHash($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setCreatedAt($arr[$keys[4]]);
+            $this->setCacheTime($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setUpdatedAt($arr[$keys[5]]);
+            $this->setCreatedAt($arr[$keys[5]]);
+        }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setUpdatedAt($arr[$keys[6]]);
         }
     }
 
@@ -1372,6 +1427,9 @@ abstract class Item implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ItemTableMap::COL_ICON)) {
             $criteria->add(ItemTableMap::COL_ICON, $this->icon);
+        }
+        if ($this->isColumnModified(ItemTableMap::COL_HASH)) {
+            $criteria->add(ItemTableMap::COL_HASH, $this->hash);
         }
         if ($this->isColumnModified(ItemTableMap::COL_CACHE_TIME)) {
             $criteria->add(ItemTableMap::COL_CACHE_TIME, $this->cache_time);
@@ -1471,6 +1529,7 @@ abstract class Item implements ActiveRecordInterface
         $copyObj->setId($this->getId());
         $copyObj->setName($this->getName());
         $copyObj->setIcon($this->getIcon());
+        $copyObj->setHash($this->getHash());
         $copyObj->setCacheTime($this->getCacheTime());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
@@ -2590,6 +2649,7 @@ abstract class Item implements ActiveRecordInterface
         $this->id = null;
         $this->name = null;
         $this->icon = null;
+        $this->hash = null;
         $this->cache_time = null;
         $this->created_at = null;
         $this->updated_at = null;

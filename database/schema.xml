@@ -8,8 +8,10 @@
     <column name="id" type="integer" required="true" primaryKey="true" />
     <column name="name" type="varchar" size="255" required="true" />
     <column name="icon" type="varchar" size="255" required="true" />
+    <column name="hash" type="varchar" size="3000" required="true" />
     <column name="cache_time" type="integer" required="true" />
     <behavior name="timestampable" />
+    <behavior name="query_cache" />
   </table>
 
   <!--
@@ -30,6 +32,7 @@
     <foreign-key foreignTable="item">
       <reference local="item_id" foreign="id"/>
     </foreign-key>
+    <behavior name="query_cache" />
   </table>
 
   <!--
@@ -45,6 +48,7 @@
     <foreign-key foreignTable="item_detail">
       <reference local="item_detail_id" foreign="id"/>
     </foreign-key>
+    <behavior name="query_cache" />
   </table>
 
   <!--
@@ -64,6 +68,7 @@
       <unique-column name="item_type" />
       <unique-column name="label" />
     </unique>
+    <behavior name="query_cache" />
   </table>
 
   <table name="listing">
@@ -85,6 +90,7 @@
       <unique-column name="unit_price" />
     </unique>
     <behavior name="timestampable" />
+    <behavior name="query_cache" />
   </table>
     <!--
       This table has the information that would be visible from the trading place's screen.
@@ -105,10 +111,6 @@
     <column name="min_buy" type="integer" />
     <column name="max_sell" type="integer" />
     <column name="min_sell" type="integer" />
-    <unique>
-      <unique-column name="item_id" />
-      <unique-column name="created_at" />
-    </unique>
     <index>
       <index-column name="max_buy" />
     </index>
@@ -125,6 +127,7 @@
       <reference local="item_id" foreign="id"/>
     </foreign-key>
     <behavior name="timestampable" />
+    <behavior name="query_cache" />
   </table>
 
   <table name="price_history">
@@ -149,5 +152,6 @@
     <behavior name="timestampable">
       <parameter name="disable_updated_at" value="true" />
     </behavior>
+    <behavior name="query_cache" />
   </table>
 </database>

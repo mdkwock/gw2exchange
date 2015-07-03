@@ -59,7 +59,7 @@ class ItemTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 7;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class ItemTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 7;
 
     /**
      * the column name for the id field
@@ -85,6 +85,11 @@ class ItemTableMap extends TableMap
      * the column name for the icon field
      */
     const COL_ICON = 'item.icon';
+
+    /**
+     * the column name for the hash field
+     */
+    const COL_HASH = 'item.hash';
 
     /**
      * the column name for the cache_time field
@@ -113,11 +118,11 @@ class ItemTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Name', 'Icon', 'CacheTime', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'name', 'icon', 'cacheTime', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(ItemTableMap::COL_ID, ItemTableMap::COL_NAME, ItemTableMap::COL_ICON, ItemTableMap::COL_CACHE_TIME, ItemTableMap::COL_CREATED_AT, ItemTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'name', 'icon', 'cache_time', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id', 'Name', 'Icon', 'Hash', 'CacheTime', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'name', 'icon', 'hash', 'cacheTime', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(ItemTableMap::COL_ID, ItemTableMap::COL_NAME, ItemTableMap::COL_ICON, ItemTableMap::COL_HASH, ItemTableMap::COL_CACHE_TIME, ItemTableMap::COL_CREATED_AT, ItemTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'name', 'icon', 'hash', 'cache_time', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -127,11 +132,11 @@ class ItemTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'Icon' => 2, 'CacheTime' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'icon' => 2, 'cacheTime' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
-        self::TYPE_COLNAME       => array(ItemTableMap::COL_ID => 0, ItemTableMap::COL_NAME => 1, ItemTableMap::COL_ICON => 2, ItemTableMap::COL_CACHE_TIME => 3, ItemTableMap::COL_CREATED_AT => 4, ItemTableMap::COL_UPDATED_AT => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'icon' => 2, 'cache_time' => 3, 'created_at' => 4, 'updated_at' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'Icon' => 2, 'Hash' => 3, 'CacheTime' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'icon' => 2, 'hash' => 3, 'cacheTime' => 4, 'createdAt' => 5, 'updatedAt' => 6, ),
+        self::TYPE_COLNAME       => array(ItemTableMap::COL_ID => 0, ItemTableMap::COL_NAME => 1, ItemTableMap::COL_ICON => 2, ItemTableMap::COL_HASH => 3, ItemTableMap::COL_CACHE_TIME => 4, ItemTableMap::COL_CREATED_AT => 5, ItemTableMap::COL_UPDATED_AT => 6, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'icon' => 2, 'hash' => 3, 'cache_time' => 4, 'created_at' => 5, 'updated_at' => 6, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -154,6 +159,7 @@ class ItemTableMap extends TableMap
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('name', 'Name', 'VARCHAR', true, 255, null);
         $this->addColumn('icon', 'Icon', 'VARCHAR', true, 255, null);
+        $this->addColumn('hash', 'Hash', 'VARCHAR', true, 3000, null);
         $this->addColumn('cache_time', 'CacheTime', 'INTEGER', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
@@ -212,6 +218,7 @@ class ItemTableMap extends TableMap
     {
         return array(
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
+            'query_cache' => array('backend' => 'apc', 'lifetime' => '3600', ),
         );
     } // getBehaviors()
 
@@ -359,6 +366,7 @@ class ItemTableMap extends TableMap
             $criteria->addSelectColumn(ItemTableMap::COL_ID);
             $criteria->addSelectColumn(ItemTableMap::COL_NAME);
             $criteria->addSelectColumn(ItemTableMap::COL_ICON);
+            $criteria->addSelectColumn(ItemTableMap::COL_HASH);
             $criteria->addSelectColumn(ItemTableMap::COL_CACHE_TIME);
             $criteria->addSelectColumn(ItemTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(ItemTableMap::COL_UPDATED_AT);
@@ -366,6 +374,7 @@ class ItemTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.name');
             $criteria->addSelectColumn($alias . '.icon');
+            $criteria->addSelectColumn($alias . '.hash');
             $criteria->addSelectColumn($alias . '.cache_time');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');

@@ -95,25 +95,23 @@ class Price extends BasePrice implements DatabaseObjectInterface
     $priceHistory = $priceHistoryQuery->filterByItemId($this->item_id)->lastCreatedFirst()->findOneOrCreate();
     $existing = $priceHistory->hash();
     $new = $this->hash();
+    //we only create new price_history records when the price/qty changes
     if($existing == $new){
-      //dd("same");
       //if the old price history and the price we are about to save are the same
       $this->setCacheTime($this->getCacheTime()*2);//double the cache time
     }else{
-      //d($priceHistory);
-      //d($this);
-      //dd('diff');
       $this->setCacheTime($this->minCacheTime);//else reset the cache time to 1
-    }
-    if($priceHistory->getCreatedAt() != $this->getUpdatedAt()){
-      //if there is no existing price history entry for this update time
-      $priceHistory = new PriceHistory();
-      $priceHistory->fromArray($this->toArray());
-      $priceHistory->setCreatedAt($now);
-      $this->addPriceHistory($priceHistory);
-    }else{
-      //there is an existing price history for this update time
-    }
+
+
+      if($priceHistory->getCreatedAt() != $this->getUpdatedAt()){
+        //if there is no existing price history entry for this update time
+        $priceHistory = new PriceHistory();
+        $priceHistory->fromArray($this->toArray());
+        $priceHistory->setCreatedAt($now);
+        $this->addPriceHistory($priceHistory);
+      }else{
+        //there is an existing price history for this update time
+      }
       if(empty($this->getMaxBuy())){
         //if there is not already a max buy set
         //then we have to calculate and set all of them
@@ -143,7 +141,7 @@ class Price extends BasePrice implements DatabaseObjectInterface
           $this->setMinSell($this->sell_price);
         }
       }
-    //dd($this);
+    }
     return true;//continue with the save
   }
 

@@ -238,6 +238,7 @@ class PriceTableMap extends TableMap
     {
         return array(
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
+            'query_cache' => array('backend' => 'apc', 'lifetime' => '3600', ),
         );
     } // getBehaviors()
 

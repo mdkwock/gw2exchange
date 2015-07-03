@@ -77,9 +77,9 @@ $app->configureMode('development', function () use($app){
   $itemAssembler = new ItemAssembler($webScraper, $itemParser, $itemFactory);
 
   $itemQueryFactory = new ItemQueryFactory();
-  $itemMaintenance = new ItemMaintenance($itemAssembler,$itemQueryFactory);
 
   $itemStorage = new ItemStorage($itemQueryFactory, $itemFactory);
+  $itemMaintenance = new ItemMaintenance($itemAssembler, $itemStorage, $itemQueryFactory);
 
 
   $listingParser = new ListingParser();
@@ -96,9 +96,9 @@ $app->configureMode('development', function () use($app){
 
   $priceQueryFactory = new PriceQueryFactory();
   $PriceHistoryQueryFactory = new PriceHistoryQueryFactory();
-  $priceMaintenance = new PriceMaintenance($priceAssembler, $itemAssembler,$priceQueryFactory, $itemQueryFactory);
-
+  
   $priceStorage = new PriceStorage($priceQueryFactory, $PriceHistoryQueryFactory, $priceFactory);
+  $priceMaintenance = new PriceMaintenance($priceAssembler, $priceStorage,$itemStorage);
 
   $metadata = new SearchMetadata($itemQueryFactory);
   $itemSearch = new ItemSearch($itemQueryFactory, $priceQueryFactory,$itemStorage,$priceStorage);

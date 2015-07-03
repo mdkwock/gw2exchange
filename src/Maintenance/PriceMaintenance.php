@@ -3,7 +3,8 @@ namespace GW2Exchange\Maintenance;
 
 use GW2Exchange\Signature\Maintenance\MaintenanceInterface;
 use GW2Exchange\Signature\Price\PriceAssemblerInterface;
-use \GW2Exchange\Signature\Item\ItemAssemblerInterface;
+use GW2Exchange\Price\PriceStorage;
+use GW2Exchange\Item\ItemStorage;
 
 use GW2Exchange\Database\PriceQueryFactory;
 
@@ -18,16 +19,14 @@ use GW2Exchange\Database\Map\PriceTableMap;
 class PriceMaintenance implements MaintenanceInterface
 {
   protected $priceAssembler;
-  protected $itemAssembler;
-  protected $priceQueryFactory;
-  protected $itemQueryFactory;
+  protected $priceStorage;
+  protected $itemStorage;
 
-  public function __construct(PriceAssemblerInterface $pa, ItemAssemblerInterface $ia, PriceQueryFactory $pqf, ItemQueryFactory $iqf)
+  public function __construct(PriceAssemblerInterface $pa, PriceStorage $ps, ItemStorage $is)
   {
     $this->priceAssembler = $pa;
-    $this->itemAssembler = $ia;
-    $this->priceQueryFactory = $pqf;
-    $this->itemQueryFactory = $iqf;
+    $this->priceStorage = $ps;
+    $this->itemStorage = $is;
   }
 
   /**
@@ -36,27 +35,32 @@ class PriceMaintenance implements MaintenanceInterface
    * if no datetime is passed, then it will only return nonexisting ones
    * @return int[]   all of the ids which need to be run
    */
-  public function getToDoList(\DateTime $staleDateTime = null)
+  protected function getToDoList()
   {
-    $priceQuery = $this->priceQueryFactory->createQuery();
-    if($staleDateTime !== null){
-      //if we pass in a stale datetime
-      $priceQuery->filterByUpdatedAt(array("min"=>$staleDateTime->format('Y-m-d H:i:s'))); //only take the ones older than the given
-    }
-    //$skipList = $priceQuery->select('ItemId')->find()->toArray(); //this is all of the prices in the database that are young enough to be skipped
-    $pickList = $this->getStaleCache();
+    //find prices that are up to date and pick them, do not run items that no longer return answers them
+    $stalePickList = $this->getStaleCache();
+
+    //master list is a list of all valid prices (item in item table and price on gw2 servers)
     //get a list from the gw2 server of all the prices in the game
     $masterPriceList = $this->priceAssembler->getIdList();
-    $masterItemList = $this->itemAssembler->getIdList();
+    //get a list from the database about what items we are tracking
+    $masterItemList = $this->itemStorage->getAllItemIds();
     //check that all of the prices refer to valid items
-    $masterPriceList = array_flip($masterPriceList);
-    $masterItemList = array_flip($masterItemList);
+    $flippedMasterPriceList = array_flip($masterPriceList);
+    $flippedMasterItemList = array_flip($masterItemList);
+    $flippedMasterList = array_intersect_key($flippedMasterItemList,$flippedMasterPriceList);//find the prices of only valid items
+    $masterList = array_keys($flippedMasterList);
+    $pickList = array_flip($stalePickList);
+    //only get prices which still exist    
+    //$pickList = array_intersect_key($pickList,$masterList);
+    //masterlist is still flipped from its creation
 
-    $masterList = array_intersect_key($masterItemList,$masterPriceList);//find the prices of only valid items
-    //find prices that are up to date and pick them, do not run items that no longer return answers them
-    $pickList = array_flip($pickList);
-    $toDoList = array_intersect_key($pickList,$masterList); //use array diff keys bc its faster than otherwise
-    $toDoList = array_keys($toDoList);
+    //get all of the prices which are not in the database
+    $newPrices = $this->loadNewPriceItems($masterList);    //new item prices come before updates to existing items
+    $toDoList = array_merge($newPrices,$pickList);
+    $flippedToDoList = array_flip($toDoList);
+    $flippedToDoList = array_intersect_key($flippedToDoList,$flippedMasterList);
+    $toDoList = array_keys($flippedToDoList);
     return $toDoList;
   }
 
@@ -66,8 +70,7 @@ class PriceMaintenance implements MaintenanceInterface
    * even if the 1 min item hasn't been checked in an hour
    * @return [type] [description]
    */
-  public function getStaleCache(){
-    $con = Propel::getWriteConnection(PriceTableMap::DATABASE_NAME);
+  protected function getStaleCache(){
     //find the items that the cache time has expired
     //this is equal to saying the current time is after the cache time
     //had to adjust mysqls idea of the time bc of some timezone issue may not be needed on other servers
@@ -76,27 +79,33 @@ class PriceMaintenance implements MaintenanceInterface
            WHERE
             CONVERT_TZ(NOW(),'+00:00','-04:00') > date_add(updated_at, Interval (cache_time) MINUTE)
              ORDER BY (CONVERT_TZ(NOW(),'+00:00','-04:00') - date_add(updated_at, Interval (cache_time) MINUTE)) DESC";
-    $stmt = $con->prepare($sql);
-    $stmt->execute();
-    $data = $stmt->fetchAll();
-    $prices = array();
+    $this->priceStorage->prepareCustomQuery($sql);
+    $data = $this->priceStorage->fetchAllCustomQuery();
+    $items = array();
     foreach ($data as $id) {
-      $prices[] = $id['item_id'];
+      $items[] = $id['item_id'];
     }
-    return $prices;
-
+    return $items;
   }
 
+
   /**
-   * this will return a DateTime object which will be set to the last time the maintenance ran
-   * @return DateTime    the last time the maintenance ran
+   * this function loads all of the prices from both the storage and the gw2 servers
+   * it then adds all prices for items not found in the storage to the storage to allow for them to be updated like the rest
+   * choosing this method even though it is not that great for simplicity sake 
+   * its not optimal because you have to hit the database twice     
+   *
+   * @param  int[] $masterItemList  an array of all the items from the gw2 server
+   * @return int[]                  the ids of prices that aren't in the database
    */
-  public function getLastRun()
-  {
-    $lastUpdated = $this->priceQueryFactory->createQuery()->lastUpdatedFirst()->findOne();
-    $ans = $lastUpdated->getUpdatedAt();
-    $dateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $ans);
-    return $dateTime;
+  protected function loadNewPriceItems($masterPriceList){
+    $currentPriceList = $this->priceStorage->getAllItemIds();
+    $flippedCurrentPriceList = array_flip($currentPriceList);
+    $flippedMasterPriceList = array_flip($masterPriceList);
+    //get all the prices that aren't in the database
+    $newPriceList = array_diff_key($flippedMasterPriceList,$flippedCurrentPriceList); //use array diff keys bc its faster than otherwise
+    $newPriceList = array_keys($newPriceList);
+    return $newPriceList;
   }
 
   /**
@@ -104,21 +113,14 @@ class PriceMaintenance implements MaintenanceInterface
    * @param  int[]  $ids  specifies which ids should be run
    * @param  DateTime  $ids  specifies which ids should be run
    */
-  public function runMaintenance($ids = array(),$staleDateTime = null)
+  public function runMaintenance($ids = array())
   {
 
     if(empty($ids)){
       //if we are not given a set of ids, figure out what they should be
       //find the list of ids based on old ones from the database
-      $ids = $this->getToDoList($staleDateTime); //get the list of ids to run based on the optional expiration time
+      $ids = $this->getToDoList(); //get the list of ids to run based on the optional expiration time
     }
-    /*
-    //archive any existing prices
-    $oldPrices = $this->priceQueryFactory->createQuery()->filterByItemId($ids)->find();//get all old prices
-    foreach ($oldPrices as $price) {
-      $price->archive();
-    }
-    */
     //use the count ids bc the assembler rate limits us
     $numLeft = count($ids);
     //get new prices
@@ -139,7 +141,6 @@ class PriceMaintenance implements MaintenanceInterface
         dd($price);
       }
     }
-    //dd($prices);
     return $numLeft;
   }
 }

@@ -164,6 +164,19 @@ class ItemItemDetailTableMap extends TableMap
     } // buildRelations()
 
     /**
+     *
+     * Gets the list of behaviors registered for this table
+     *
+     * @return array Associative array (name => parameters) of behaviors
+     */
+    public function getBehaviors()
+    {
+        return array(
+            'query_cache' => array('backend' => 'apc', 'lifetime' => '3600', ),
+        );
+    } // getBehaviors()
+
+    /**
      * Adds an object to the instance pool.
      *
      * Propel keeps cached copies of objects in an instance pool when they are retrieved

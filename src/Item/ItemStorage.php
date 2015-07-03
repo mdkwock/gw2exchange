@@ -18,11 +18,24 @@ class ItemStorage
 {
   protected $itemQueryFactory;
   protected $itemFactory;
+  protected $stmt; //this is a statement object stored for use in the custom query functions
 
   public function __construct(DatabaseQueryFactoryInterface $iqf,ItemFactoryInterface $if)
   {
     $this->itemQueryFactory = $iqf;
     $this->itemFactory = $if;
+  }
+
+  public function prepareCustomQuery($sql){
+
+    $con = Propel::getWriteConnection(ItemTableMap::DATABASE_NAME);
+    $this->stmt = $con->prepare($sql);
+  }
+
+  public function fetchAllCustomQuery(){
+    $this->stmt->execute();
+    $data = $this->stmt->fetchAll();
+    return $data;
   }
 
   /**
@@ -39,6 +52,11 @@ class ItemStorage
     return $items;
   }
 
+  public function getAllItemIds(){
+    $itemQuery = $this->itemQueryFactory->createQuery()->select('Id');
+    $itemIds = $itemQuery->find()->toArray();
+    return $itemIds;
+  }
 
   /**
    * a general search function that will call the applicable filters

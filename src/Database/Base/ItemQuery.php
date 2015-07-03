@@ -23,6 +23,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItemQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildItemQuery orderByName($order = Criteria::ASC) Order by the name column
  * @method     ChildItemQuery orderByIcon($order = Criteria::ASC) Order by the icon column
+ * @method     ChildItemQuery orderByHash($order = Criteria::ASC) Order by the hash column
  * @method     ChildItemQuery orderByCacheTime($order = Criteria::ASC) Order by the cache_time column
  * @method     ChildItemQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildItemQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
@@ -30,6 +31,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItemQuery groupById() Group by the id column
  * @method     ChildItemQuery groupByName() Group by the name column
  * @method     ChildItemQuery groupByIcon() Group by the icon column
+ * @method     ChildItemQuery groupByHash() Group by the hash column
  * @method     ChildItemQuery groupByCacheTime() Group by the cache_time column
  * @method     ChildItemQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildItemQuery groupByUpdatedAt() Group by the updated_at column
@@ -66,6 +68,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItem findOneById(int $id) Return the first ChildItem filtered by the id column
  * @method     ChildItem findOneByName(string $name) Return the first ChildItem filtered by the name column
  * @method     ChildItem findOneByIcon(string $icon) Return the first ChildItem filtered by the icon column
+ * @method     ChildItem findOneByHash(string $hash) Return the first ChildItem filtered by the hash column
  * @method     ChildItem findOneByCacheTime(int $cache_time) Return the first ChildItem filtered by the cache_time column
  * @method     ChildItem findOneByCreatedAt(string $created_at) Return the first ChildItem filtered by the created_at column
  * @method     ChildItem findOneByUpdatedAt(string $updated_at) Return the first ChildItem filtered by the updated_at column *
@@ -76,6 +79,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItem requireOneById(int $id) Return the first ChildItem filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildItem requireOneByName(string $name) Return the first ChildItem filtered by the name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildItem requireOneByIcon(string $icon) Return the first ChildItem filtered by the icon column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildItem requireOneByHash(string $hash) Return the first ChildItem filtered by the hash column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildItem requireOneByCacheTime(int $cache_time) Return the first ChildItem filtered by the cache_time column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildItem requireOneByCreatedAt(string $created_at) Return the first ChildItem filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildItem requireOneByUpdatedAt(string $updated_at) Return the first ChildItem filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -84,6 +88,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItem[]|ObjectCollection findById(int $id) Return ChildItem objects filtered by the id column
  * @method     ChildItem[]|ObjectCollection findByName(string $name) Return ChildItem objects filtered by the name column
  * @method     ChildItem[]|ObjectCollection findByIcon(string $icon) Return ChildItem objects filtered by the icon column
+ * @method     ChildItem[]|ObjectCollection findByHash(string $hash) Return ChildItem objects filtered by the hash column
  * @method     ChildItem[]|ObjectCollection findByCacheTime(int $cache_time) Return ChildItem objects filtered by the cache_time column
  * @method     ChildItem[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildItem objects filtered by the created_at column
  * @method     ChildItem[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildItem objects filtered by the updated_at column
@@ -92,7 +97,10 @@ use Propel\Runtime\Exception\PropelException;
  */
 abstract class ItemQuery extends ModelCriteria
 {
-    protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityNotFoundException';
+
+    // query_cache behavior
+    protected $queryKey = '';
+protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityNotFoundException';
 
     /**
      * Initializes internal state of \GW2Exchange\Database\Base\ItemQuery object.
@@ -179,7 +187,7 @@ abstract class ItemQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, name, icon, cache_time, created_at, updated_at FROM item WHERE id = :p0';
+        $sql = 'SELECT id, name, icon, hash, cache_time, created_at, updated_at FROM item WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -366,6 +374,35 @@ abstract class ItemQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(ItemTableMap::COL_ICON, $icon, $comparison);
+    }
+
+    /**
+     * Filter the query on the hash column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByHash('fooValue');   // WHERE hash = 'fooValue'
+     * $query->filterByHash('%fooValue%'); // WHERE hash LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $hash The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildItemQuery The current query, for fluid interface
+     */
+    public function filterByHash($hash = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($hash)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $hash)) {
+                $hash = str_replace('*', '%', $hash);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(ItemTableMap::COL_HASH, $hash, $comparison);
     }
 
     /**
@@ -1018,6 +1055,128 @@ abstract class ItemQuery extends ModelCriteria
     public function firstCreatedFirst()
     {
         return $this->addAscendingOrderByColumn(ItemTableMap::COL_CREATED_AT);
+    }
+
+    // query_cache behavior
+
+    public function setQueryKey($key)
+    {
+        $this->queryKey = $key;
+
+        return $this;
+    }
+
+    public function getQueryKey()
+    {
+        return $this->queryKey;
+    }
+
+    public function cacheContains($key)
+    {
+
+        return apc_fetch($key);
+    }
+
+    public function cacheFetch($key)
+    {
+
+        return apc_fetch($key);
+    }
+
+    public function cacheStore($key, $value, $lifetime = 3600)
+    {
+        apc_store($key, $value, $lifetime);
+    }
+
+    public function doSelect(ConnectionInterface $con = null)
+    {
+        // check that the columns of the main class are already added (if this is the primary ModelCriteria)
+        if (!$this->hasSelectClause() && !$this->getPrimaryCriteria()) {
+            $this->addSelfSelectColumns();
+        }
+        $this->configureSelectColumns();
+
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(ItemTableMap::DATABASE_NAME);
+        $db = Propel::getServiceContainer()->getAdapter(ItemTableMap::DATABASE_NAME);
+
+        $key = $this->getQueryKey();
+        if ($key && $this->cacheContains($key)) {
+            $params = $this->getParams();
+            $sql = $this->cacheFetch($key);
+        } else {
+            $params = array();
+            $sql = $this->createSelectSql($params);
+            if ($key) {
+                $this->cacheStore($key, $sql);
+            }
+        }
+
+        try {
+            $stmt = $con->prepare($sql);
+            $db->bindValues($stmt, $params, $dbMap);
+            $stmt->execute();
+            } catch (Exception $e) {
+                Propel::log($e->getMessage(), Propel::LOG_ERR);
+                throw new PropelException(sprintf('Unable to execute SELECT statement [%s]', $sql), 0, $e);
+            }
+
+        return $con->getDataFetcher($stmt);
+    }
+
+    public function doCount(ConnectionInterface $con = null)
+    {
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap($this->getDbName());
+        $db = Propel::getServiceContainer()->getAdapter($this->getDbName());
+
+        $key = $this->getQueryKey();
+        if ($key && $this->cacheContains($key)) {
+            $params = $this->getParams();
+            $sql = $this->cacheFetch($key);
+        } else {
+            // check that the columns of the main class are already added (if this is the primary ModelCriteria)
+            if (!$this->hasSelectClause() && !$this->getPrimaryCriteria()) {
+                $this->addSelfSelectColumns();
+            }
+
+            $this->configureSelectColumns();
+
+            $needsComplexCount = $this->getGroupByColumns()
+                || $this->getOffset()
+                || $this->getLimit()
+                || $this->getHaving()
+                || in_array(Criteria::DISTINCT, $this->getSelectModifiers());
+
+            $params = array();
+            if ($needsComplexCount) {
+                if ($this->needsSelectAliases()) {
+                    if ($this->getHaving()) {
+                        throw new PropelException('Propel cannot create a COUNT query when using HAVING and  duplicate column names in the SELECT part');
+                    }
+                    $db->turnSelectColumnsToAliases($this);
+                }
+                $selectSql = $this->createSelectSql($params);
+                $sql = 'SELECT COUNT(*) FROM (' . $selectSql . ') propelmatch4cnt';
+            } else {
+                // Replace SELECT columns with COUNT(*)
+                $this->clearSelectColumns()->addSelectColumn('COUNT(*)');
+                $sql = $this->createSelectSql($params);
+            }
+
+            if ($key) {
+                $this->cacheStore($key, $sql);
+            }
+        }
+
+        try {
+            $stmt = $con->prepare($sql);
+            $db->bindValues($stmt, $params, $dbMap);
+            $stmt->execute();
+        } catch (Exception $e) {
+            Propel::log($e->getMessage(), Propel::LOG_ERR);
+            throw new PropelException(sprintf('Unable to execute COUNT statement [%s]', $sql), 0, $e);
+        }
+
+        return $con->getDataFetcher($stmt);
     }
 
 } // ItemQuery

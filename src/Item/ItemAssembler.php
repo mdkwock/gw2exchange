@@ -64,7 +64,6 @@ class ItemAssembler implements ItemAssemblerInterface
       //if it looks like a number id
       $itemId = intval($itemIds);
     }
-
     //get item from database
     //and check if the time updated is less than cache + now
     //if true then ask server for update

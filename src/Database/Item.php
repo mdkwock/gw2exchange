@@ -4,8 +4,7 @@ namespace GW2Exchange\Database;
 use GW2Exchange\Database\Base\Item as BaseItem;
 use GW2Exchange\Database\Map\ItemTableMap;
 use GW2Exchange\Signature\Database\DatabaseObjectInterface;
-use Propel\Runtime\Map\TableMap;
-
+use Propel\Runtime\Connection\ConnectionInterface;
 /**
  * Skeleton subclass for representing a row from the 'item' table.
  *
@@ -19,6 +18,7 @@ use Propel\Runtime\Map\TableMap;
 class Item extends BaseItem implements DatabaseObjectInterface
 {
   protected static $tableColumnMap;
+  protected $minCacheTime = 1;
 
   /**
    * this function is used as a shortcut to the propel table mapping process
@@ -60,20 +60,20 @@ class Item extends BaseItem implements DatabaseObjectInterface
     return $this->setAll($attributes['Id'],$attributes['Name'],$attributes['Icon']);
   }
 
-  public function toArray($keyType = TableMap::TYPE_COLNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
+  public function toArray($keyType = ItemTableMap::TYPE_COLNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
   {
 
     //if we have already dumped this object, indicated that its already been done and we're stopping
     if (isset($alreadyDumpedObjects['Item'][$this->hashCode()])) {
         return '*RECURSION*';
     }
-    $keyType = TableMap::TYPE_PHPNAME;
+    $keyType = ItemTableMap::TYPE_PHPNAME;
     $result = parent::toArray($keyType, $includeLazyLoadColumns, $alreadyDumpedObjects, $includeForeignObjects);
     //assign the related object index keys
     //use keys variables rather than setting string constants so that it will work no matter how it is being called
     switch($keyType){
       default:
-      case TableMap::TYPE_PHPNAME:
+      case ItemTableMap::TYPE_PHPNAME:
         $itemKey = 'Item';
         $itemInfoKey = 'ItemInfo';
         $itemItemDetailKey = 'ItemItemDetails';
@@ -82,7 +82,7 @@ class Item extends BaseItem implements DatabaseObjectInterface
         $itemDetailLabelKey = 'Label';
         $itemDetailValueKey = 'Value';
       break;
-      case TableMap::TYPE_CAMELNAME:
+      case ItemTableMap::TYPE_CAMELNAME:
         $itemKey = 'item';
         $itemInfoKey = 'itemInfo';
         $itemItemDetailKey = 'itemItemDetails';
@@ -91,7 +91,7 @@ class Item extends BaseItem implements DatabaseObjectInterface
         $itemDetailLabelKey = 'label';
         $itemDetailValueKey = 'value';
       break;
-      case TableMap::TYPE_COLNAME:
+      case ItemTableMap::TYPE_COLNAME:
         $itemKey = 'Item';
         $itemInfoKey = 'ItemInfo';
         $itemItemDetailKey = 'ItemItemDetails';
@@ -100,7 +100,7 @@ class Item extends BaseItem implements DatabaseObjectInterface
         $itemDetailLabelKey = 'item_detail.label';
         $itemDetailValueKey = 'item_item_detail.value';
       break;
-      case TableMap::TYPE_FIELDNAME:
+      case ItemTableMap::TYPE_FIELDNAME:
         $itemKey = 'item';
         $itemInfoKey = 'item_info';
         $itemItemDetailKey = 'item_item_details';
@@ -109,7 +109,7 @@ class Item extends BaseItem implements DatabaseObjectInterface
         $itemDetailLabelKey = 'label';
         $itemDetailValueKey = 'value';
       break;
-      case TableMap::TYPE_NUM:
+      case ItemTableMap::TYPE_NUM:
         $itemKey = 'Item';
         $itemInfoKey = 'ItemInfo';
         $itemItemDetailKey = 'ItemItemDetails';
@@ -122,8 +122,10 @@ class Item extends BaseItem implements DatabaseObjectInterface
     //move the item's info into the root
     //dd($keyType);
     $itemInfo = $this->getItemInfo();
-    $itemInfoArray = $itemInfo->toArray();
-    $result = array_merge($result, $itemInfoArray);
+    if(!empty($itemInfo)){
+      $itemInfoArray = $itemInfo->toArray();
+      $result = array_merge($result, $itemInfoArray);
+    }    
     /*
     $itemInfo = $result[$itemInfoKey];
     unset($itemInfo[$itemKey]);//unset the recursive entry
@@ -151,5 +153,30 @@ class Item extends BaseItem implements DatabaseObjectInterface
     $result[$itemDetailKey] = $details;
     unset($result[$itemItemDetailKey]);
     return $result;
+  }
+
+  public function hash(){
+    $data = $this->toArray();
+    $hash = md5(json_encode($data));
+    return $hash;
+  }
+
+  /**
+   * Code to be run before persisting the object
+   * Creates a Price History Record of the previous value and saves it to the db
+   * @param  ConnectionInterface $con
+   * @return boolean
+   */
+  public function preSave(ConnectionInterface $con =  null)
+  {
+    $newHash = $this->hash();//calculate the hash values of the new object
+    //if the old hash value and this new hash value are the same, then the object is the same
+    if($this->getHash() == $newHash){
+      $this->setCacheTime($this->getCacheTime()*2);//double the cache time
+    }else{
+      $this->setCacheTime($this->minCacheTime);//else reset the cache time to the minimum
+    }
+    $this->setHash($newHash);
+    return true;
   }
 }

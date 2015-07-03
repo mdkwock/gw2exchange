@@ -3,11 +3,14 @@ namespace GW2Exchange\Price;
 
 use GW2Exchange\Signature\Database\DatabaseQueryFactoryInterface;
 
-use Propel\Runtime\ActiveQuery\Criteria;
 use \GW2Exchange\Signature\Price\PriceParserInterface;
 use \GW2Exchange\Signature\Price\PriceFactoryInterface;
 use \GW2Exchange\Price\Price;
 use GW2Exchange\Database\PriceQuery;
+
+use Propel\Runtime\ActiveQuery\Criteria;
+use Propel\Runtime\Propel;
+use GW2Exchange\Database\Map\PriceTableMap;
 
 /**
  * 
@@ -17,12 +20,37 @@ class PriceStorage
   protected $priceQueryFactory;
   protected $priceHistoryQueryFactory;
   protected $priceFactory;
+  protected $stmt; //this is a statement object stored for use in the custom query functions
 
   public function __construct(DatabaseQueryFactoryInterface $pqf,DatabaseQueryFactoryInterface $phqf, PriceFactoryInterface $pf)
   {
     $this->priceQueryFactory = $pqf;
     $this->priceHistoryQueryFactory = $phqf;
     $this->priceFactory = $pf;
+  }
+
+  public function prepareCustomQuery($sql){
+
+    $con = Propel::getWriteConnection(PriceTableMap::DATABASE_NAME);
+    $this->stmt = $con->prepare($sql);
+  }
+
+  public function fetchAllCustomQuery(){
+    $this->stmt->execute();
+    $data = $this->stmt->fetchAll();
+    return $data;
+  }
+
+
+  /**
+   * returns all of the item ids that we track
+   * @return int[]   an array of all the item ids
+   */
+  public function getAllItemIds()
+  {
+    $priceQuery = $this->priceQueryFactory->createQuery()->select('ItemId');
+    $priceIds = $priceQuery->find()->toArray();
+    return $priceIds;
   }
 
   public function getByItemIds($itemIds)

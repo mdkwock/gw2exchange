@@ -226,6 +226,7 @@ $app->get('/maintenance/item',function() use($app){
     //count the number of redirects to eliminate too many redirects break
     $_SESSION['redirects'] = empty($_SESSION['redirects'])?1:$_SESSION['redirects']+1;
     if($_SESSION['redirects'] >= 10){
+      $_SESSION['redirects'] = 0;
       echo "<script>window.location.reload();</script>";
     }else{
       $app->response->redirect('/GW2Exchange/maintenance/item', 303);
