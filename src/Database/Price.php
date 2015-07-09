@@ -98,9 +98,12 @@ class Price extends BasePrice implements DatabaseObjectInterface
     //we only create new price_history records when the price/qty changes
     if($existing == $new){
       //if the old price history and the price we are about to save are the same
-      $this->setCacheTime($this->getCacheTime()*2);//double the cache time
+      $oldCacheTime = $this->getCacheTime();
+      $newCacheTime = $oldCacheTime>$this->minCacheTime?$oldCacheTime*2:$this->minCacheTime*2;
+      $this->setCacheTime($newCacheTime);//double the cache time
     }else{
-      $this->setCacheTime($this->minCacheTime);//else reset the cache time to 1
+      //we found it so reset the cache timer
+      $this->setCacheTime($this->minCacheTime);
 
 
       if($priceHistory->getCreatedAt() != $this->getUpdatedAt()){
@@ -119,10 +122,16 @@ class Price extends BasePrice implements DatabaseObjectInterface
         $stmt->bindValue(':p1', $this->getItemId());
         $stmt->execute();
         $aggregates = $stmt->fetch();
-        $this->setMaxBuy($aggregates['MAX(buy_price)']);
-        $this->setMinBuy($aggregates['MIN(buy_price)']);
-        $this->setMaxSell($aggregates['MAX(sell_price)']);
-        $this->setMinSell($aggregates['MIN(sell_price)']);
+        //we need to make sure that we get a value back without the checks then the aggregate function can return null,
+        //if its the first result
+        $maxBuy = empty($aggregates['MAX(buy_price'])?$this->getBuyPrice():$aggregates['MAX(buy_price'];
+        $minBuy = empty($aggregates['MIN(buy_price'])?$this->getBuyPrice():$aggregates['MIN(buy_price'];
+        $maxSell = empty($aggregates['MAX(sell_price'])?$this->getSellPrice():$aggregates['MAX(sell_price'];
+        $minSell = empty($aggregates['MIN(sell_price'])?$this->getSellPrice():$aggregates['MIN(sell_price'];
+        $this->setMaxBuy($maxBuy);
+        $this->setMinBuy($minBuy);
+        $this->setMaxSell($maxSell);
+        $this->setMinSell($minSell);
       }else{
         //else they are already set so we can just update if necessary
         if($this->buy_price > $this->getMaxBuy()){

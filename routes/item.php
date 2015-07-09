@@ -219,8 +219,6 @@ $app->get('/item/:id/price/update',function($id) use ($app){
 /******************* END Price Lookups *************************/
 
 $app->get('/maintenance/item',function() use($app){
-  $staleTime = new DateTime();
-  $staleTime->modify('-1 day');
   $toDo = $app->config('ItemMaintenance')->runMaintenance();
   if($toDo>0){
     //count the number of redirects to eliminate too many redirects break
@@ -235,9 +233,7 @@ $app->get('/maintenance/item',function() use($app){
 });
 
 $app->get('/maintenance/price',function() use($app){
-  $staleTime = new DateTime();
-  $staleTime->modify('-3 hour');
-  $toDo = $app->config('PriceMaintenance')->runMaintenance(null,$staleTime);
+  $toDo = $app->config('PriceMaintenance')->runMaintenance();
   if($toDo>0){
     //count the number of redirects to eliminate too many redirects break
     $_SESSION['redirects'] = empty($_SESSION['redirects'])?1:$_SESSION['redirects']+1;

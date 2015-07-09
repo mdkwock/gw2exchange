@@ -50,14 +50,11 @@ class PriceMaintenance implements MaintenanceInterface
     $flippedMasterItemList = array_flip($masterItemList);
     $flippedMasterList = array_intersect_key($flippedMasterItemList,$flippedMasterPriceList);//find the prices of only valid items
     $masterList = array_keys($flippedMasterList);
-    $pickList = array_flip($stalePickList);
-    //only get prices which still exist    
-    //$pickList = array_intersect_key($pickList,$masterList);
-    //masterlist is still flipped from its creation
-
+    //only get prices which still exist   
     //get all of the prices which are not in the database
     $newPrices = $this->loadNewPriceItems($masterList);    //new item prices come before updates to existing items
-    $toDoList = array_merge($newPrices,$pickList);
+    //dd($newPrices);
+    $toDoList = array_merge($newPrices,$stalePickList);
     $flippedToDoList = array_flip($toDoList);
     $flippedToDoList = array_intersect_key($flippedToDoList,$flippedMasterList);
     $toDoList = array_keys($flippedToDoList);
@@ -115,7 +112,6 @@ class PriceMaintenance implements MaintenanceInterface
    */
   public function runMaintenance($ids = array())
   {
-
     if(empty($ids)){
       //if we are not given a set of ids, figure out what they should be
       //find the list of ids based on old ones from the database
