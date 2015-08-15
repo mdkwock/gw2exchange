@@ -6,3 +6,4 @@
 /database/generated-sql/
 /database/conf/
 /logs/
+*.log

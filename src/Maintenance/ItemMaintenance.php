@@ -54,7 +54,7 @@ class ItemMaintenance implements MaintenanceInterface
   /**
    * this function loads all of the items from both the storage and the gw2 servers
    * it then adds all items not found in the storage to the storage to allow for them to be updated like the rest
-   * choosing this method even though it is not that great for simplicity sake
+   * choosing this method even though it is not that great, for simplicity sake
    * its not optimal because you have to hit the database twice
    *
    * @param  int[] $masterItemList  an array of all the items from the gw2 server

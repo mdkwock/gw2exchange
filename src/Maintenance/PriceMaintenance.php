@@ -37,7 +37,7 @@ class PriceMaintenance implements MaintenanceInterface
    */
   protected function getToDoList()
   {
-    //find prices that are up to date and pick them, do not run items that no longer return answers them
+    //find prices that are up to date and pick them, do not run items that no longer return answers for them
     $stalePickList = $this->getStaleCache();
 
     //master list is a list of all valid prices (item in item table and price on gw2 servers)
