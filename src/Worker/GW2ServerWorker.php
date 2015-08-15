@@ -37,28 +37,36 @@ class GW2ServerWorker extends Worker
     $itemIds = $jobData['ids'];
     switch ($jobData['taskType']) {
       case 'price':
-        $this->getPrices($itemIds);
+        $this->result_data = $this->getPrices($itemIds);
         break;      
       case 'item':
       default:
-        $this->getItems($itemIds);
+        $this->result_data = $this->getItems($itemIds);
         break;
     }
   }
 
   public function getItems($itemIds){
+    d($itemIds);
     $items = $this->itemAssembler->getByIds($itemIds);//get all the requested items
+    d($items);
+    $count = 0;
     foreach ($items as $item) {
       $item->save();//save the item
+      $count++;
     }
-    return true;
+    return $count;
   }
 
   public function getPrices($itemIds){
+    d($itemIds);
     $prices = $this->priceAssembler->getByItemIds($itemIds);
+    d($prices);
+    $count = 0;
     foreach ($prices as $price) {
       $price->save();//save the price
+      $count++;
     } 
-    return true;
+    return $count;
   }
 }

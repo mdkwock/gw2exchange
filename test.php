@@ -1,8 +1,10 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 use \PHPQueue\Runner;
+require './database/generated-conf/config.php';
 require_once __DIR__ . '/queue-config.php';
 
+use Raveren\Kint;
 use GW2Exchange\Connection\GuzzleWebScraper,
   GuzzleHttp\Client;
 
@@ -20,6 +22,11 @@ use GW2Exchange\Queue\SampleQueue;
 use GW2Exchange\Runner\GW2Runner;
 use PHPQueue\Base;
 
+use GW2Exchange\Price\PriceAssembler,
+  GW2Exchange\Price\PriceParser,
+  GW2Exchange\Price\PriceFactory,
+  GW2Exchange\Database\Price;
+
 
 $client = new Client();
 $webScraper = new GuzzleWebScraper($client);
@@ -36,6 +43,9 @@ $itemFactory = new ItemFactory($baseItemFactory, $itemInfoFactory, $itemDetailsA
 
 $itemAssembler = new ItemAssembler($webScraper, $itemParser, $itemFactory);
 
+$priceParser = new PriceParser();
+$priceFactory = new PriceFactory();
+$priceAssembler = new PriceAssembler($webScraper, $priceParser, $priceFactory);
 
 $queueName = 'SampleQueue';
 $queue = Base::getQueue($queueName);
@@ -45,6 +55,6 @@ $queue->addJob(array('taskType' => 'price', 'ids'=>array(3,36,24,53,221)));
 $queue->addJob(array('taskType' => 'price', 'ids'=>array(27,31,234,5365,21)));
 
 
-$runner = new GW2Runner($queueName,array('logPath'=>__DIR__,'ItemAssembler'=>$itemAssembler));
+$runner = new GW2Runner($queueName,array('logPath'=>__DIR__,'ItemAssembler'=>$itemAssembler, 'PriceAssembler'=>$priceAssembler));
 
 $runner->run();

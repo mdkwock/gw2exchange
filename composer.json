@@ -5,7 +5,6 @@
       "slim/slim": "2.*",
       "flynsarmy/slim-monolog": "~1.0",
       "guzzlehttp/guzzle": "~5.0",
-      "illuminate/queue": "~5.1",
       "coderkungfu/php-queue" : "dev-master"
     },
     "require-dev": {
