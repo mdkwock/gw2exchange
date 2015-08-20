@@ -47,7 +47,7 @@ $priceParser = new PriceParser();
 $priceFactory = new PriceFactory();
 $priceAssembler = new PriceAssembler($webScraper, $priceParser, $priceFactory);
 
-$queueName = 'SampleQueue';
+$queueName = 'FileQueue';
 $queue = Base::getQueue($queueName);
 $queue->setWorkerName('GW2ServerWorker');
 $queue->addJob(array('taskType' => 'item', 'ids'=>array(2,3,4,5,21)));

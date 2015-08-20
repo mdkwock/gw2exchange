@@ -7,17 +7,17 @@ class FileQueue extends \PHPQueue\JobQueue
     private $filePath;
     private $lastSynced; //a time stamp of the last time that the file storage was synced
     protected $workerName;
-    private static $lockFile = 'file.lock';
+    private static $lockFile = '/file.lock';
 
     public function __construct()
     {
         parent::__construct();
         $this->filePath = __DIR__.'/test.queue';
-        $this->jobs = readFile($this->filePath);
+        $this->jobs = $this->readFile($this->filePath);
     }
     public function __destruct()
     {
-        writeFile($this->filePath, $this->jobs);
+        $this->writeFile($this->filePath, $this->jobs);
     }
 
     public function setWorkerName($workerName){
@@ -31,12 +31,11 @@ class FileQueue extends \PHPQueue\JobQueue
                 $data = $temp;
             }
         }
-        dd($data);
         return $data;    
     }
 
     public function writeFile($filePath,$jobs){
-            file_put_contents($filePath, serialize($jobs));
+        file_put_contents($filePath, serialize($jobs));
     }
 
     public function addJob($newJob = null)
@@ -44,7 +43,7 @@ class FileQueue extends \PHPQueue\JobQueue
         if(!is_file(__DIR__.static::$lockFile)){
             $fh = fopen(__DIR__.static::$lockFile, 'w');
             fclose($fh);
-            $this->jobs = readFile($this->filePath);
+            $this->jobs = $this->readFile($this->filePath);
             parent::addJob($newJob);
             array_unshift($this->jobs, $newJob);
             $this->writeFile($this->filePath, $this->jobs);
@@ -61,7 +60,7 @@ class FileQueue extends \PHPQueue\JobQueue
         if(!is_file(__DIR__.static::$lockFile)){
             $fh = fopen(__DIR__.static::$lockFile, 'w');
             fclose($fh);
-            $this->jobs = readFile($this->filePath);
+            $this->jobs = $this->readFile($this->filePath);
             parent::getJob();
             if ( empty($this->jobs) ) {
                 throw new \Exception("No more jobs.");

@@ -21,8 +21,6 @@ class GW2Runner extends Runner
         $worker = Base::getWorker($worker_name);
         $worker->init($this->itemAssembler,$this->priceAssembler);//add the required classes into the worker
         Base::workJob($worker, $new_job);
-        d($new_job);
-        dd($worker);
         $this->logger->addInfo(sprintf('Worker is done. Updating job (%s). Result:', $new_job->job_id), $worker->result_data);
 
         return $worker->result_data;
