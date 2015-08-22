@@ -5,7 +5,8 @@
       "slim/slim": "2.*",
       "flynsarmy/slim-monolog": "~1.0",
       "guzzlehttp/guzzle": "~5.0",
-      "coderkungfu/php-queue" : "dev-master"
+      "coderkungfu/php-queue" : "dev-master",
+      "iron-io/iron_mq": "2.*"
     },
     "require-dev": {
       "raveren/kint": "0.9.1",

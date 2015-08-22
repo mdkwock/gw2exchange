@@ -103,6 +103,15 @@ $app->configureMode('development', function () use($app){
   $metadata = new SearchMetadata($itemQueryFactory);
   $itemSearch = new ItemSearch($itemQueryFactory, $priceQueryFactory,$itemStorage,$priceStorage);
 
+
+  $backend = new IronMQ($ironConfig);
+
+  $queueName = 'GW2Queue';
+  $queue = Base::getQueue($queueName);
+  $queue->setWorkerName('GW2ServerWorker');
+  $queue->setDataSource($backend);
+
+
   $app->config(array(
     'Item'=>$itemAssembler, 
     'Listing'=>$listingAssembler, 
@@ -114,7 +123,8 @@ $app->configureMode('development', function () use($app){
     'ItemStorage'=>$itemStorage,
     'PriceStorage'=>$priceStorage,
     'Metadata'=>$metadata,
-    'ItemSearch'=>$itemSearch
+    'ItemSearch'=>$itemSearch,
+    'Queue'=>$queue
       ));
 });
 
