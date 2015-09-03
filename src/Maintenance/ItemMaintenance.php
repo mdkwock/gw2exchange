@@ -31,7 +31,7 @@ class ItemMaintenance implements MaintenanceInterface
    * load new is a special setting which will create all of the items that are not in the database already
    * @return int[]   all of the ids which need to be run
    */
-  protected function getToDoList()
+  public function getToDoList()
   {
     //find a list of items that are old which need to be run
     $pickList = $this->getStaleCache();

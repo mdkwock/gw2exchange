@@ -46,6 +46,9 @@ use GW2Exchange\Database\PriceQueryFactory,
 use GW2Exchange\Metadata\SearchMetadata,
   GW2Exchange\Search\ItemSearch;
 
+use PHPQueue\Backend\IronMQ,
+  PHPQueue\Base;
+
 $logger = new \Flynsarmy\SlimMonolog\Log\MonologWriter(array(
     'handlers' => array(
         new \Monolog\Handler\StreamHandler('./logs/'.date('Y-m-d').'.log'),
@@ -64,6 +67,25 @@ $app->configureMode('development', function () use($app){
   $client = new Client();
   $webScraper = new GuzzleWebScraper($client);
   $itemParser = new ItemParser();
+
+$ironConfig = array(
+  'token' => 'bMbG6sQnvhl2OVFRjXeM7Lw7rqQ',
+  'project_id' => '55d65d444d246d000a000042',
+  'queue_name' => 'gw2-server-poll',
+  'msg_options' => array(
+      "timeout" => 60
+    , "delay"   => 0
+    , "expires_in" => 172800
+  )
+);
+require_once __DIR__ . '/queue-config.php';
+
+  $backend = new IronMQ($ironConfig);
+
+  $queueName = 'GW2Queue';
+  $queue = Base::getQueue($queueName);
+  $queue->setWorkerName('GW2ServerWorker');
+  $queue->setDataSource($backend);
  
   $itemDetailFactory = new ItemDetailFactory();
   $itemItemDetailFactory = new ItemItemDetailFactory();
@@ -103,15 +125,16 @@ $app->configureMode('development', function () use($app){
   $metadata = new SearchMetadata($itemQueryFactory);
   $itemSearch = new ItemSearch($itemQueryFactory, $priceQueryFactory,$itemStorage,$priceStorage);
 
+  //get all the ids to be updated
+  $idList = $priceMaintenance->getToDoList(200);
+  if(!empty($idList)){
+    //add the ids to be updated to the queue
+    $queue->addJob(array('taskType' => 'price', 'ids'=>$idList));
 
-  $backend = new IronMQ($ironConfig);
-
-  $queueName = 'GW2Queue';
-  $queue = Base::getQueue($queueName);
-  $queue->setWorkerName('GW2ServerWorker');
-  $queue->setDataSource($backend);
-
-
+    //mark all the items as updated so that we dont check them more than once too quickly
+    $priceQueryFactory->createQuery()->filterByPrimaryKeys($idList)->update(array('UpdatedAt'=>date('Y-m-d H:i:s')));
+  }
+  
   $app->config(array(
     'Item'=>$itemAssembler, 
     'Listing'=>$listingAssembler, 
@@ -125,7 +148,7 @@ $app->configureMode('development', function () use($app){
     'Metadata'=>$metadata,
     'ItemSearch'=>$itemSearch,
     'Queue'=>$queue
-      ));
+  ));
 });
 
 $app->response->headers->set('Access-Control-Allow-Origin', '*');

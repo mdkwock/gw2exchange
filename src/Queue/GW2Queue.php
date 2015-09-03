@@ -2,7 +2,6 @@
 namespace GW2Exchange\Queue;
 use \PHPQueue\JobQueue;
 use \PHPQueue\Job;
-use \PHPQueue\Interfaces\IndexedFifoQueueStore;
 
 class GW2Queue extends JobQueue
 {
@@ -23,7 +22,7 @@ class GW2Queue extends JobQueue
 
     public function addJob($newJob = null)
     {
-        $formatted_data = array('worker'=>$this->workerName, 'data'=>$newJob);
+        $formatted_data = json_encode(array('worker'=>$this->workerName, 'data'=>$newJob));
         $this->dataSource->push($formatted_data);
 
         return true;
@@ -31,7 +30,7 @@ class GW2Queue extends JobQueue
 
     public function getJob($jobId = null)
     {
-        $data = $this->dataSource->pop();
+        $data = json_decode($this->dataSource->pop(),true);
         $nextJob = new Job($data, $this->dataSource->last_job_id);
 
         return $nextJob;
