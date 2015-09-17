@@ -67,6 +67,10 @@ class Price extends BasePrice implements DatabaseObjectInterface
       $roi = $profit / $buy_price * 100;
       $this->setProfit($profit);
       $this->setRoi($roi);
+    }else{
+      //if there is no buy price or sell price, we cant really calculate a profit or roi
+      $this->setProfit(null);
+      $this->setRoi(null);
     }
   }
   
@@ -89,6 +93,8 @@ class Price extends BasePrice implements DatabaseObjectInterface
    */
   public function preSave(ConnectionInterface $con =  null)
   {
+    $con = \Propel\Runtime\Propel::getWriteConnection(PriceTableMap::DATABASE_NAME);
+    dd($con);
     $now = time();
     //check to see if we have not already made this record
     $priceHistoryQuery = new PriceHistoryQuery();
