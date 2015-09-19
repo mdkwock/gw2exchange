@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 use \PHPQueue\Runner;
-require './database/generated-conf/config.php';
+require __DIR__.'/database/generated-conf/config.php';
 require_once __DIR__ . '/queue-config.php';
 
 use Raveren\Kint;

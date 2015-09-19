@@ -35,15 +35,17 @@ class GW2ServerWorker extends Worker
     parent::runJob($jobObject);
     $jobData = $jobObject->data;
     $itemIds = $jobData['ids'];
+    echo "Given: ".count($itemIds).';';
     switch ($jobData['taskType']) {
       case 'price':
-        $this->result_data = array($this->getPrices($itemIds));
+        $complete = $this->result_data = array($this->getPrices($itemIds));
         break;      
       case 'item':
       default:
-        $this->result_data = array($this->getItems($itemIds));
+        $complete = $this->result_data = array($this->getItems($itemIds));
         break;
     }
+    echo "Completed: ".$complete.';';
   }
 
   public function getItems($itemIds){
