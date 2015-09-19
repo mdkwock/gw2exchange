@@ -1,9 +1,9 @@
 <?php
-require_once 'vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
 session_start();
 
-require './database/generated-conf/config.php';
+require __DIR__.'/database/generated-conf/config.php';
 use \Slim\Slim;
 
 use GW2Exchange\Connection\GuzzleWebScraper,

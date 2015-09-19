@@ -25,6 +25,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceQuery orderBySellPrice($order = Criteria::ASC) Order by the sell_price column
  * @method     ChildPriceQuery orderByBuyQty($order = Criteria::ASC) Order by the buy_qty column
  * @method     ChildPriceQuery orderBySellQty($order = Criteria::ASC) Order by the sell_qty column
+ * @method     ChildPriceQuery orderByHash($order = Criteria::ASC) Order by the hash column
  * @method     ChildPriceQuery orderByProfit($order = Criteria::ASC) Order by the profit column
  * @method     ChildPriceQuery orderByRoi($order = Criteria::ASC) Order by the roi column
  * @method     ChildPriceQuery orderByCacheTime($order = Criteria::ASC) Order by the cache_time column
@@ -40,6 +41,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceQuery groupBySellPrice() Group by the sell_price column
  * @method     ChildPriceQuery groupByBuyQty() Group by the buy_qty column
  * @method     ChildPriceQuery groupBySellQty() Group by the sell_qty column
+ * @method     ChildPriceQuery groupByHash() Group by the hash column
  * @method     ChildPriceQuery groupByProfit() Group by the profit column
  * @method     ChildPriceQuery groupByRoi() Group by the roi column
  * @method     ChildPriceQuery groupByCacheTime() Group by the cache_time column
@@ -54,13 +56,29 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildPriceQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
+ * @method     ChildPriceQuery leftJoinWith($relation) Adds a LEFT JOIN clause and with to the query
+ * @method     ChildPriceQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
+ * @method     ChildPriceQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
+ *
  * @method     ChildPriceQuery leftJoinItem($relationAlias = null) Adds a LEFT JOIN clause to the query using the Item relation
  * @method     ChildPriceQuery rightJoinItem($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Item relation
  * @method     ChildPriceQuery innerJoinItem($relationAlias = null) Adds a INNER JOIN clause to the query using the Item relation
  *
+ * @method     ChildPriceQuery joinWithItem($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Item relation
+ *
+ * @method     ChildPriceQuery leftJoinWithItem() Adds a LEFT JOIN clause and with to the query using the Item relation
+ * @method     ChildPriceQuery rightJoinWithItem() Adds a RIGHT JOIN clause and with to the query using the Item relation
+ * @method     ChildPriceQuery innerJoinWithItem() Adds a INNER JOIN clause and with to the query using the Item relation
+ *
  * @method     ChildPriceQuery leftJoinPriceHistory($relationAlias = null) Adds a LEFT JOIN clause to the query using the PriceHistory relation
  * @method     ChildPriceQuery rightJoinPriceHistory($relationAlias = null) Adds a RIGHT JOIN clause to the query using the PriceHistory relation
  * @method     ChildPriceQuery innerJoinPriceHistory($relationAlias = null) Adds a INNER JOIN clause to the query using the PriceHistory relation
+ *
+ * @method     ChildPriceQuery joinWithPriceHistory($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the PriceHistory relation
+ *
+ * @method     ChildPriceQuery leftJoinWithPriceHistory() Adds a LEFT JOIN clause and with to the query using the PriceHistory relation
+ * @method     ChildPriceQuery rightJoinWithPriceHistory() Adds a RIGHT JOIN clause and with to the query using the PriceHistory relation
+ * @method     ChildPriceQuery innerJoinWithPriceHistory() Adds a INNER JOIN clause and with to the query using the PriceHistory relation
  *
  * @method     \GW2Exchange\Database\ItemQuery|\GW2Exchange\Database\PriceHistoryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
@@ -72,6 +90,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPrice findOneBySellPrice(int $sell_price) Return the first ChildPrice filtered by the sell_price column
  * @method     ChildPrice findOneByBuyQty(int $buy_qty) Return the first ChildPrice filtered by the buy_qty column
  * @method     ChildPrice findOneBySellQty(int $sell_qty) Return the first ChildPrice filtered by the sell_qty column
+ * @method     ChildPrice findOneByHash(string $hash) Return the first ChildPrice filtered by the hash column
  * @method     ChildPrice findOneByProfit(int $profit) Return the first ChildPrice filtered by the profit column
  * @method     ChildPrice findOneByRoi(double $roi) Return the first ChildPrice filtered by the roi column
  * @method     ChildPrice findOneByCacheTime(int $cache_time) Return the first ChildPrice filtered by the cache_time column
@@ -90,6 +109,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPrice requireOneBySellPrice(int $sell_price) Return the first ChildPrice filtered by the sell_price column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPrice requireOneByBuyQty(int $buy_qty) Return the first ChildPrice filtered by the buy_qty column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPrice requireOneBySellQty(int $sell_qty) Return the first ChildPrice filtered by the sell_qty column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPrice requireOneByHash(string $hash) Return the first ChildPrice filtered by the hash column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPrice requireOneByProfit(int $profit) Return the first ChildPrice filtered by the profit column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPrice requireOneByRoi(double $roi) Return the first ChildPrice filtered by the roi column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPrice requireOneByCacheTime(int $cache_time) Return the first ChildPrice filtered by the cache_time column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -106,6 +126,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPrice[]|ObjectCollection findBySellPrice(int $sell_price) Return ChildPrice objects filtered by the sell_price column
  * @method     ChildPrice[]|ObjectCollection findByBuyQty(int $buy_qty) Return ChildPrice objects filtered by the buy_qty column
  * @method     ChildPrice[]|ObjectCollection findBySellQty(int $sell_qty) Return ChildPrice objects filtered by the sell_qty column
+ * @method     ChildPrice[]|ObjectCollection findByHash(string $hash) Return ChildPrice objects filtered by the hash column
  * @method     ChildPrice[]|ObjectCollection findByProfit(int $profit) Return ChildPrice objects filtered by the profit column
  * @method     ChildPrice[]|ObjectCollection findByRoi(double $roi) Return ChildPrice objects filtered by the roi column
  * @method     ChildPrice[]|ObjectCollection findByCacheTime(int $cache_time) Return ChildPrice objects filtered by the cache_time column
@@ -210,7 +231,7 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT item_id, buy_price, sell_price, buy_qty, sell_qty, profit, roi, cache_time, max_buy, min_buy, max_sell, min_sell, created_at, updated_at FROM price WHERE item_id = :p0';
+        $sql = 'SELECT item_id, buy_price, sell_price, buy_qty, sell_qty, hash, profit, roi, cache_time, max_buy, min_buy, max_sell, min_sell, created_at, updated_at FROM price WHERE item_id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -505,6 +526,35 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
         }
 
         return $this->addUsingAlias(PriceTableMap::COL_SELL_QTY, $sellQty, $comparison);
+    }
+
+    /**
+     * Filter the query on the hash column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByHash('fooValue');   // WHERE hash = 'fooValue'
+     * $query->filterByHash('%fooValue%'); // WHERE hash LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $hash The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPriceQuery The current query, for fluid interface
+     */
+    public function filterByHash($hash = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($hash)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $hash)) {
+                $hash = str_replace('*', '%', $hash);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(PriceTableMap::COL_HASH, $hash, $comparison);
     }
 
     /**
@@ -988,7 +1038,7 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
      *
      * @return $this|ChildPriceQuery The current query, for fluid interface
      */
-    public function joinPriceHistory($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function joinPriceHistory($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
         $relationMap = $tableMap->getRelation('PriceHistory');
@@ -1023,7 +1073,7 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
      *
      * @return \GW2Exchange\Database\PriceHistoryQuery A secondary query class using the current class as primary query
      */
-    public function usePriceHistoryQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function usePriceHistoryQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinPriceHistory($relationAlias, $joinType)
@@ -1258,9 +1308,11 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
 
             $needsComplexCount = $this->getGroupByColumns()
                 || $this->getOffset()
-                || $this->getLimit()
+                || $this->getLimit() >= 0
                 || $this->getHaving()
-                || in_array(Criteria::DISTINCT, $this->getSelectModifiers());
+                || in_array(Criteria::DISTINCT, $this->getSelectModifiers())
+                || count($this->selectQueries) > 0
+            ;
 
             $params = array();
             if ($needsComplexCount) {
