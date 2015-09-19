@@ -154,4 +154,24 @@
     </behavior>
     <behavior name="query_cache" />
   </table>
+
+  <table name="sync_queue">
+    <column name="id" type="integer" primaryKey="true" autoIncrement="true" />
+    <column name="queue" type="varchar" size="255" />
+    <column name="payload" type="varchar" size="255" required="required"/>
+    <column name="attempts" type="integer" required="required" />
+    <column name="reserved" type="tinyint" required="required" />
+    <column name="reserved_at" type="integer" />
+    <column name="available_at" type="integer" required="required" />
+    <column name="created_at" type="integer" required="required" />
+    <index>
+      <index-column name="queue" />
+    </index>
+    <index>
+      <index-column name="reserved" />
+    </index>
+    <index>
+      <index-column name="reserved_at" />      
+    </index>
+  </table>
 </database>

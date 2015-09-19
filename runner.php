@@ -66,11 +66,6 @@ $queue->setWorkerName('GW2ServerWorker');
 $queue->setDataSource($backend);
 
 
-$queue->addJob(array('taskType' => 'item', 'ids'=>array(2,3,4,5,21)));
-$queue->addJob(array('taskType' => 'price', 'ids'=>array(3,36,24,53,221)));
-$queue->addJob(array('taskType' => 'price', 'ids'=>array(27,31,234,5365,21)));
-
-
 $runner = new GW2Runner($queueName,array('logPath'=>__DIR__,'ItemAssembler'=>$itemAssembler, 'PriceAssembler'=>$priceAssembler));
 
 $runner->run();

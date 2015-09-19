@@ -21,7 +21,6 @@ class PriceMaintenance implements MaintenanceInterface
   protected $priceAssembler;
   protected $priceStorage;
   protected $itemStorage;
-
   public function __construct(PriceAssemblerInterface $pa, PriceStorage $ps, ItemStorage $is)
   {
     $this->priceAssembler = $pa;
@@ -33,11 +32,12 @@ class PriceMaintenance implements MaintenanceInterface
    * this will return a list of all of the things that need to be refreshed
    * if the staleDateTime is passed, then every entry that hasn't been touched since that day will be ran
    * if no datetime is passed, then it will only return nonexisting ones
+   * @param  int  $maxRecords   the maximum number of records returned
    * @return int[]   all of the ids which need to be run
    */
-  protected function getToDoList()
+  public function getToDoList($maxRecords = -1)
   {
-    //find prices that are up to date and pick them, do not run items that no longer return answers them
+    //find prices that are up to date and pick them, do not run items that no longer return answers for them
     $stalePickList = $this->getStaleCache();
 
     //master list is a list of all valid prices (item in item table and price on gw2 servers)
@@ -58,6 +58,10 @@ class PriceMaintenance implements MaintenanceInterface
     $flippedToDoList = array_flip($toDoList);
     $flippedToDoList = array_intersect_key($flippedToDoList,$flippedMasterList);
     $toDoList = array_keys($flippedToDoList);
+    if($maxRecords > 0){
+      //if we are passing in a max records limit
+      $toDoList = array_slice($toDoList, 0, $maxRecords);
+    }
     return $toDoList;
   }
 
@@ -117,6 +121,7 @@ class PriceMaintenance implements MaintenanceInterface
       //find the list of ids based on old ones from the database
       $ids = $this->getToDoList(); //get the list of ids to run based on the optional expiration time
     }
+    $endTime = time();
     //use the count ids bc the assembler rate limits us
     $numLeft = count($ids);
     //get new prices
