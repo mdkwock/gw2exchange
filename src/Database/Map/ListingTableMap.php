@@ -167,7 +167,7 @@ class ListingTableMap extends TableMap
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addForeignKey('item_id', 'ItemId', 'INTEGER', 'item', 'id', false, null, null);
+        $this->addForeignKey('item_id', 'ItemId', 'INTEGER', 'item', 'id', true, null, null);
         $this->addColumn('type', 'Type', 'VARCHAR', true, 255, null);
         $this->addColumn('orders', 'Orders', 'INTEGER', true, null, null);
         $this->addColumn('unit_price', 'UnitPrice', 'INTEGER', true, null, null);

@@ -73,7 +73,7 @@
 
   <table name="listing">
     <column name="id" type="integer" primaryKey="true" autoIncrement="true" />
-    <column name="item_id" type="integer" required="required" />
+    <column name="item_id" type="integer" required="true" />
     <foreign-key foreignTable="item">
       <reference local="item_id" foreign="id"/>
     </foreign-key>
@@ -99,14 +99,15 @@
      -->
   <table name="price">
     <!-- setting primary key to true, makes propel treat it as a 1-1 relation -->
-    <column name="item_id" type="integer" primaryKey="true" required="required" />
-    <column name="buy_price" type="integer" required="required" />
-    <column name="sell_price" type="integer" required="required" />
-    <column name="buy_qty" type="integer" required="required" />
-    <column name="sell_qty" type="integer" required="required" />
-    <column name="profit" type="integer" required="required" />
-    <column name="roi" type="float" required="required" />
-    <column name="cache_time" type="integer" defaultValue="1" />
+    <column name="item_id" type="integer" primaryKey="true" required="true" />
+    <column name="buy_price" type="integer" required="true" />
+    <column name="sell_price" type="integer" required="true" />
+    <column name="buy_qty" type="integer" required="true" />
+    <column name="sell_qty" type="integer" required="true" />
+    <column name="hash" type="varchar" size="128" required="true" />
+    <column name="profit" type="integer" />
+    <column name="roi" type="float" />
+    <column name="cache_time" type="integer" defaultValue="4" />
     <column name="max_buy" type="integer" />
     <column name="min_buy" type="integer" />
     <column name="max_sell" type="integer" />
@@ -130,15 +131,17 @@
     <behavior name="query_cache" />
   </table>
 
+  <!-- price history records get added when the price changes, so the most recent price history is the current price-->
   <table name="price_history">
     <column name="id" type="integer" primaryKey="true" autoIncrement="true" />
-    <column name="item_id" type="integer" required="required" />
-    <column name="buy_price" type="integer" required="required" />
-    <column name="sell_price" type="integer" required="required" />
-    <column name="buy_qty" type="integer" required="required" />
-    <column name="sell_qty" type="integer" required="required" />
-    <column name="profit" type="integer" required="required" />
-    <column name="roi" type="float" required="required" />
+    <column name="item_id" type="integer" required="true" />
+    <column name="buy_price" type="integer" required="true" />
+    <column name="sell_price" type="integer" required="true" />
+    <column name="buy_qty" type="integer" required="true" />
+    <column name="sell_qty" type="integer" required="true" />
+    <column name="hash" type="varchar" size="128" required="true" />
+    <column name="profit" type="integer" />
+    <column name="roi" type="float" />
     <unique>
       <unique-column name="item_id" />
       <unique-column name="created_at" />
@@ -155,23 +158,19 @@
     <behavior name="query_cache" />
   </table>
 
-  <table name="sync_queue">
+  <!-- keep a log of all requests and whether the cached results were used -->
+  <table name="requests_log">
     <column name="id" type="integer" primaryKey="true" autoIncrement="true" />
-    <column name="queue" type="varchar" size="255" />
-    <column name="payload" type="varchar" size="255" required="required"/>
-    <column name="attempts" type="integer" required="required" />
-    <column name="reserved" type="tinyint" required="required" />
-    <column name="reserved_at" type="integer" />
-    <column name="available_at" type="integer" required="required" />
-    <column name="created_at" type="integer" required="required" />
-    <index>
-      <index-column name="queue" />
-    </index>
-    <index>
-      <index-column name="reserved" />
-    </index>
-    <index>
-      <index-column name="reserved_at" />      
-    </index>
+    <column name="url" type="integer" required="true" />
+    <column name="gw2ServerUrl" type="integer" required="true" />
+    <column name="price_history_id" type="integer" required="true" />
+    <column name="cache_hit" type="integer" required="true" />
+    <column name="cache_correct" type="integer" />
+    <foreign-key foreignTable="price_history">
+      <reference local="price_history_id" foreign="id"/>
+    </foreign-key>
+    <behavior name="timestampable">
+      <parameter name="disable_updated_at" value="true" />
+    </behavior>
   </table>
 </database>

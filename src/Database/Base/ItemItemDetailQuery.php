@@ -32,13 +32,29 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItemItemDetailQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildItemItemDetailQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
+ * @method     ChildItemItemDetailQuery leftJoinWith($relation) Adds a LEFT JOIN clause and with to the query
+ * @method     ChildItemItemDetailQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
+ * @method     ChildItemItemDetailQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
+ *
  * @method     ChildItemItemDetailQuery leftJoinItem($relationAlias = null) Adds a LEFT JOIN clause to the query using the Item relation
  * @method     ChildItemItemDetailQuery rightJoinItem($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Item relation
  * @method     ChildItemItemDetailQuery innerJoinItem($relationAlias = null) Adds a INNER JOIN clause to the query using the Item relation
  *
+ * @method     ChildItemItemDetailQuery joinWithItem($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Item relation
+ *
+ * @method     ChildItemItemDetailQuery leftJoinWithItem() Adds a LEFT JOIN clause and with to the query using the Item relation
+ * @method     ChildItemItemDetailQuery rightJoinWithItem() Adds a RIGHT JOIN clause and with to the query using the Item relation
+ * @method     ChildItemItemDetailQuery innerJoinWithItem() Adds a INNER JOIN clause and with to the query using the Item relation
+ *
  * @method     ChildItemItemDetailQuery leftJoinItemDetail($relationAlias = null) Adds a LEFT JOIN clause to the query using the ItemDetail relation
  * @method     ChildItemItemDetailQuery rightJoinItemDetail($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ItemDetail relation
  * @method     ChildItemItemDetailQuery innerJoinItemDetail($relationAlias = null) Adds a INNER JOIN clause to the query using the ItemDetail relation
+ *
+ * @method     ChildItemItemDetailQuery joinWithItemDetail($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the ItemDetail relation
+ *
+ * @method     ChildItemItemDetailQuery leftJoinWithItemDetail() Adds a LEFT JOIN clause and with to the query using the ItemDetail relation
+ * @method     ChildItemItemDetailQuery rightJoinWithItemDetail() Adds a RIGHT JOIN clause and with to the query using the ItemDetail relation
+ * @method     ChildItemItemDetailQuery innerJoinWithItemDetail() Adds a INNER JOIN clause and with to the query using the ItemDetail relation
  *
  * @method     \GW2Exchange\Database\ItemQuery|\GW2Exchange\Database\ItemDetailQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
@@ -690,9 +706,11 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
 
             $needsComplexCount = $this->getGroupByColumns()
                 || $this->getOffset()
-                || $this->getLimit()
+                || $this->getLimit() >= 0
                 || $this->getHaving()
-                || in_array(Criteria::DISTINCT, $this->getSelectModifiers());
+                || in_array(Criteria::DISTINCT, $this->getSelectModifiers())
+                || count($this->selectQueries) > 0
+            ;
 
             $params = array();
             if ($needsComplexCount) {

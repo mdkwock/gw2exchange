@@ -1,6 +1,8 @@
 <?php
 namespace GW2Exchange\Maintenance;
 
+use GuzzleHttp\Exception\RequestException;
+
 use GW2Exchange\Signature\Maintenance\MaintenanceInterface;
 use GW2Exchange\Signature\Price\PriceAssemblerInterface;
 use GW2Exchange\Price\PriceStorage;
@@ -37,30 +39,36 @@ class PriceMaintenance implements MaintenanceInterface
    */
   public function getToDoList($maxRecords = -1)
   {
-    //find prices that are up to date and pick them, do not run items that no longer return answers for them
-    $stalePickList = $this->getStaleCache();
+    $toDoList = array();
+    try{
+      //find prices that are up to date and pick them, do not run items that no longer return answers for them
+      $stalePickList = $this->getStaleCache();
 
-    //master list is a list of all valid prices (item in item table and price on gw2 servers)
-    //get a list from the gw2 server of all the prices in the game
-    $masterPriceList = $this->priceAssembler->getIdList();
-    //get a list from the database about what items we are tracking
-    $masterItemList = $this->itemStorage->getAllItemIds();
-    //check that all of the prices refer to valid items
-    $flippedMasterPriceList = array_flip($masterPriceList);
-    $flippedMasterItemList = array_flip($masterItemList);
-    $flippedMasterList = array_intersect_key($flippedMasterItemList,$flippedMasterPriceList);//find the prices of only valid items
-    $masterList = array_keys($flippedMasterList);
-    //only get prices which still exist   
-    //get all of the prices which are not in the database
-    $newPrices = $this->loadNewPriceItems($masterList);    //new item prices come before updates to existing items
-    //dd($newPrices);
-    $toDoList = array_merge($newPrices,$stalePickList);
-    $flippedToDoList = array_flip($toDoList);
-    $flippedToDoList = array_intersect_key($flippedToDoList,$flippedMasterList);
-    $toDoList = array_keys($flippedToDoList);
-    if($maxRecords > 0){
-      //if we are passing in a max records limit
-      $toDoList = array_slice($toDoList, 0, $maxRecords);
+      //master list is a list of all valid prices (item in item table and price on gw2 servers)
+      //get a list from the gw2 server of all the prices in the game
+      $masterPriceList = $this->priceAssembler->getIdList();
+      //get a list from the database about what items we are tracking
+      $masterItemList = $this->itemStorage->getAllItemIds();
+      //check that all of the prices refer to valid items
+      $flippedMasterPriceList = array_flip($masterPriceList);
+      $flippedMasterItemList = array_flip($masterItemList);
+      $flippedMasterList = array_intersect_key($flippedMasterItemList,$flippedMasterPriceList);//find the prices of only valid items
+      $masterList = array_keys($flippedMasterList);
+      //only get prices which still exist   
+      //get all of the prices which are not in the database
+      $newPrices = $this->loadNewPriceItems($masterList);    //new item prices come before updates to existing items
+      //dd($newPrices);
+      $toDoList = array_merge($newPrices,$stalePickList);
+      $flippedToDoList = array_flip($toDoList);
+      $flippedToDoList = array_intersect_key($flippedToDoList,$flippedMasterList);
+      $toDoList = array_keys($flippedToDoList);
+      if($maxRecords > 0){
+        //if we are passing in a max records limit
+        $toDoList = array_slice($toDoList, 0, $maxRecords);
+      }
+      
+    }catch(RequestException $e){
+
     }
     return $toDoList;
   }

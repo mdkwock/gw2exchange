@@ -34,9 +34,19 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItemDetailQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildItemDetailQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
+ * @method     ChildItemDetailQuery leftJoinWith($relation) Adds a LEFT JOIN clause and with to the query
+ * @method     ChildItemDetailQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
+ * @method     ChildItemDetailQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
+ *
  * @method     ChildItemDetailQuery leftJoinItemItemDetail($relationAlias = null) Adds a LEFT JOIN clause to the query using the ItemItemDetail relation
  * @method     ChildItemDetailQuery rightJoinItemItemDetail($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ItemItemDetail relation
  * @method     ChildItemDetailQuery innerJoinItemItemDetail($relationAlias = null) Adds a INNER JOIN clause to the query using the ItemItemDetail relation
+ *
+ * @method     ChildItemDetailQuery joinWithItemItemDetail($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the ItemItemDetail relation
+ *
+ * @method     ChildItemDetailQuery leftJoinWithItemItemDetail() Adds a LEFT JOIN clause and with to the query using the ItemItemDetail relation
+ * @method     ChildItemDetailQuery rightJoinWithItemItemDetail() Adds a RIGHT JOIN clause and with to the query using the ItemItemDetail relation
+ * @method     ChildItemDetailQuery innerJoinWithItemItemDetail() Adds a INNER JOIN clause and with to the query using the ItemItemDetail relation
  *
  * @method     \GW2Exchange\Database\ItemItemDetailQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
@@ -626,9 +636,11 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
 
             $needsComplexCount = $this->getGroupByColumns()
                 || $this->getOffset()
-                || $this->getLimit()
+                || $this->getLimit() >= 0
                 || $this->getHaving()
-                || in_array(Criteria::DISTINCT, $this->getSelectModifiers());
+                || in_array(Criteria::DISTINCT, $this->getSelectModifiers())
+                || count($this->selectQueries) > 0
+            ;
 
             $params = array();
             if ($needsComplexCount) {

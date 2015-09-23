@@ -8,14 +8,18 @@ use \PDO;
 use GW2Exchange\Database\Item as ChildItem;
 use GW2Exchange\Database\ItemQuery as ChildItemQuery;
 use GW2Exchange\Database\Price as ChildPrice;
+use GW2Exchange\Database\PriceHistory as ChildPriceHistory;
 use GW2Exchange\Database\PriceHistoryQuery as ChildPriceHistoryQuery;
 use GW2Exchange\Database\PriceQuery as ChildPriceQuery;
+use GW2Exchange\Database\RequestsLog as ChildRequestsLog;
+use GW2Exchange\Database\RequestsLogQuery as ChildRequestsLogQuery;
 use GW2Exchange\Database\Map\PriceHistoryTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
+use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -102,6 +106,12 @@ abstract class PriceHistory implements ActiveRecordInterface
     protected $sell_qty;
 
     /**
+     * The value for the hash field.
+     * @var        string
+     */
+    protected $hash;
+
+    /**
      * The value for the profit field.
      * @var        int
      */
@@ -130,12 +140,24 @@ abstract class PriceHistory implements ActiveRecordInterface
     protected $aPrice;
 
     /**
+     * @var        ObjectCollection|ChildRequestsLog[] Collection to store aggregation of ChildRequestsLog objects.
+     */
+    protected $collRequestsLogs;
+    protected $collRequestsLogsPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
      * @var boolean
      */
     protected $alreadyInSave = false;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildRequestsLog[]
+     */
+    protected $requestsLogsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of GW2Exchange\Database\Base\PriceHistory object.
@@ -415,6 +437,16 @@ abstract class PriceHistory implements ActiveRecordInterface
     }
 
     /**
+     * Get the [hash] column value.
+     *
+     * @return string
+     */
+    public function getHash()
+    {
+        return $this->hash;
+    }
+
+    /**
      * Get the [profit] column value.
      *
      * @return int
@@ -583,6 +615,26 @@ abstract class PriceHistory implements ActiveRecordInterface
     } // setSellQty()
 
     /**
+     * Set the value of [hash] column.
+     *
+     * @param string $v new value
+     * @return $this|\GW2Exchange\Database\PriceHistory The current object (for fluent API support)
+     */
+    public function setHash($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->hash !== $v) {
+            $this->hash = $v;
+            $this->modifiedColumns[PriceHistoryTableMap::COL_HASH] = true;
+        }
+
+        return $this;
+    } // setHash()
+
+    /**
      * Set the value of [profit] column.
      *
      * @param int $v new value
@@ -696,13 +748,16 @@ abstract class PriceHistory implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PriceHistoryTableMap::translateFieldName('SellQty', TableMap::TYPE_PHPNAME, $indexType)];
             $this->sell_qty = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : PriceHistoryTableMap::translateFieldName('Profit', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : PriceHistoryTableMap::translateFieldName('Hash', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->hash = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : PriceHistoryTableMap::translateFieldName('Profit', TableMap::TYPE_PHPNAME, $indexType)];
             $this->profit = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : PriceHistoryTableMap::translateFieldName('Roi', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : PriceHistoryTableMap::translateFieldName('Roi', TableMap::TYPE_PHPNAME, $indexType)];
             $this->roi = (null !== $col) ? (double) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : PriceHistoryTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : PriceHistoryTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -715,7 +770,7 @@ abstract class PriceHistory implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 9; // 9 = PriceHistoryTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 10; // 10 = PriceHistoryTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\GW2Exchange\\Database\\PriceHistory'), 0, $e);
@@ -784,6 +839,8 @@ abstract class PriceHistory implements ActiveRecordInterface
 
             $this->aItem = null;
             $this->aPrice = null;
+            $this->collRequestsLogs = null;
+
         } // if (deep)
     }
 
@@ -918,6 +975,23 @@ abstract class PriceHistory implements ActiveRecordInterface
                 $this->resetModified();
             }
 
+            if ($this->requestsLogsScheduledForDeletion !== null) {
+                if (!$this->requestsLogsScheduledForDeletion->isEmpty()) {
+                    \GW2Exchange\Database\RequestsLogQuery::create()
+                        ->filterByPrimaryKeys($this->requestsLogsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->requestsLogsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collRequestsLogs !== null) {
+                foreach ($this->collRequestsLogs as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
             $this->alreadyInSave = false;
 
         }
@@ -962,6 +1036,9 @@ abstract class PriceHistory implements ActiveRecordInterface
         if ($this->isColumnModified(PriceHistoryTableMap::COL_SELL_QTY)) {
             $modifiedColumns[':p' . $index++]  = 'sell_qty';
         }
+        if ($this->isColumnModified(PriceHistoryTableMap::COL_HASH)) {
+            $modifiedColumns[':p' . $index++]  = 'hash';
+        }
         if ($this->isColumnModified(PriceHistoryTableMap::COL_PROFIT)) {
             $modifiedColumns[':p' . $index++]  = 'profit';
         }
@@ -999,6 +1076,9 @@ abstract class PriceHistory implements ActiveRecordInterface
                         break;
                     case 'sell_qty':
                         $stmt->bindValue($identifier, $this->sell_qty, PDO::PARAM_INT);
+                        break;
+                    case 'hash':
+                        $stmt->bindValue($identifier, $this->hash, PDO::PARAM_STR);
                         break;
                     case 'profit':
                         $stmt->bindValue($identifier, $this->profit, PDO::PARAM_INT);
@@ -1090,12 +1170,15 @@ abstract class PriceHistory implements ActiveRecordInterface
                 return $this->getSellQty();
                 break;
             case 6:
-                return $this->getProfit();
+                return $this->getHash();
                 break;
             case 7:
-                return $this->getRoi();
+                return $this->getProfit();
                 break;
             case 8:
+                return $this->getRoi();
+                break;
+            case 9:
                 return $this->getCreatedAt();
                 break;
             default:
@@ -1134,16 +1217,17 @@ abstract class PriceHistory implements ActiveRecordInterface
             $keys[3] => $this->getSellPrice(),
             $keys[4] => $this->getBuyQty(),
             $keys[5] => $this->getSellQty(),
-            $keys[6] => $this->getProfit(),
-            $keys[7] => $this->getRoi(),
-            $keys[8] => $this->getCreatedAt(),
+            $keys[6] => $this->getHash(),
+            $keys[7] => $this->getProfit(),
+            $keys[8] => $this->getRoi(),
+            $keys[9] => $this->getCreatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[8]] instanceof \DateTime) {
+        if ($result[$keys[9]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[8]];
-            $result[$keys[8]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+            $dateTime = clone $result[$keys[9]];
+            $result[$keys[9]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1181,6 +1265,21 @@ abstract class PriceHistory implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aPrice->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->collRequestsLogs) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'requestsLogs';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'requests_logs';
+                        break;
+                    default:
+                        $key = 'RequestsLogs';
+                }
+
+                $result[$key] = $this->collRequestsLogs->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1235,12 +1334,15 @@ abstract class PriceHistory implements ActiveRecordInterface
                 $this->setSellQty($value);
                 break;
             case 6:
-                $this->setProfit($value);
+                $this->setHash($value);
                 break;
             case 7:
-                $this->setRoi($value);
+                $this->setProfit($value);
                 break;
             case 8:
+                $this->setRoi($value);
+                break;
+            case 9:
                 $this->setCreatedAt($value);
                 break;
         } // switch()
@@ -1288,13 +1390,16 @@ abstract class PriceHistory implements ActiveRecordInterface
             $this->setSellQty($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setProfit($arr[$keys[6]]);
+            $this->setHash($arr[$keys[6]]);
         }
         if (array_key_exists($keys[7], $arr)) {
-            $this->setRoi($arr[$keys[7]]);
+            $this->setProfit($arr[$keys[7]]);
         }
         if (array_key_exists($keys[8], $arr)) {
-            $this->setCreatedAt($arr[$keys[8]]);
+            $this->setRoi($arr[$keys[8]]);
+        }
+        if (array_key_exists($keys[9], $arr)) {
+            $this->setCreatedAt($arr[$keys[9]]);
         }
     }
 
@@ -1354,6 +1459,9 @@ abstract class PriceHistory implements ActiveRecordInterface
         }
         if ($this->isColumnModified(PriceHistoryTableMap::COL_SELL_QTY)) {
             $criteria->add(PriceHistoryTableMap::COL_SELL_QTY, $this->sell_qty);
+        }
+        if ($this->isColumnModified(PriceHistoryTableMap::COL_HASH)) {
+            $criteria->add(PriceHistoryTableMap::COL_HASH, $this->hash);
         }
         if ($this->isColumnModified(PriceHistoryTableMap::COL_PROFIT)) {
             $criteria->add(PriceHistoryTableMap::COL_PROFIT, $this->profit);
@@ -1455,9 +1563,24 @@ abstract class PriceHistory implements ActiveRecordInterface
         $copyObj->setSellPrice($this->getSellPrice());
         $copyObj->setBuyQty($this->getBuyQty());
         $copyObj->setSellQty($this->getSellQty());
+        $copyObj->setHash($this->getHash());
         $copyObj->setProfit($this->getProfit());
         $copyObj->setRoi($this->getRoi());
         $copyObj->setCreatedAt($this->getCreatedAt());
+
+        if ($deepCopy) {
+            // important: temporarily setNew(false) because this affects the behavior of
+            // the getter/setter methods for fkey referrer objects.
+            $copyObj->setNew(false);
+
+            foreach ($this->getRequestsLogs() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addRequestsLog($relObj->copy($deepCopy));
+                }
+            }
+
+        } // if ($deepCopy)
+
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1588,6 +1711,240 @@ abstract class PriceHistory implements ActiveRecordInterface
         return $this->aPrice;
     }
 
+
+    /**
+     * Initializes a collection based on the name of a relation.
+     * Avoids crafting an 'init[$relationName]s' method name
+     * that wouldn't work when StandardEnglishPluralizer is used.
+     *
+     * @param      string $relationName The name of the relation to initialize
+     * @return void
+     */
+    public function initRelation($relationName)
+    {
+        if ('RequestsLog' == $relationName) {
+            return $this->initRequestsLogs();
+        }
+    }
+
+    /**
+     * Clears out the collRequestsLogs collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addRequestsLogs()
+     */
+    public function clearRequestsLogs()
+    {
+        $this->collRequestsLogs = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collRequestsLogs collection loaded partially.
+     */
+    public function resetPartialRequestsLogs($v = true)
+    {
+        $this->collRequestsLogsPartial = $v;
+    }
+
+    /**
+     * Initializes the collRequestsLogs collection.
+     *
+     * By default this just sets the collRequestsLogs collection to an empty array (like clearcollRequestsLogs());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initRequestsLogs($overrideExisting = true)
+    {
+        if (null !== $this->collRequestsLogs && !$overrideExisting) {
+            return;
+        }
+        $this->collRequestsLogs = new ObjectCollection();
+        $this->collRequestsLogs->setModel('\GW2Exchange\Database\RequestsLog');
+    }
+
+    /**
+     * Gets an array of ChildRequestsLog objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildPriceHistory is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildRequestsLog[] List of ChildRequestsLog objects
+     * @throws PropelException
+     */
+    public function getRequestsLogs(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collRequestsLogsPartial && !$this->isNew();
+        if (null === $this->collRequestsLogs || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collRequestsLogs) {
+                // return empty collection
+                $this->initRequestsLogs();
+            } else {
+                $collRequestsLogs = ChildRequestsLogQuery::create(null, $criteria)
+                    ->filterByPriceHistory($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collRequestsLogsPartial && count($collRequestsLogs)) {
+                        $this->initRequestsLogs(false);
+
+                        foreach ($collRequestsLogs as $obj) {
+                            if (false == $this->collRequestsLogs->contains($obj)) {
+                                $this->collRequestsLogs->append($obj);
+                            }
+                        }
+
+                        $this->collRequestsLogsPartial = true;
+                    }
+
+                    return $collRequestsLogs;
+                }
+
+                if ($partial && $this->collRequestsLogs) {
+                    foreach ($this->collRequestsLogs as $obj) {
+                        if ($obj->isNew()) {
+                            $collRequestsLogs[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collRequestsLogs = $collRequestsLogs;
+                $this->collRequestsLogsPartial = false;
+            }
+        }
+
+        return $this->collRequestsLogs;
+    }
+
+    /**
+     * Sets a collection of ChildRequestsLog objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $requestsLogs A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildPriceHistory The current object (for fluent API support)
+     */
+    public function setRequestsLogs(Collection $requestsLogs, ConnectionInterface $con = null)
+    {
+        /** @var ChildRequestsLog[] $requestsLogsToDelete */
+        $requestsLogsToDelete = $this->getRequestsLogs(new Criteria(), $con)->diff($requestsLogs);
+
+
+        $this->requestsLogsScheduledForDeletion = $requestsLogsToDelete;
+
+        foreach ($requestsLogsToDelete as $requestsLogRemoved) {
+            $requestsLogRemoved->setPriceHistory(null);
+        }
+
+        $this->collRequestsLogs = null;
+        foreach ($requestsLogs as $requestsLog) {
+            $this->addRequestsLog($requestsLog);
+        }
+
+        $this->collRequestsLogs = $requestsLogs;
+        $this->collRequestsLogsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related RequestsLog objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related RequestsLog objects.
+     * @throws PropelException
+     */
+    public function countRequestsLogs(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collRequestsLogsPartial && !$this->isNew();
+        if (null === $this->collRequestsLogs || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collRequestsLogs) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getRequestsLogs());
+            }
+
+            $query = ChildRequestsLogQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByPriceHistory($this)
+                ->count($con);
+        }
+
+        return count($this->collRequestsLogs);
+    }
+
+    /**
+     * Method called to associate a ChildRequestsLog object to this object
+     * through the ChildRequestsLog foreign key attribute.
+     *
+     * @param  ChildRequestsLog $l ChildRequestsLog
+     * @return $this|\GW2Exchange\Database\PriceHistory The current object (for fluent API support)
+     */
+    public function addRequestsLog(ChildRequestsLog $l)
+    {
+        if ($this->collRequestsLogs === null) {
+            $this->initRequestsLogs();
+            $this->collRequestsLogsPartial = true;
+        }
+
+        if (!$this->collRequestsLogs->contains($l)) {
+            $this->doAddRequestsLog($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildRequestsLog $requestsLog The ChildRequestsLog object to add.
+     */
+    protected function doAddRequestsLog(ChildRequestsLog $requestsLog)
+    {
+        $this->collRequestsLogs[]= $requestsLog;
+        $requestsLog->setPriceHistory($this);
+    }
+
+    /**
+     * @param  ChildRequestsLog $requestsLog The ChildRequestsLog object to remove.
+     * @return $this|ChildPriceHistory The current object (for fluent API support)
+     */
+    public function removeRequestsLog(ChildRequestsLog $requestsLog)
+    {
+        if ($this->getRequestsLogs()->contains($requestsLog)) {
+            $pos = $this->collRequestsLogs->search($requestsLog);
+            $this->collRequestsLogs->remove($pos);
+            if (null === $this->requestsLogsScheduledForDeletion) {
+                $this->requestsLogsScheduledForDeletion = clone $this->collRequestsLogs;
+                $this->requestsLogsScheduledForDeletion->clear();
+            }
+            $this->requestsLogsScheduledForDeletion[]= clone $requestsLog;
+            $requestsLog->setPriceHistory(null);
+        }
+
+        return $this;
+    }
+
     /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
@@ -1607,6 +1964,7 @@ abstract class PriceHistory implements ActiveRecordInterface
         $this->sell_price = null;
         $this->buy_qty = null;
         $this->sell_qty = null;
+        $this->hash = null;
         $this->profit = null;
         $this->roi = null;
         $this->created_at = null;
@@ -1628,8 +1986,14 @@ abstract class PriceHistory implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collRequestsLogs) {
+                foreach ($this->collRequestsLogs as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
+        $this->collRequestsLogs = null;
         $this->aItem = null;
         $this->aPrice = null;
     }

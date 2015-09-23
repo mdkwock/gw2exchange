@@ -44,9 +44,19 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildListingQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildListingQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
+ * @method     ChildListingQuery leftJoinWith($relation) Adds a LEFT JOIN clause and with to the query
+ * @method     ChildListingQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
+ * @method     ChildListingQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
+ *
  * @method     ChildListingQuery leftJoinItem($relationAlias = null) Adds a LEFT JOIN clause to the query using the Item relation
  * @method     ChildListingQuery rightJoinItem($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Item relation
  * @method     ChildListingQuery innerJoinItem($relationAlias = null) Adds a INNER JOIN clause to the query using the Item relation
+ *
+ * @method     ChildListingQuery joinWithItem($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Item relation
+ *
+ * @method     ChildListingQuery leftJoinWithItem() Adds a LEFT JOIN clause and with to the query using the Item relation
+ * @method     ChildListingQuery rightJoinWithItem() Adds a RIGHT JOIN clause and with to the query using the Item relation
+ * @method     ChildListingQuery innerJoinWithItem() Adds a INNER JOIN clause and with to the query using the Item relation
  *
  * @method     \GW2Exchange\Database\ItemQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
@@ -669,7 +679,7 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
      *
      * @return $this|ChildListingQuery The current query, for fluid interface
      */
-    public function joinItem($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function joinItem($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
         $relationMap = $tableMap->getRelation('Item');
@@ -704,7 +714,7 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
      *
      * @return \GW2Exchange\Database\ItemQuery A secondary query class using the current class as primary query
      */
-    public function useItemQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function useItemQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinItem($relationAlias, $joinType)
@@ -939,9 +949,11 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
 
             $needsComplexCount = $this->getGroupByColumns()
                 || $this->getOffset()
-                || $this->getLimit()
+                || $this->getLimit() >= 0
                 || $this->getHaving()
-                || in_array(Criteria::DISTINCT, $this->getSelectModifiers());
+                || in_array(Criteria::DISTINCT, $this->getSelectModifiers())
+                || count($this->selectQueries) > 0
+            ;
 
             $params = array();
             if ($needsComplexCount) {

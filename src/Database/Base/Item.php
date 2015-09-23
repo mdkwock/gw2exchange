@@ -952,10 +952,9 @@ abstract class Item implements ActiveRecordInterface
 
             if ($this->listingsScheduledForDeletion !== null) {
                 if (!$this->listingsScheduledForDeletion->isEmpty()) {
-                    foreach ($this->listingsScheduledForDeletion as $listing) {
-                        // need to save related object because we set the relation to null
-                        $listing->save($con);
-                    }
+                    \GW2Exchange\Database\ListingQuery::create()
+                        ->filterByPrimaryKeys($this->listingsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
                     $this->listingsScheduledForDeletion = null;
                 }
             }
@@ -976,10 +975,9 @@ abstract class Item implements ActiveRecordInterface
 
             if ($this->priceHistoriesScheduledForDeletion !== null) {
                 if (!$this->priceHistoriesScheduledForDeletion->isEmpty()) {
-                    foreach ($this->priceHistoriesScheduledForDeletion as $priceHistory) {
-                        // need to save related object because we set the relation to null
-                        $priceHistory->save($con);
-                    }
+                    \GW2Exchange\Database\PriceHistoryQuery::create()
+                        ->filterByPrimaryKeys($this->priceHistoriesScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
                     $this->priceHistoriesScheduledForDeletion = null;
                 }
             }
@@ -2111,7 +2109,7 @@ abstract class Item implements ActiveRecordInterface
                 $this->listingsScheduledForDeletion = clone $this->collListings;
                 $this->listingsScheduledForDeletion->clear();
             }
-            $this->listingsScheduledForDeletion[]= $listing;
+            $this->listingsScheduledForDeletion[]= clone $listing;
             $listing->setItem(null);
         }
 
@@ -2365,7 +2363,7 @@ abstract class Item implements ActiveRecordInterface
                 $this->priceHistoriesScheduledForDeletion = clone $this->collPriceHistories;
                 $this->priceHistoriesScheduledForDeletion->clear();
             }
-            $this->priceHistoriesScheduledForDeletion[]= $priceHistory;
+            $this->priceHistoriesScheduledForDeletion[]= clone $priceHistory;
             $priceHistory->setItem(null);
         }
 

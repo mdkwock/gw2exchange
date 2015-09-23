@@ -93,67 +93,72 @@ class Price extends BasePrice implements DatabaseObjectInterface
    */
   public function preSave(ConnectionInterface $con =  null)
   {
-    $con = \Propel\Runtime\Propel::getWriteConnection(PriceTableMap::DATABASE_NAME);
-    dd($con);
-    $now = time();
-    //check to see if we have not already made this record
-    $priceHistoryQuery = new PriceHistoryQuery();
-    $priceHistory = $priceHistoryQuery->filterByItemId($this->item_id)->lastCreatedFirst()->findOneOrCreate();
-    $existing = $priceHistory->hash();
-    $new = $this->hash();
-    //we only create new price_history records when the price/qty changes
-    if($existing == $new){
-      //if the old price history and the price we are about to save are the same
-      $oldCacheTime = $this->getCacheTime();
-      $newCacheTime = $oldCacheTime>$this->minCacheTime?$oldCacheTime*2:$this->minCacheTime*2;
-      $this->setCacheTime($newCacheTime);//double the cache time
-    }else{
-      //we found it so reset the cache timer
-      $this->setCacheTime($this->minCacheTime);
-
-
-      if($priceHistory->getCreatedAt() != $this->getUpdatedAt()){
-        //if there is no existing price history entry for this update time
-        $priceHistory = new PriceHistory();
-        $priceHistory->fromArray($this->toArray());
-        $priceHistory->setCreatedAt($now);
-        $this->addPriceHistory($priceHistory);
-      }else{
-        //there is an existing price history for this update time
+    if($this->isModified()){
+      $hash = $this->hash();
+      $this->setHash($hash);
+      $priceHistory =  $this->getPriceHistories()->getLast();
+      //only bother if this is changed at all
+      $mods = $this->getModifiedColumns();
+      $stale = true;//whether the database row is the same as the gw2 server
+      if(count($mods) == 1 && $mods[0] = "price.updated_at"){
+        //if we have only modified the price updated_at column then it is the same price
+        $stale = false;
       }
-      if(empty($this->getMaxBuy())){
-        //if there is not already a max buy set
-        //then we have to calculate and set all of them
-        $stmt = $con->prepare('SELECT MAX(buy_price), MIN(buy_price), MAX(sell_price), MIN(sell_price) FROM price_history WHERE price_history.ITEM_ID = :p1');
-        $stmt->bindValue(':p1', $this->getItemId());
-        $stmt->execute();
-        $aggregates = $stmt->fetch();
-        //we need to make sure that we get a value back without the checks then the aggregate function can return null,
-        //if its the first result
-        $maxBuy = empty($aggregates['MAX(buy_price'])?$this->getBuyPrice():$aggregates['MAX(buy_price'];
-        $minBuy = empty($aggregates['MIN(buy_price'])?$this->getBuyPrice():$aggregates['MIN(buy_price'];
-        $maxSell = empty($aggregates['MAX(sell_price'])?$this->getSellPrice():$aggregates['MAX(sell_price'];
-        $minSell = empty($aggregates['MIN(sell_price'])?$this->getSellPrice():$aggregates['MIN(sell_price'];
-        $this->setMaxBuy($maxBuy);
-        $this->setMinBuy($minBuy);
-        $this->setMaxSell($maxSell);
-        $this->setMinSell($minSell);
-      }else{
-        //else they are already set so we can just update if necessary
-        if($this->buy_price > $this->getMaxBuy()){
-          //if the new price is higher than the previous max
-          $this->setMaxBuy($this->buy_price);
-        }elseif($this->buy_price < $this->getMinBuy()){
-          //if the new price is higher than the previous max
-          $this->setMinBuy($this->buy_price);
-        }
 
-        if($this->sell_price > $this->getMaxSell()){
-          //if the new price is higher than the previous max
-          $this->setMaxSell($this->sell_price);
-        }elseif($this->sell_price < $this->getMinSell()){
-          //if the new price is higher than the previous max
-          $this->setMinSell($this->sell_price);
+      //we only create new price_history records when the price/qty changes
+      //if($existing == $new){
+      if($stale === false){
+        //if we have the same value as before
+        //double the cache time bc its a cache hit
+        $oldCacheTime = $this->getCacheTime();
+        $newCacheTime = $oldCacheTime>$this->minCacheTime?$oldCacheTime*2:$this->minCacheTime*2;
+        $this->setCacheTime($newCacheTime);//double the cache time
+      }else{
+        //this is a changed price so reset the cache timer
+        $this->setCacheTime($this->minCacheTime);
+
+        //create a new price history
+          $priceHistory = new PriceHistory();
+          $priceHistory->fromArray($this->toArray());
+          $priceHistory->setCreatedAt($this->getUpdatedAt());
+          $hash = $priceHistory->hash();
+          $priceHistory->setHash($hash);
+          $this->addPriceHistory($priceHistory);
+
+        if(empty($this->getMaxBuy())){
+          //if there is not already a max buy set
+          //then we have to calculate and set all of them
+          $stmt = $con->prepare('SELECT MAX(buy_price), MIN(buy_price), MAX(sell_price), MIN(sell_price) FROM price_history WHERE price_history.ITEM_ID = :p1');
+          $stmt->bindValue(':p1', $this->getItemId());
+          $stmt->execute();
+          $aggregates = $stmt->fetch();
+          //we need to make sure that we get a value back without the checks then the aggregate function can return null,
+          //if its the first result
+          $maxBuy = empty($aggregates['MAX(buy_price'])?$this->getBuyPrice():$aggregates['MAX(buy_price'];
+          $minBuy = empty($aggregates['MIN(buy_price'])?$this->getBuyPrice():$aggregates['MIN(buy_price'];
+          $maxSell = empty($aggregates['MAX(sell_price'])?$this->getSellPrice():$aggregates['MAX(sell_price'];
+          $minSell = empty($aggregates['MIN(sell_price'])?$this->getSellPrice():$aggregates['MIN(sell_price'];
+          $this->setMaxBuy($maxBuy);
+          $this->setMinBuy($minBuy);
+          $this->setMaxSell($maxSell);
+          $this->setMinSell($minSell);
+        }else{
+          //else they are already existing maxes set so we can just update if it is necessary
+          if($this->buy_price > $this->getMaxBuy()){
+            //if the new price is higher than the previous max
+            $this->setMaxBuy($this->buy_price);
+          }elseif($this->buy_price < $this->getMinBuy()){
+            //if the new price is higher than the previous max
+            $this->setMinBuy($this->buy_price);
+          }
+
+          if($this->sell_price > $this->getMaxSell()){
+            //if the new price is higher than the previous max
+            $this->setMaxSell($this->sell_price);
+          }elseif($this->sell_price < $this->getMinSell()){
+            //if the new price is higher than the previous max
+            $this->setMinSell($this->sell_price);
+          }
         }
       }
     }
@@ -171,6 +176,8 @@ class Price extends BasePrice implements DatabaseObjectInterface
         'buy_qty'=>$this->getBuyQty(),
         'sell_price'=>$this->getSellPrice(),
         'sell_qty'=>$this->getSellQty(),
+        'profit'=>$this->getSellProfit(),
+        'roi'=>$this->getSellRoi(),
       ); 
     }    
     $hash = md5(json_encode($arr));

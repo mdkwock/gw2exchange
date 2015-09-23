@@ -98,6 +98,12 @@ abstract class Price implements ActiveRecordInterface
     protected $sell_qty;
 
     /**
+     * The value for the hash field.
+     * @var        string
+     */
+    protected $hash;
+
+    /**
      * The value for the profit field.
      * @var        int
      */
@@ -111,7 +117,7 @@ abstract class Price implements ActiveRecordInterface
 
     /**
      * The value for the cache_time field.
-     * Note: this column has a database default value of: 1
+     * Note: this column has a database default value of: 4
      * @var        int
      */
     protected $cache_time;
@@ -185,7 +191,7 @@ abstract class Price implements ActiveRecordInterface
      */
     public function applyDefaultValues()
     {
-        $this->cache_time = 1;
+        $this->cache_time = 4;
     }
 
     /**
@@ -458,6 +464,16 @@ abstract class Price implements ActiveRecordInterface
     }
 
     /**
+     * Get the [hash] column value.
+     *
+     * @return string
+     */
+    public function getHash()
+    {
+        return $this->hash;
+    }
+
+    /**
      * Get the [profit] column value.
      *
      * @return int
@@ -672,6 +688,26 @@ abstract class Price implements ActiveRecordInterface
     } // setSellQty()
 
     /**
+     * Set the value of [hash] column.
+     *
+     * @param string $v new value
+     * @return $this|\GW2Exchange\Database\Price The current object (for fluent API support)
+     */
+    public function setHash($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->hash !== $v) {
+            $this->hash = $v;
+            $this->modifiedColumns[PriceTableMap::COL_HASH] = true;
+        }
+
+        return $this;
+    } // setHash()
+
+    /**
      * Set the value of [profit] column.
      *
      * @param int $v new value
@@ -861,7 +897,7 @@ abstract class Price implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
-            if ($this->cache_time !== 1) {
+            if ($this->cache_time !== 4) {
                 return false;
             }
 
@@ -906,34 +942,37 @@ abstract class Price implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : PriceTableMap::translateFieldName('SellQty', TableMap::TYPE_PHPNAME, $indexType)];
             $this->sell_qty = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PriceTableMap::translateFieldName('Profit', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : PriceTableMap::translateFieldName('Hash', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->hash = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : PriceTableMap::translateFieldName('Profit', TableMap::TYPE_PHPNAME, $indexType)];
             $this->profit = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : PriceTableMap::translateFieldName('Roi', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : PriceTableMap::translateFieldName('Roi', TableMap::TYPE_PHPNAME, $indexType)];
             $this->roi = (null !== $col) ? (double) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : PriceTableMap::translateFieldName('CacheTime', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : PriceTableMap::translateFieldName('CacheTime', TableMap::TYPE_PHPNAME, $indexType)];
             $this->cache_time = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : PriceTableMap::translateFieldName('MaxBuy', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : PriceTableMap::translateFieldName('MaxBuy', TableMap::TYPE_PHPNAME, $indexType)];
             $this->max_buy = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : PriceTableMap::translateFieldName('MinBuy', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : PriceTableMap::translateFieldName('MinBuy', TableMap::TYPE_PHPNAME, $indexType)];
             $this->min_buy = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : PriceTableMap::translateFieldName('MaxSell', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : PriceTableMap::translateFieldName('MaxSell', TableMap::TYPE_PHPNAME, $indexType)];
             $this->max_sell = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : PriceTableMap::translateFieldName('MinSell', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : PriceTableMap::translateFieldName('MinSell', TableMap::TYPE_PHPNAME, $indexType)];
             $this->min_sell = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : PriceTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : PriceTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : PriceTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 14 + $startcol : PriceTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -946,7 +985,7 @@ abstract class Price implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 14; // 14 = PriceTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 15; // 15 = PriceTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\GW2Exchange\\Database\\Price'), 0, $e);
@@ -1149,10 +1188,9 @@ abstract class Price implements ActiveRecordInterface
 
             if ($this->priceHistoriesScheduledForDeletion !== null) {
                 if (!$this->priceHistoriesScheduledForDeletion->isEmpty()) {
-                    foreach ($this->priceHistoriesScheduledForDeletion as $priceHistory) {
-                        // need to save related object because we set the relation to null
-                        $priceHistory->save($con);
-                    }
+                    \GW2Exchange\Database\PriceHistoryQuery::create()
+                        ->filterByPrimaryKeys($this->priceHistoriesScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
                     $this->priceHistoriesScheduledForDeletion = null;
                 }
             }
@@ -1201,6 +1239,9 @@ abstract class Price implements ActiveRecordInterface
         }
         if ($this->isColumnModified(PriceTableMap::COL_SELL_QTY)) {
             $modifiedColumns[':p' . $index++]  = 'sell_qty';
+        }
+        if ($this->isColumnModified(PriceTableMap::COL_HASH)) {
+            $modifiedColumns[':p' . $index++]  = 'hash';
         }
         if ($this->isColumnModified(PriceTableMap::COL_PROFIT)) {
             $modifiedColumns[':p' . $index++]  = 'profit';
@@ -1254,6 +1295,9 @@ abstract class Price implements ActiveRecordInterface
                         break;
                     case 'sell_qty':
                         $stmt->bindValue($identifier, $this->sell_qty, PDO::PARAM_INT);
+                        break;
+                    case 'hash':
+                        $stmt->bindValue($identifier, $this->hash, PDO::PARAM_STR);
                         break;
                     case 'profit':
                         $stmt->bindValue($identifier, $this->profit, PDO::PARAM_INT);
@@ -1353,30 +1397,33 @@ abstract class Price implements ActiveRecordInterface
                 return $this->getSellQty();
                 break;
             case 5:
-                return $this->getProfit();
+                return $this->getHash();
                 break;
             case 6:
-                return $this->getRoi();
+                return $this->getProfit();
                 break;
             case 7:
-                return $this->getCacheTime();
+                return $this->getRoi();
                 break;
             case 8:
-                return $this->getMaxBuy();
+                return $this->getCacheTime();
                 break;
             case 9:
-                return $this->getMinBuy();
+                return $this->getMaxBuy();
                 break;
             case 10:
-                return $this->getMaxSell();
+                return $this->getMinBuy();
                 break;
             case 11:
-                return $this->getMinSell();
+                return $this->getMaxSell();
                 break;
             case 12:
-                return $this->getCreatedAt();
+                return $this->getMinSell();
                 break;
             case 13:
+                return $this->getCreatedAt();
+                break;
+            case 14:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1414,28 +1461,29 @@ abstract class Price implements ActiveRecordInterface
             $keys[2] => $this->getSellPrice(),
             $keys[3] => $this->getBuyQty(),
             $keys[4] => $this->getSellQty(),
-            $keys[5] => $this->getProfit(),
-            $keys[6] => $this->getRoi(),
-            $keys[7] => $this->getCacheTime(),
-            $keys[8] => $this->getMaxBuy(),
-            $keys[9] => $this->getMinBuy(),
-            $keys[10] => $this->getMaxSell(),
-            $keys[11] => $this->getMinSell(),
-            $keys[12] => $this->getCreatedAt(),
-            $keys[13] => $this->getUpdatedAt(),
+            $keys[5] => $this->getHash(),
+            $keys[6] => $this->getProfit(),
+            $keys[7] => $this->getRoi(),
+            $keys[8] => $this->getCacheTime(),
+            $keys[9] => $this->getMaxBuy(),
+            $keys[10] => $this->getMinBuy(),
+            $keys[11] => $this->getMaxSell(),
+            $keys[12] => $this->getMinSell(),
+            $keys[13] => $this->getCreatedAt(),
+            $keys[14] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[12]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[12]];
-            $result[$keys[12]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[13]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[13]];
             $result[$keys[13]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[14]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[14]];
+            $result[$keys[14]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1524,30 +1572,33 @@ abstract class Price implements ActiveRecordInterface
                 $this->setSellQty($value);
                 break;
             case 5:
-                $this->setProfit($value);
+                $this->setHash($value);
                 break;
             case 6:
-                $this->setRoi($value);
+                $this->setProfit($value);
                 break;
             case 7:
-                $this->setCacheTime($value);
+                $this->setRoi($value);
                 break;
             case 8:
-                $this->setMaxBuy($value);
+                $this->setCacheTime($value);
                 break;
             case 9:
-                $this->setMinBuy($value);
+                $this->setMaxBuy($value);
                 break;
             case 10:
-                $this->setMaxSell($value);
+                $this->setMinBuy($value);
                 break;
             case 11:
-                $this->setMinSell($value);
+                $this->setMaxSell($value);
                 break;
             case 12:
-                $this->setCreatedAt($value);
+                $this->setMinSell($value);
                 break;
             case 13:
+                $this->setCreatedAt($value);
+                break;
+            case 14:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1592,31 +1643,34 @@ abstract class Price implements ActiveRecordInterface
             $this->setSellQty($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setProfit($arr[$keys[5]]);
+            $this->setHash($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setRoi($arr[$keys[6]]);
+            $this->setProfit($arr[$keys[6]]);
         }
         if (array_key_exists($keys[7], $arr)) {
-            $this->setCacheTime($arr[$keys[7]]);
+            $this->setRoi($arr[$keys[7]]);
         }
         if (array_key_exists($keys[8], $arr)) {
-            $this->setMaxBuy($arr[$keys[8]]);
+            $this->setCacheTime($arr[$keys[8]]);
         }
         if (array_key_exists($keys[9], $arr)) {
-            $this->setMinBuy($arr[$keys[9]]);
+            $this->setMaxBuy($arr[$keys[9]]);
         }
         if (array_key_exists($keys[10], $arr)) {
-            $this->setMaxSell($arr[$keys[10]]);
+            $this->setMinBuy($arr[$keys[10]]);
         }
         if (array_key_exists($keys[11], $arr)) {
-            $this->setMinSell($arr[$keys[11]]);
+            $this->setMaxSell($arr[$keys[11]]);
         }
         if (array_key_exists($keys[12], $arr)) {
-            $this->setCreatedAt($arr[$keys[12]]);
+            $this->setMinSell($arr[$keys[12]]);
         }
         if (array_key_exists($keys[13], $arr)) {
-            $this->setUpdatedAt($arr[$keys[13]]);
+            $this->setCreatedAt($arr[$keys[13]]);
+        }
+        if (array_key_exists($keys[14], $arr)) {
+            $this->setUpdatedAt($arr[$keys[14]]);
         }
     }
 
@@ -1673,6 +1727,9 @@ abstract class Price implements ActiveRecordInterface
         }
         if ($this->isColumnModified(PriceTableMap::COL_SELL_QTY)) {
             $criteria->add(PriceTableMap::COL_SELL_QTY, $this->sell_qty);
+        }
+        if ($this->isColumnModified(PriceTableMap::COL_HASH)) {
+            $criteria->add(PriceTableMap::COL_HASH, $this->hash);
         }
         if ($this->isColumnModified(PriceTableMap::COL_PROFIT)) {
             $criteria->add(PriceTableMap::COL_PROFIT, $this->profit);
@@ -1799,6 +1856,7 @@ abstract class Price implements ActiveRecordInterface
         $copyObj->setSellPrice($this->getSellPrice());
         $copyObj->setBuyQty($this->getBuyQty());
         $copyObj->setSellQty($this->getSellQty());
+        $copyObj->setHash($this->getHash());
         $copyObj->setProfit($this->getProfit());
         $copyObj->setRoi($this->getRoi());
         $copyObj->setCacheTime($this->getCacheTime());
@@ -2121,7 +2179,7 @@ abstract class Price implements ActiveRecordInterface
                 $this->priceHistoriesScheduledForDeletion = clone $this->collPriceHistories;
                 $this->priceHistoriesScheduledForDeletion->clear();
             }
-            $this->priceHistoriesScheduledForDeletion[]= $priceHistory;
+            $this->priceHistoriesScheduledForDeletion[]= clone $priceHistory;
             $priceHistory->setPrice(null);
         }
 
@@ -2168,6 +2226,7 @@ abstract class Price implements ActiveRecordInterface
         $this->sell_price = null;
         $this->buy_qty = null;
         $this->sell_qty = null;
+        $this->hash = null;
         $this->profit = null;
         $this->roi = null;
         $this->cache_time = null;

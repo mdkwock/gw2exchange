@@ -40,25 +40,59 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildItemQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildItemQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
+ * @method     ChildItemQuery leftJoinWith($relation) Adds a LEFT JOIN clause and with to the query
+ * @method     ChildItemQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
+ * @method     ChildItemQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
+ *
  * @method     ChildItemQuery leftJoinItemInfo($relationAlias = null) Adds a LEFT JOIN clause to the query using the ItemInfo relation
  * @method     ChildItemQuery rightJoinItemInfo($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ItemInfo relation
  * @method     ChildItemQuery innerJoinItemInfo($relationAlias = null) Adds a INNER JOIN clause to the query using the ItemInfo relation
+ *
+ * @method     ChildItemQuery joinWithItemInfo($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the ItemInfo relation
+ *
+ * @method     ChildItemQuery leftJoinWithItemInfo() Adds a LEFT JOIN clause and with to the query using the ItemInfo relation
+ * @method     ChildItemQuery rightJoinWithItemInfo() Adds a RIGHT JOIN clause and with to the query using the ItemInfo relation
+ * @method     ChildItemQuery innerJoinWithItemInfo() Adds a INNER JOIN clause and with to the query using the ItemInfo relation
  *
  * @method     ChildItemQuery leftJoinItemItemDetail($relationAlias = null) Adds a LEFT JOIN clause to the query using the ItemItemDetail relation
  * @method     ChildItemQuery rightJoinItemItemDetail($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ItemItemDetail relation
  * @method     ChildItemQuery innerJoinItemItemDetail($relationAlias = null) Adds a INNER JOIN clause to the query using the ItemItemDetail relation
  *
+ * @method     ChildItemQuery joinWithItemItemDetail($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the ItemItemDetail relation
+ *
+ * @method     ChildItemQuery leftJoinWithItemItemDetail() Adds a LEFT JOIN clause and with to the query using the ItemItemDetail relation
+ * @method     ChildItemQuery rightJoinWithItemItemDetail() Adds a RIGHT JOIN clause and with to the query using the ItemItemDetail relation
+ * @method     ChildItemQuery innerJoinWithItemItemDetail() Adds a INNER JOIN clause and with to the query using the ItemItemDetail relation
+ *
  * @method     ChildItemQuery leftJoinListing($relationAlias = null) Adds a LEFT JOIN clause to the query using the Listing relation
  * @method     ChildItemQuery rightJoinListing($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Listing relation
  * @method     ChildItemQuery innerJoinListing($relationAlias = null) Adds a INNER JOIN clause to the query using the Listing relation
+ *
+ * @method     ChildItemQuery joinWithListing($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Listing relation
+ *
+ * @method     ChildItemQuery leftJoinWithListing() Adds a LEFT JOIN clause and with to the query using the Listing relation
+ * @method     ChildItemQuery rightJoinWithListing() Adds a RIGHT JOIN clause and with to the query using the Listing relation
+ * @method     ChildItemQuery innerJoinWithListing() Adds a INNER JOIN clause and with to the query using the Listing relation
  *
  * @method     ChildItemQuery leftJoinPrice($relationAlias = null) Adds a LEFT JOIN clause to the query using the Price relation
  * @method     ChildItemQuery rightJoinPrice($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Price relation
  * @method     ChildItemQuery innerJoinPrice($relationAlias = null) Adds a INNER JOIN clause to the query using the Price relation
  *
+ * @method     ChildItemQuery joinWithPrice($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Price relation
+ *
+ * @method     ChildItemQuery leftJoinWithPrice() Adds a LEFT JOIN clause and with to the query using the Price relation
+ * @method     ChildItemQuery rightJoinWithPrice() Adds a RIGHT JOIN clause and with to the query using the Price relation
+ * @method     ChildItemQuery innerJoinWithPrice() Adds a INNER JOIN clause and with to the query using the Price relation
+ *
  * @method     ChildItemQuery leftJoinPriceHistory($relationAlias = null) Adds a LEFT JOIN clause to the query using the PriceHistory relation
  * @method     ChildItemQuery rightJoinPriceHistory($relationAlias = null) Adds a RIGHT JOIN clause to the query using the PriceHistory relation
  * @method     ChildItemQuery innerJoinPriceHistory($relationAlias = null) Adds a INNER JOIN clause to the query using the PriceHistory relation
+ *
+ * @method     ChildItemQuery joinWithPriceHistory($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the PriceHistory relation
+ *
+ * @method     ChildItemQuery leftJoinWithPriceHistory() Adds a LEFT JOIN clause and with to the query using the PriceHistory relation
+ * @method     ChildItemQuery rightJoinWithPriceHistory() Adds a RIGHT JOIN clause and with to the query using the PriceHistory relation
+ * @method     ChildItemQuery innerJoinWithPriceHistory() Adds a INNER JOIN clause and with to the query using the PriceHistory relation
  *
  * @method     \GW2Exchange\Database\ItemInfoQuery|\GW2Exchange\Database\ItemItemDetailQuery|\GW2Exchange\Database\ListingQuery|\GW2Exchange\Database\PriceQuery|\GW2Exchange\Database\PriceHistoryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
@@ -709,7 +743,7 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
      *
      * @return $this|ChildItemQuery The current query, for fluid interface
      */
-    public function joinListing($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function joinListing($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
         $relationMap = $tableMap->getRelation('Listing');
@@ -744,7 +778,7 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
      *
      * @return \GW2Exchange\Database\ListingQuery A secondary query class using the current class as primary query
      */
-    public function useListingQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function useListingQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinListing($relationAlias, $joinType)
@@ -855,7 +889,7 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
      *
      * @return $this|ChildItemQuery The current query, for fluid interface
      */
-    public function joinPriceHistory($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function joinPriceHistory($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
         $relationMap = $tableMap->getRelation('PriceHistory');
@@ -890,7 +924,7 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
      *
      * @return \GW2Exchange\Database\PriceHistoryQuery A secondary query class using the current class as primary query
      */
-    public function usePriceHistoryQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function usePriceHistoryQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinPriceHistory($relationAlias, $joinType)
@@ -1142,9 +1176,11 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
 
             $needsComplexCount = $this->getGroupByColumns()
                 || $this->getOffset()
-                || $this->getLimit()
+                || $this->getLimit() >= 0
                 || $this->getHaving()
-                || in_array(Criteria::DISTINCT, $this->getSelectModifiers());
+                || in_array(Criteria::DISTINCT, $this->getSelectModifiers())
+                || count($this->selectQueries) > 0
+            ;
 
             $params = array();
             if ($needsComplexCount) {

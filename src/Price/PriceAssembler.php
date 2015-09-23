@@ -33,9 +33,19 @@ class PriceAssembler implements PriceAssemblerInterface
    */
   public function getIdList()
   {
-    $url = "https://api.guildwars2.com/v2/commerce/prices/";
-    $result = $this->webScraper->getInfo($url);
-    $result = $this->priceParser->parseList($result);
+    $result = array();
+    try{
+      $url = "https://api.guildwars2.com/v2/commerce/prices/";
+      $result = $this->webScraper->getInfo($url);
+      $result = $this->priceParser->parseList($result);
+    }catch(ClientException $e){
+      if($e->getCode() == 404){
+        //if the item doesn't exist
+        return array();//return an empty array
+      }else{
+        throw $e;//else pass the error up
+      }
+    }
     return $result;
   }
 

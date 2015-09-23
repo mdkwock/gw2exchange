@@ -26,6 +26,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceHistoryQuery orderBySellPrice($order = Criteria::ASC) Order by the sell_price column
  * @method     ChildPriceHistoryQuery orderByBuyQty($order = Criteria::ASC) Order by the buy_qty column
  * @method     ChildPriceHistoryQuery orderBySellQty($order = Criteria::ASC) Order by the sell_qty column
+ * @method     ChildPriceHistoryQuery orderByHash($order = Criteria::ASC) Order by the hash column
  * @method     ChildPriceHistoryQuery orderByProfit($order = Criteria::ASC) Order by the profit column
  * @method     ChildPriceHistoryQuery orderByRoi($order = Criteria::ASC) Order by the roi column
  * @method     ChildPriceHistoryQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
@@ -36,6 +37,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceHistoryQuery groupBySellPrice() Group by the sell_price column
  * @method     ChildPriceHistoryQuery groupByBuyQty() Group by the buy_qty column
  * @method     ChildPriceHistoryQuery groupBySellQty() Group by the sell_qty column
+ * @method     ChildPriceHistoryQuery groupByHash() Group by the hash column
  * @method     ChildPriceHistoryQuery groupByProfit() Group by the profit column
  * @method     ChildPriceHistoryQuery groupByRoi() Group by the roi column
  * @method     ChildPriceHistoryQuery groupByCreatedAt() Group by the created_at column
@@ -44,15 +46,41 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceHistoryQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildPriceHistoryQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
+ * @method     ChildPriceHistoryQuery leftJoinWith($relation) Adds a LEFT JOIN clause and with to the query
+ * @method     ChildPriceHistoryQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
+ * @method     ChildPriceHistoryQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
+ *
  * @method     ChildPriceHistoryQuery leftJoinItem($relationAlias = null) Adds a LEFT JOIN clause to the query using the Item relation
  * @method     ChildPriceHistoryQuery rightJoinItem($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Item relation
  * @method     ChildPriceHistoryQuery innerJoinItem($relationAlias = null) Adds a INNER JOIN clause to the query using the Item relation
+ *
+ * @method     ChildPriceHistoryQuery joinWithItem($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Item relation
+ *
+ * @method     ChildPriceHistoryQuery leftJoinWithItem() Adds a LEFT JOIN clause and with to the query using the Item relation
+ * @method     ChildPriceHistoryQuery rightJoinWithItem() Adds a RIGHT JOIN clause and with to the query using the Item relation
+ * @method     ChildPriceHistoryQuery innerJoinWithItem() Adds a INNER JOIN clause and with to the query using the Item relation
  *
  * @method     ChildPriceHistoryQuery leftJoinPrice($relationAlias = null) Adds a LEFT JOIN clause to the query using the Price relation
  * @method     ChildPriceHistoryQuery rightJoinPrice($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Price relation
  * @method     ChildPriceHistoryQuery innerJoinPrice($relationAlias = null) Adds a INNER JOIN clause to the query using the Price relation
  *
- * @method     \GW2Exchange\Database\ItemQuery|\GW2Exchange\Database\PriceQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildPriceHistoryQuery joinWithPrice($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Price relation
+ *
+ * @method     ChildPriceHistoryQuery leftJoinWithPrice() Adds a LEFT JOIN clause and with to the query using the Price relation
+ * @method     ChildPriceHistoryQuery rightJoinWithPrice() Adds a RIGHT JOIN clause and with to the query using the Price relation
+ * @method     ChildPriceHistoryQuery innerJoinWithPrice() Adds a INNER JOIN clause and with to the query using the Price relation
+ *
+ * @method     ChildPriceHistoryQuery leftJoinRequestsLog($relationAlias = null) Adds a LEFT JOIN clause to the query using the RequestsLog relation
+ * @method     ChildPriceHistoryQuery rightJoinRequestsLog($relationAlias = null) Adds a RIGHT JOIN clause to the query using the RequestsLog relation
+ * @method     ChildPriceHistoryQuery innerJoinRequestsLog($relationAlias = null) Adds a INNER JOIN clause to the query using the RequestsLog relation
+ *
+ * @method     ChildPriceHistoryQuery joinWithRequestsLog($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the RequestsLog relation
+ *
+ * @method     ChildPriceHistoryQuery leftJoinWithRequestsLog() Adds a LEFT JOIN clause and with to the query using the RequestsLog relation
+ * @method     ChildPriceHistoryQuery rightJoinWithRequestsLog() Adds a RIGHT JOIN clause and with to the query using the RequestsLog relation
+ * @method     ChildPriceHistoryQuery innerJoinWithRequestsLog() Adds a INNER JOIN clause and with to the query using the RequestsLog relation
+ *
+ * @method     \GW2Exchange\Database\ItemQuery|\GW2Exchange\Database\PriceQuery|\GW2Exchange\Database\RequestsLogQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildPriceHistory findOne(ConnectionInterface $con = null) Return the first ChildPriceHistory matching the query
  * @method     ChildPriceHistory findOneOrCreate(ConnectionInterface $con = null) Return the first ChildPriceHistory matching the query, or a new ChildPriceHistory object populated from the query conditions when no match is found
@@ -63,6 +91,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceHistory findOneBySellPrice(int $sell_price) Return the first ChildPriceHistory filtered by the sell_price column
  * @method     ChildPriceHistory findOneByBuyQty(int $buy_qty) Return the first ChildPriceHistory filtered by the buy_qty column
  * @method     ChildPriceHistory findOneBySellQty(int $sell_qty) Return the first ChildPriceHistory filtered by the sell_qty column
+ * @method     ChildPriceHistory findOneByHash(string $hash) Return the first ChildPriceHistory filtered by the hash column
  * @method     ChildPriceHistory findOneByProfit(int $profit) Return the first ChildPriceHistory filtered by the profit column
  * @method     ChildPriceHistory findOneByRoi(double $roi) Return the first ChildPriceHistory filtered by the roi column
  * @method     ChildPriceHistory findOneByCreatedAt(string $created_at) Return the first ChildPriceHistory filtered by the created_at column *
@@ -76,6 +105,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceHistory requireOneBySellPrice(int $sell_price) Return the first ChildPriceHistory filtered by the sell_price column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPriceHistory requireOneByBuyQty(int $buy_qty) Return the first ChildPriceHistory filtered by the buy_qty column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPriceHistory requireOneBySellQty(int $sell_qty) Return the first ChildPriceHistory filtered by the sell_qty column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPriceHistory requireOneByHash(string $hash) Return the first ChildPriceHistory filtered by the hash column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPriceHistory requireOneByProfit(int $profit) Return the first ChildPriceHistory filtered by the profit column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPriceHistory requireOneByRoi(double $roi) Return the first ChildPriceHistory filtered by the roi column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPriceHistory requireOneByCreatedAt(string $created_at) Return the first ChildPriceHistory filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -87,6 +117,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceHistory[]|ObjectCollection findBySellPrice(int $sell_price) Return ChildPriceHistory objects filtered by the sell_price column
  * @method     ChildPriceHistory[]|ObjectCollection findByBuyQty(int $buy_qty) Return ChildPriceHistory objects filtered by the buy_qty column
  * @method     ChildPriceHistory[]|ObjectCollection findBySellQty(int $sell_qty) Return ChildPriceHistory objects filtered by the sell_qty column
+ * @method     ChildPriceHistory[]|ObjectCollection findByHash(string $hash) Return ChildPriceHistory objects filtered by the hash column
  * @method     ChildPriceHistory[]|ObjectCollection findByProfit(int $profit) Return ChildPriceHistory objects filtered by the profit column
  * @method     ChildPriceHistory[]|ObjectCollection findByRoi(double $roi) Return ChildPriceHistory objects filtered by the roi column
  * @method     ChildPriceHistory[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildPriceHistory objects filtered by the created_at column
@@ -185,7 +216,7 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, item_id, buy_price, sell_price, buy_qty, sell_qty, profit, roi, created_at FROM price_history WHERE id = :p0';
+        $sql = 'SELECT id, item_id, buy_price, sell_price, buy_qty, sell_qty, hash, profit, roi, created_at FROM price_history WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -526,6 +557,35 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
     }
 
     /**
+     * Filter the query on the hash column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByHash('fooValue');   // WHERE hash = 'fooValue'
+     * $query->filterByHash('%fooValue%'); // WHERE hash LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $hash The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildPriceHistoryQuery The current query, for fluid interface
+     */
+    public function filterByHash($hash = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($hash)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $hash)) {
+                $hash = str_replace('*', '%', $hash);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(PriceHistoryTableMap::COL_HASH, $hash, $comparison);
+    }
+
+    /**
      * Filter the query on the profit column
      *
      * Example usage:
@@ -685,7 +745,7 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
      *
      * @return $this|ChildPriceHistoryQuery The current query, for fluid interface
      */
-    public function joinItem($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function joinItem($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
         $relationMap = $tableMap->getRelation('Item');
@@ -720,7 +780,7 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
      *
      * @return \GW2Exchange\Database\ItemQuery A secondary query class using the current class as primary query
      */
-    public function useItemQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function useItemQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinItem($relationAlias, $joinType)
@@ -762,7 +822,7 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
      *
      * @return $this|ChildPriceHistoryQuery The current query, for fluid interface
      */
-    public function joinPrice($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function joinPrice($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
         $relationMap = $tableMap->getRelation('Price');
@@ -797,11 +857,84 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
      *
      * @return \GW2Exchange\Database\PriceQuery A secondary query class using the current class as primary query
      */
-    public function usePriceQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function usePriceQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinPrice($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Price', '\GW2Exchange\Database\PriceQuery');
+    }
+
+    /**
+     * Filter the query by a related \GW2Exchange\Database\RequestsLog object
+     *
+     * @param \GW2Exchange\Database\RequestsLog|ObjectCollection $requestsLog the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildPriceHistoryQuery The current query, for fluid interface
+     */
+    public function filterByRequestsLog($requestsLog, $comparison = null)
+    {
+        if ($requestsLog instanceof \GW2Exchange\Database\RequestsLog) {
+            return $this
+                ->addUsingAlias(PriceHistoryTableMap::COL_ID, $requestsLog->getPriceHistoryId(), $comparison);
+        } elseif ($requestsLog instanceof ObjectCollection) {
+            return $this
+                ->useRequestsLogQuery()
+                ->filterByPrimaryKeys($requestsLog->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByRequestsLog() only accepts arguments of type \GW2Exchange\Database\RequestsLog or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the RequestsLog relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildPriceHistoryQuery The current query, for fluid interface
+     */
+    public function joinRequestsLog($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('RequestsLog');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'RequestsLog');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the RequestsLog relation RequestsLog object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \GW2Exchange\Database\RequestsLogQuery A secondary query class using the current class as primary query
+     */
+    public function useRequestsLogQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinRequestsLog($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'RequestsLog', '\GW2Exchange\Database\RequestsLogQuery');
     }
 
     /**
@@ -1000,9 +1133,11 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
 
             $needsComplexCount = $this->getGroupByColumns()
                 || $this->getOffset()
-                || $this->getLimit()
+                || $this->getLimit() >= 0
                 || $this->getHaving()
-                || in_array(Criteria::DISTINCT, $this->getSelectModifiers());
+                || in_array(Criteria::DISTINCT, $this->getSelectModifiers())
+                || count($this->selectQueries) > 0
+            ;
 
             $params = array();
             if ($needsComplexCount) {
