@@ -63,6 +63,8 @@ class ItemSearch
         'maxSell'=>$price->getMaxSell(),
         'supply'=>$price->getSellQty(),
         'demand'=>$price->getBuyQty(),
+        'profit'=>$price->getProfit(),
+        'roi'=>$price->getRoi(),
       );
 
       $returns[] = $temp;

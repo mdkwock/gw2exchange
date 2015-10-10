@@ -2,8 +2,8 @@
 
 namespace GW2Exchange\Database\Map;
 
-use GW2Exchange\Database\PriceHistory;
-use GW2Exchange\Database\PriceHistoryQuery;
+use GW2Exchange\Database\RequestsLog;
+use GW2Exchange\Database\RequestsLogQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'price_history' table.
+ * This class defines the structure of the 'requests_log' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class PriceHistoryTableMap extends TableMap
+class RequestsLogTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class PriceHistoryTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'GW2Exchange.Database.Map.PriceHistoryTableMap';
+    const CLASS_NAME = 'GW2Exchange.Database.Map.RequestsLogTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class PriceHistoryTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'price_history';
+    const TABLE_NAME = 'requests_log';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\GW2Exchange\\Database\\PriceHistory';
+    const OM_CLASS = '\\GW2Exchange\\Database\\RequestsLog';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'GW2Exchange.Database.PriceHistory';
+    const CLASS_DEFAULT = 'GW2Exchange.Database.RequestsLog';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 10;
+    const NUM_COLUMNS = 7;
 
     /**
      * The number of lazy-loaded columns
@@ -69,57 +69,42 @@ class PriceHistoryTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 10;
+    const NUM_HYDRATE_COLUMNS = 7;
 
     /**
      * the column name for the id field
      */
-    const COL_ID = 'price_history.id';
+    const COL_ID = 'requests_log.id';
 
     /**
-     * the column name for the item_id field
+     * the column name for the url field
      */
-    const COL_ITEM_ID = 'price_history.item_id';
+    const COL_URL = 'requests_log.url';
 
     /**
-     * the column name for the buy_price field
+     * the column name for the gw2ServerUrl field
      */
-    const COL_BUY_PRICE = 'price_history.buy_price';
+    const COL_GW2SERVERURL = 'requests_log.gw2ServerUrl';
 
     /**
-     * the column name for the sell_price field
+     * the column name for the price_history_id field
      */
-    const COL_SELL_PRICE = 'price_history.sell_price';
+    const COL_PRICE_HISTORY_ID = 'requests_log.price_history_id';
 
     /**
-     * the column name for the buy_qty field
+     * the column name for the cache_hit field
      */
-    const COL_BUY_QTY = 'price_history.buy_qty';
+    const COL_CACHE_HIT = 'requests_log.cache_hit';
 
     /**
-     * the column name for the sell_qty field
+     * the column name for the cache_correct field
      */
-    const COL_SELL_QTY = 'price_history.sell_qty';
-
-    /**
-     * the column name for the hash field
-     */
-    const COL_HASH = 'price_history.hash';
-
-    /**
-     * the column name for the profit field
-     */
-    const COL_PROFIT = 'price_history.profit';
-
-    /**
-     * the column name for the roi field
-     */
-    const COL_ROI = 'price_history.roi';
+    const COL_CACHE_CORRECT = 'requests_log.cache_correct';
 
     /**
      * the column name for the created_at field
      */
-    const COL_CREATED_AT = 'price_history.created_at';
+    const COL_CREATED_AT = 'requests_log.created_at';
 
     /**
      * The default string format for model objects of the related table
@@ -133,11 +118,11 @@ class PriceHistoryTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'ItemId', 'BuyPrice', 'SellPrice', 'BuyQty', 'SellQty', 'Hash', 'Profit', 'Roi', 'CreatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'itemId', 'buyPrice', 'sellPrice', 'buyQty', 'sellQty', 'hash', 'profit', 'roi', 'createdAt', ),
-        self::TYPE_COLNAME       => array(PriceHistoryTableMap::COL_ID, PriceHistoryTableMap::COL_ITEM_ID, PriceHistoryTableMap::COL_BUY_PRICE, PriceHistoryTableMap::COL_SELL_PRICE, PriceHistoryTableMap::COL_BUY_QTY, PriceHistoryTableMap::COL_SELL_QTY, PriceHistoryTableMap::COL_HASH, PriceHistoryTableMap::COL_PROFIT, PriceHistoryTableMap::COL_ROI, PriceHistoryTableMap::COL_CREATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'item_id', 'buy_price', 'sell_price', 'buy_qty', 'sell_qty', 'hash', 'profit', 'roi', 'created_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+        self::TYPE_PHPNAME       => array('Id', 'Url', 'Gw2serverurl', 'PriceHistoryId', 'CacheHit', 'CacheCorrect', 'CreatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'url', 'gw2serverurl', 'priceHistoryId', 'cacheHit', 'cacheCorrect', 'createdAt', ),
+        self::TYPE_COLNAME       => array(RequestsLogTableMap::COL_ID, RequestsLogTableMap::COL_URL, RequestsLogTableMap::COL_GW2SERVERURL, RequestsLogTableMap::COL_PRICE_HISTORY_ID, RequestsLogTableMap::COL_CACHE_HIT, RequestsLogTableMap::COL_CACHE_CORRECT, RequestsLogTableMap::COL_CREATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'url', 'gw2ServerUrl', 'price_history_id', 'cache_hit', 'cache_correct', 'created_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -147,11 +132,11 @@ class PriceHistoryTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'ItemId' => 1, 'BuyPrice' => 2, 'SellPrice' => 3, 'BuyQty' => 4, 'SellQty' => 5, 'Hash' => 6, 'Profit' => 7, 'Roi' => 8, 'CreatedAt' => 9, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'itemId' => 1, 'buyPrice' => 2, 'sellPrice' => 3, 'buyQty' => 4, 'sellQty' => 5, 'hash' => 6, 'profit' => 7, 'roi' => 8, 'createdAt' => 9, ),
-        self::TYPE_COLNAME       => array(PriceHistoryTableMap::COL_ID => 0, PriceHistoryTableMap::COL_ITEM_ID => 1, PriceHistoryTableMap::COL_BUY_PRICE => 2, PriceHistoryTableMap::COL_SELL_PRICE => 3, PriceHistoryTableMap::COL_BUY_QTY => 4, PriceHistoryTableMap::COL_SELL_QTY => 5, PriceHistoryTableMap::COL_HASH => 6, PriceHistoryTableMap::COL_PROFIT => 7, PriceHistoryTableMap::COL_ROI => 8, PriceHistoryTableMap::COL_CREATED_AT => 9, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'item_id' => 1, 'buy_price' => 2, 'sell_price' => 3, 'buy_qty' => 4, 'sell_qty' => 5, 'hash' => 6, 'profit' => 7, 'roi' => 8, 'created_at' => 9, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Url' => 1, 'Gw2serverurl' => 2, 'PriceHistoryId' => 3, 'CacheHit' => 4, 'CacheCorrect' => 5, 'CreatedAt' => 6, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'url' => 1, 'gw2serverurl' => 2, 'priceHistoryId' => 3, 'cacheHit' => 4, 'cacheCorrect' => 5, 'createdAt' => 6, ),
+        self::TYPE_COLNAME       => array(RequestsLogTableMap::COL_ID => 0, RequestsLogTableMap::COL_URL => 1, RequestsLogTableMap::COL_GW2SERVERURL => 2, RequestsLogTableMap::COL_PRICE_HISTORY_ID => 3, RequestsLogTableMap::COL_CACHE_HIT => 4, RequestsLogTableMap::COL_CACHE_CORRECT => 5, RequestsLogTableMap::COL_CREATED_AT => 6, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'url' => 1, 'gw2ServerUrl' => 2, 'price_history_id' => 3, 'cache_hit' => 4, 'cache_correct' => 5, 'created_at' => 6, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -164,23 +149,19 @@ class PriceHistoryTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('price_history');
-        $this->setPhpName('PriceHistory');
+        $this->setName('requests_log');
+        $this->setPhpName('RequestsLog');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\GW2Exchange\\Database\\PriceHistory');
+        $this->setClassName('\\GW2Exchange\\Database\\RequestsLog');
         $this->setPackage('GW2Exchange.Database');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addForeignKey('item_id', 'ItemId', 'INTEGER', 'item', 'id', true, null, null);
-        $this->addForeignKey('item_id', 'ItemId', 'INTEGER', 'price', 'item_id', true, null, null);
-        $this->addColumn('buy_price', 'BuyPrice', 'INTEGER', true, null, null);
-        $this->addColumn('sell_price', 'SellPrice', 'INTEGER', true, null, null);
-        $this->addColumn('buy_qty', 'BuyQty', 'INTEGER', true, null, null);
-        $this->addColumn('sell_qty', 'SellQty', 'INTEGER', true, null, null);
-        $this->addColumn('hash', 'Hash', 'VARCHAR', true, 128, null);
-        $this->addColumn('profit', 'Profit', 'INTEGER', false, null, null);
-        $this->addColumn('roi', 'Roi', 'FLOAT', false, null, null);
+        $this->addColumn('url', 'Url', 'INTEGER', true, null, null);
+        $this->addColumn('gw2ServerUrl', 'Gw2serverurl', 'INTEGER', true, null, null);
+        $this->addForeignKey('price_history_id', 'PriceHistoryId', 'INTEGER', 'price_history', 'id', true, null, null);
+        $this->addColumn('cache_hit', 'CacheHit', 'INTEGER', true, null, null);
+        $this->addColumn('cache_correct', 'CacheCorrect', 'INTEGER', false, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
 
@@ -189,34 +170,13 @@ class PriceHistoryTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Item', '\\GW2Exchange\\Database\\Item', RelationMap::MANY_TO_ONE, array (
-  0 =>
-  array (
-    0 => ':item_id',
-    1 => ':id',
-  ),
-), null, null, null, false);
-        $this->addRelation('Price', '\\GW2Exchange\\Database\\Price', RelationMap::MANY_TO_ONE, array (
-  0 =>
-  array (
-    0 => ':item_id',
-    1 => ':item_id',
-  ),
-), null, null, null, false);
-        $this->addRelation('PriceRequestLogEntry', '\\GW2Exchange\\Database\\PriceRequestLogEntry', RelationMap::ONE_TO_MANY, array (
+        $this->addRelation('PriceHistory', '\\GW2Exchange\\Database\\PriceHistory', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':price_history_id',
     1 => ':id',
   ),
-), null, null, 'PriceRequestLogEntries', false);
-        $this->addRelation('PriceUpdateCheckLogEntry', '\\GW2Exchange\\Database\\PriceUpdateCheckLogEntry', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':price_history_id',
-    1 => ':id',
-  ),
-), null, null, 'PriceUpdateCheckLogEntries', false);
+), null, null, null, false);
     } // buildRelations()
 
     /**
@@ -229,7 +189,6 @@ class PriceHistoryTableMap extends TableMap
     {
         return array(
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'true', ),
-            'query_cache' => array('backend' => 'apc', 'lifetime' => '3600', ),
         );
     } // getBehaviors()
 
@@ -290,7 +249,7 @@ class PriceHistoryTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? PriceHistoryTableMap::CLASS_DEFAULT : PriceHistoryTableMap::OM_CLASS;
+        return $withPrefix ? RequestsLogTableMap::CLASS_DEFAULT : RequestsLogTableMap::OM_CLASS;
     }
 
     /**
@@ -304,22 +263,22 @@ class PriceHistoryTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (PriceHistory object, last column rank)
+     * @return array           (RequestsLog object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = PriceHistoryTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = PriceHistoryTableMap::getInstanceFromPool($key))) {
+        $key = RequestsLogTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = RequestsLogTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + PriceHistoryTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + RequestsLogTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = PriceHistoryTableMap::OM_CLASS;
-            /** @var PriceHistory $obj */
+            $cls = RequestsLogTableMap::OM_CLASS;
+            /** @var RequestsLog $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            PriceHistoryTableMap::addInstanceToPool($obj, $key);
+            RequestsLogTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -342,18 +301,18 @@ class PriceHistoryTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = PriceHistoryTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = PriceHistoryTableMap::getInstanceFromPool($key))) {
+            $key = RequestsLogTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = RequestsLogTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var PriceHistory $obj */
+                /** @var RequestsLog $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                PriceHistoryTableMap::addInstanceToPool($obj, $key);
+                RequestsLogTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -374,26 +333,20 @@ class PriceHistoryTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(PriceHistoryTableMap::COL_ID);
-            $criteria->addSelectColumn(PriceHistoryTableMap::COL_ITEM_ID);
-            $criteria->addSelectColumn(PriceHistoryTableMap::COL_BUY_PRICE);
-            $criteria->addSelectColumn(PriceHistoryTableMap::COL_SELL_PRICE);
-            $criteria->addSelectColumn(PriceHistoryTableMap::COL_BUY_QTY);
-            $criteria->addSelectColumn(PriceHistoryTableMap::COL_SELL_QTY);
-            $criteria->addSelectColumn(PriceHistoryTableMap::COL_HASH);
-            $criteria->addSelectColumn(PriceHistoryTableMap::COL_PROFIT);
-            $criteria->addSelectColumn(PriceHistoryTableMap::COL_ROI);
-            $criteria->addSelectColumn(PriceHistoryTableMap::COL_CREATED_AT);
+            $criteria->addSelectColumn(RequestsLogTableMap::COL_ID);
+            $criteria->addSelectColumn(RequestsLogTableMap::COL_URL);
+            $criteria->addSelectColumn(RequestsLogTableMap::COL_GW2SERVERURL);
+            $criteria->addSelectColumn(RequestsLogTableMap::COL_PRICE_HISTORY_ID);
+            $criteria->addSelectColumn(RequestsLogTableMap::COL_CACHE_HIT);
+            $criteria->addSelectColumn(RequestsLogTableMap::COL_CACHE_CORRECT);
+            $criteria->addSelectColumn(RequestsLogTableMap::COL_CREATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
-            $criteria->addSelectColumn($alias . '.item_id');
-            $criteria->addSelectColumn($alias . '.buy_price');
-            $criteria->addSelectColumn($alias . '.sell_price');
-            $criteria->addSelectColumn($alias . '.buy_qty');
-            $criteria->addSelectColumn($alias . '.sell_qty');
-            $criteria->addSelectColumn($alias . '.hash');
-            $criteria->addSelectColumn($alias . '.profit');
-            $criteria->addSelectColumn($alias . '.roi');
+            $criteria->addSelectColumn($alias . '.url');
+            $criteria->addSelectColumn($alias . '.gw2ServerUrl');
+            $criteria->addSelectColumn($alias . '.price_history_id');
+            $criteria->addSelectColumn($alias . '.cache_hit');
+            $criteria->addSelectColumn($alias . '.cache_correct');
             $criteria->addSelectColumn($alias . '.created_at');
         }
     }
@@ -407,7 +360,7 @@ class PriceHistoryTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(PriceHistoryTableMap::DATABASE_NAME)->getTable(PriceHistoryTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(RequestsLogTableMap::DATABASE_NAME)->getTable(RequestsLogTableMap::TABLE_NAME);
     }
 
     /**
@@ -415,16 +368,16 @@ class PriceHistoryTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(PriceHistoryTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(PriceHistoryTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new PriceHistoryTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(RequestsLogTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(RequestsLogTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new RequestsLogTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a PriceHistory or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a RequestsLog or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or PriceHistory object or primary key or array of primary keys
+     * @param mixed               $values Criteria or RequestsLog object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -435,27 +388,27 @@ class PriceHistoryTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(PriceHistoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(RequestsLogTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \GW2Exchange\Database\PriceHistory) { // it's a model object
+        } elseif ($values instanceof \GW2Exchange\Database\RequestsLog) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(PriceHistoryTableMap::DATABASE_NAME);
-            $criteria->add(PriceHistoryTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(RequestsLogTableMap::DATABASE_NAME);
+            $criteria->add(RequestsLogTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = PriceHistoryQuery::create()->mergeWith($criteria);
+        $query = RequestsLogQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            PriceHistoryTableMap::clearInstancePool();
+            RequestsLogTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                PriceHistoryTableMap::removeInstanceFromPool($singleval);
+                RequestsLogTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -463,20 +416,20 @@ class PriceHistoryTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the price_history table.
+     * Deletes all rows from the requests_log table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return PriceHistoryQuery::create()->doDeleteAll($con);
+        return RequestsLogQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a PriceHistory or Criteria object.
+     * Performs an INSERT on the database, given a RequestsLog or Criteria object.
      *
-     * @param mixed               $criteria Criteria or PriceHistory object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or RequestsLog object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -485,22 +438,22 @@ class PriceHistoryTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(PriceHistoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(RequestsLogTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from PriceHistory object
+            $criteria = $criteria->buildCriteria(); // build Criteria from RequestsLog object
         }
 
-        if ($criteria->containsKey(PriceHistoryTableMap::COL_ID) && $criteria->keyContainsValue(PriceHistoryTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.PriceHistoryTableMap::COL_ID.')');
+        if ($criteria->containsKey(RequestsLogTableMap::COL_ID) && $criteria->keyContainsValue(RequestsLogTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.RequestsLogTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = PriceHistoryQuery::create()->mergeWith($criteria);
+        $query = RequestsLogQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -509,7 +462,7 @@ class PriceHistoryTableMap extends TableMap
         });
     }
 
-} // PriceHistoryTableMap
+} // RequestsLogTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-PriceHistoryTableMap::buildTableMap();
+RequestsLogTableMap::buildTableMap();

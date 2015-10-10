@@ -24,8 +24,17 @@ $app->get('/item/:ids',function($ids) use ($app){
   $idArr = explode(',',$ids);
   $items = $app->config('Item')->getByIds($idArr);
   $returns = array();
+  $log = $app->config('log');
   foreach($items as $id=>$item){
     $returns[$id] = $item->toArray();
+    /*
+    <column name="id" type="integer" primaryKey="true" autoIncrement="true" />
+    <column name="url" type="integer" required="required" />
+    <column name="gw2ServerUrl" type="integer" required="required" />
+    <column name="item_id" type="integer" required="required" />
+    <column name="cache_hit" type="integer" required="required" />
+    $log->
+    */
   }
   echo(json_encode($returns));
 });
@@ -49,94 +58,112 @@ $app->get('/search/item', function() use ($app){
   $request = $app->request;
   $filters = array();
   $itemName = $request->get('name');
-  if(!empty($itemName)){
+  if(isset($name) && (!empty($itemName) || $name===0)){
+    //we include 0 as a valid search filter
     //look for partials
     $filters['name'] = '%'.$itemName.'%';
   }
 
   $itemType = $request->get('type');
-  if(!empty($itemType)){
+  if(isset($type) && (!empty($itemType) || $type===0)){
+    //we include 0 as a valid search filter
     $filters['type'] = $itemType;
   }
 
   $itemSubtype = $request->get('subtype');
-  if(!empty($itemSubtype)){
+  if(isset($subtype) && (!empty($itemSubtype) || $subtype===0)){
+    //we include 0 as a valid search filter
     $filters['subtype'] = $itemSubtype;
   }
 
   $itemRarity = $request->get('rarity');
-  if(!empty($itemRarity))
+  if(isset($rarity) && (!empty($itemRarity || $rarity===0)))
+    //we include 0 as a valid search filter
   {
     $filters['rarity'] = $itemRarity;
   }  
 
   $itemLevel = $request->get('minLevel');
-  if(!empty($itemLevel)){
+  if(isset($minLevel) && (!empty($itemLevel) || $minLevel===0)){
+    //we include 0 as a valid search filter
     $filters['minLevel'] = $itemLevel;
   }
 
   $itemLevel = $request->get('maxLevel');
-  if(!empty($itemLevel)){
+  if(isset($maxLevel) && (!empty($itemLevel) || $maxLevel===0)){
+    //we include 0 as a valid search filter
     $filters['maxLevel'] = $itemLevel;
   }
   
   $itemBuy = $request->get('minBuy');
-  if(!empty($itemBuy)){
+  if(isset($minBuy) && (!empty($itemBuy) || $minBuy===0)){
+    //we include 0 as a valid search filter
     $filters['minBuy'] = $itemBuy;
   }
 
   $itemBuy = $request->get('maxBuy');
-  if(!empty($itemBuy)){
+  if(isset($maxBuy) && (!empty($itemBuy) || $maxBuy===0)){
+    //we include 0 as a valid search filter
     $filters['maxBuy'] = $itemBuy;
   }
   
   $itemSell = $request->get('minSell');
-  if(!empty($itemSell)){
+  if(isset($minSell) && (!empty($itemSell) || $minSell===0)){
+    //we include 0 as a valid search filter
     $filters['minSell'] = $itemSell;
   }
 
   $itemSell = $request->get('maxSell');
-  if(!empty($itemSell)){
+  if(isset($maxSell) && (!empty($itemSell) || $maxSell===0)){
+    //we include 0 as a valid search filter
     $filters['maxSell'] = $itemSell;
   }
   
   $itemProfit = $request->get('minProfit');
-  if(!empty($itemProfit)){
+  if(isset($minProfit) && (!empty($itemProfit) || $minProfit===0)){
+    //we include 0 as a valid search filter
     $filters['minProfit'] = $itemProfit;
   }
 
   $itemProfit = $request->get('maxProfit');
-  if(!empty($itemProfit)){
+  if(isset($maxProfit) && (!empty($itemProfit) || $maxProfit===0)){
+    //we include 0 as a valid search filter
     $filters['maxProfit'] = $itemProfit;
   }
   
   $itemROI = $request->get('minROI');
-  if(!empty($itemROI)){
+  if(isset($minROI) && (!empty($itemROI) || $minROI===0)){
+    //we include 0 as a valid search filter
     $filters['minROI'] = $itemROI;
   }
 
   $itemROI = $request->get('maxROI');
-  if(!empty($itemROI)){
+  if(isset($maxROI) && (!empty($itemROI) || $maxROI===0)){
+    //we include 0 as a valid search filter
     $filters['maxROI'] = $itemROI;
   }
   
   $itemSupply = $request->get('minSupply');
-  if(!empty($itemSupply)){
+  if(isset($minSupply) && (!empty($itemSupply) || $minSupply===0)){
+    //we include 0 as a valid search filter
     $filters['minSupply'] = $itemSupply;
   }
 
   $itemSupply = $request->get('maxSupply');
-  if(!empty($itemSupply)){
+  if(isset($maxSupply) && (!empty($itemSupply) || $maxSupply===0)){
+    //we include 0 as a valid search filter
     $filters['maxSupply'] = $itemSupply;
   }
   
   $itemDemand = $request->get('minDemand');
-  if(!empty($itemDemand)){
+  if(isset($minDemand) && (!empty($itemDemand) || $minDemand===0)){
+    //we include 0 as a valid search filter
     $filters['minDemand'] = $itemDemand;
   }
 
   $itemDemand = $request->get('maxDemand');
-  if(!empty($itemDemand)){
+  if(isset($maxDemand) && (!empty($itemDemand) || $maxDemand===0)){
+    //we include 0 as a valid search filter
     $filters['maxDemand'] = $itemDemand;
   }
   $page = $request->get('p');
