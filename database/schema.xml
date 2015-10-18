@@ -176,7 +176,7 @@
   <table name="price_update_check_log_entry">
     <column name="id" type="integer" primaryKey="true" autoIncrement="true" />
     <column name="price_history_id" type="integer" required="true" />
-    <column name="isModified" type="integer" required="true" />
+    <column name="is_modified" type="integer" required="true" />
     <foreign-key foreignTable="price_history">
       <reference local="price_history_id" foreign="id"/>
     </foreign-key>

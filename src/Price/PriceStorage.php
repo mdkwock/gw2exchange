@@ -6,11 +6,14 @@ use GW2Exchange\Signature\Database\DatabaseQueryFactoryInterface;
 use \GW2Exchange\Signature\Price\PriceParserInterface;
 use \GW2Exchange\Signature\Price\PriceFactoryInterface;
 use \GW2Exchange\Price\Price;
+use \GW2Exchange\Price\PriceAssembler;
 use GW2Exchange\Database\PriceQuery;
 
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Propel;
 use GW2Exchange\Database\Map\PriceTableMap;
+
+use GW2Exchange\Log\PriceLogger;
 
 /**
  * 
@@ -20,13 +23,17 @@ class PriceStorage
   protected $priceQueryFactory;
   protected $priceHistoryQueryFactory;
   protected $priceFactory;
+  protected $priceLogger;
+  protected $priceAssembler;
   protected $stmt; //this is a statement object stored for use in the custom query functions
 
-  public function __construct(DatabaseQueryFactoryInterface $pqf,DatabaseQueryFactoryInterface $phqf, PriceFactoryInterface $pf)
+  public function __construct(DatabaseQueryFactoryInterface $pqf,DatabaseQueryFactoryInterface $phqf, PriceFactoryInterface $pf, PriceLogger $pl, PriceAssembler $pa)
   {
     $this->priceQueryFactory = $pqf;
     $this->priceHistoryQueryFactory = $phqf;
     $this->priceFactory = $pf;
+    $this->priceLogger = $pl;
+    $this->priceAssembler = $pa;
   }
 
   public function prepareCustomQuery($sql){
@@ -58,8 +65,47 @@ class PriceStorage
 
     $priceQuery = $this->priceQueryFactory->createQuery();
     $prices = $priceQuery->findPKs($itemIds);
+
     if(!empty($prices)){
+
+      //get a set of answers from the gw2 servers to compare with
+      $serverResponse = $this->priceAssembler->getByItemIds($itemIds);
+      //for this task re-index the server prices by item it so that it is easier to look up
+      $serverPrices = array();
+      foreach ($serverResponse as $price) {
+        $key = $price->getItemId();
+        $serverPrices[$key] = $price;
+      }
+      
       $prices = $prices->getData();
+
+
+      //create a new log entry  for the lookup
+      foreach ($prices as $price) {
+        $cacheCorrect = null;
+        $priceHistory = $price->getPriceHistories()->pop();//the most recent price history is the same as the current price
+        $cacheTime = $price->getCacheTime();
+        $lastUpdated = $price->getUpdatedAt();
+        if(time() < $lastUpdated->getTimestamp() +($cacheTime*60*1000)){
+          //if the time now is before the next cache update time, then the cache is hit
+          $cacheHit = true;
+          //if it does hit the cache check to see if the cache is correct
+          $key = $price->getItemId();
+          $testPrice = $serverPrices[$key];
+          $testHash = $testPrice->hash();
+          $myHash = $price->hash();
+          $cacheCorrect = $testHash==$myHash;
+        }else{
+          //if the cache is expired it does not hit the cache
+          $cacheHit = false;
+        }
+        $this->priceLogger->logPriceRequest($priceHistory,$cacheHit,$cacheCorrect);
+        //save the price history because we are not actually saving anything otherwise
+        $priceHistory->save();
+      }
+
+
+
     }
     return $prices;
   }

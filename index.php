@@ -33,6 +33,7 @@ use GW2Exchange\Database\ListingQueryFactory,
   GW2Exchange\Maintenance\ListingMaintenance;
 
 use GW2Exchange\Price\PriceAssembler,
+  GW2Exchange\Log\PriceLogger,
   GW2Exchange\Price\PriceParser,
   GW2Exchange\Price\PriceFactory,
   GW2Exchange\Database\Price;
@@ -113,17 +114,18 @@ require_once __DIR__ . '/queue-config.php';
 
 
   $priceParser = new PriceParser();
-  $priceFactory = new PriceFactory();
+  $priceLogger = new PriceLogger();
+  $priceFactory = new PriceFactory($priceLogger);
   $priceAssembler = new PriceAssembler($webScraper, $priceParser, $priceFactory);
 
   $priceQueryFactory = new PriceQueryFactory();
   $PriceHistoryQueryFactory = new PriceHistoryQueryFactory();
   
-  $priceStorage = new PriceStorage($priceQueryFactory, $PriceHistoryQueryFactory, $priceFactory);
+  $priceStorage = new PriceStorage($priceQueryFactory, $PriceHistoryQueryFactory, $priceFactory, $priceLogger, $priceAssembler);
   $priceMaintenance = new PriceMaintenance($priceAssembler, $priceStorage,$itemStorage);
 
   $metadata = new SearchMetadata($itemQueryFactory);
-  $itemSearch = new ItemSearch($itemQueryFactory, $priceQueryFactory,$itemStorage,$priceStorage);
+  $itemSearch = new ItemSearch($itemQueryFactory, $priceQueryFactory,$itemStorage,$priceStorage,$priceAssembler,$priceLogger);
 
   //get all the ids to be updated
   $idList = $priceMaintenance->getToDoList(200);

@@ -22,12 +22,12 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildPriceUpdateCheckLogEntryQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildPriceUpdateCheckLogEntryQuery orderByPriceHistoryId($order = Criteria::ASC) Order by the price_history_id column
- * @method     ChildPriceUpdateCheckLogEntryQuery orderByIsmodified($order = Criteria::ASC) Order by the isModified column
+ * @method     ChildPriceUpdateCheckLogEntryQuery orderByIsModified($order = Criteria::ASC) Order by the is_modified column
  * @method     ChildPriceUpdateCheckLogEntryQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  *
  * @method     ChildPriceUpdateCheckLogEntryQuery groupById() Group by the id column
  * @method     ChildPriceUpdateCheckLogEntryQuery groupByPriceHistoryId() Group by the price_history_id column
- * @method     ChildPriceUpdateCheckLogEntryQuery groupByIsmodified() Group by the isModified column
+ * @method     ChildPriceUpdateCheckLogEntryQuery groupByIsModified() Group by the is_modified column
  * @method     ChildPriceUpdateCheckLogEntryQuery groupByCreatedAt() Group by the created_at column
  *
  * @method     ChildPriceUpdateCheckLogEntryQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
@@ -55,7 +55,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildPriceUpdateCheckLogEntry findOneById(int $id) Return the first ChildPriceUpdateCheckLogEntry filtered by the id column
  * @method     ChildPriceUpdateCheckLogEntry findOneByPriceHistoryId(int $price_history_id) Return the first ChildPriceUpdateCheckLogEntry filtered by the price_history_id column
- * @method     ChildPriceUpdateCheckLogEntry findOneByIsmodified(int $isModified) Return the first ChildPriceUpdateCheckLogEntry filtered by the isModified column
+ * @method     ChildPriceUpdateCheckLogEntry findOneByIsModified(int $is_modified) Return the first ChildPriceUpdateCheckLogEntry filtered by the is_modified column
  * @method     ChildPriceUpdateCheckLogEntry findOneByCreatedAt(string $created_at) Return the first ChildPriceUpdateCheckLogEntry filtered by the created_at column *
 
  * @method     ChildPriceUpdateCheckLogEntry requirePk($key, ConnectionInterface $con = null) Return the ChildPriceUpdateCheckLogEntry by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -63,13 +63,13 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildPriceUpdateCheckLogEntry requireOneById(int $id) Return the first ChildPriceUpdateCheckLogEntry filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPriceUpdateCheckLogEntry requireOneByPriceHistoryId(int $price_history_id) Return the first ChildPriceUpdateCheckLogEntry filtered by the price_history_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildPriceUpdateCheckLogEntry requireOneByIsmodified(int $isModified) Return the first ChildPriceUpdateCheckLogEntry filtered by the isModified column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPriceUpdateCheckLogEntry requireOneByIsModified(int $is_modified) Return the first ChildPriceUpdateCheckLogEntry filtered by the is_modified column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPriceUpdateCheckLogEntry requireOneByCreatedAt(string $created_at) Return the first ChildPriceUpdateCheckLogEntry filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildPriceUpdateCheckLogEntry[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildPriceUpdateCheckLogEntry objects based on current ModelCriteria
  * @method     ChildPriceUpdateCheckLogEntry[]|ObjectCollection findById(int $id) Return ChildPriceUpdateCheckLogEntry objects filtered by the id column
  * @method     ChildPriceUpdateCheckLogEntry[]|ObjectCollection findByPriceHistoryId(int $price_history_id) Return ChildPriceUpdateCheckLogEntry objects filtered by the price_history_id column
- * @method     ChildPriceUpdateCheckLogEntry[]|ObjectCollection findByIsmodified(int $isModified) Return ChildPriceUpdateCheckLogEntry objects filtered by the isModified column
+ * @method     ChildPriceUpdateCheckLogEntry[]|ObjectCollection findByIsModified(int $is_modified) Return ChildPriceUpdateCheckLogEntry objects filtered by the is_modified column
  * @method     ChildPriceUpdateCheckLogEntry[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildPriceUpdateCheckLogEntry objects filtered by the created_at column
  * @method     ChildPriceUpdateCheckLogEntry[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
@@ -163,7 +163,7 @@ abstract class PriceUpdateCheckLogEntryQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, price_history_id, isModified, created_at FROM price_update_check_log_entry WHERE id = :p0';
+        $sql = 'SELECT id, price_history_id, is_modified, created_at FROM price_update_check_log_entry WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -338,16 +338,16 @@ abstract class PriceUpdateCheckLogEntryQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the isModified column
+     * Filter the query on the is_modified column
      *
      * Example usage:
      * <code>
-     * $query->filterByIsmodified(1234); // WHERE isModified = 1234
-     * $query->filterByIsmodified(array(12, 34)); // WHERE isModified IN (12, 34)
-     * $query->filterByIsmodified(array('min' => 12)); // WHERE isModified > 12
+     * $query->filterByIsModified(1234); // WHERE is_modified = 1234
+     * $query->filterByIsModified(array(12, 34)); // WHERE is_modified IN (12, 34)
+     * $query->filterByIsModified(array('min' => 12)); // WHERE is_modified > 12
      * </code>
      *
-     * @param     mixed $ismodified The value to use as filter.
+     * @param     mixed $isModified The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -355,16 +355,16 @@ abstract class PriceUpdateCheckLogEntryQuery extends ModelCriteria
      *
      * @return $this|ChildPriceUpdateCheckLogEntryQuery The current query, for fluid interface
      */
-    public function filterByIsmodified($ismodified = null, $comparison = null)
+    public function filterByIsModified($isModified = null, $comparison = null)
     {
-        if (is_array($ismodified)) {
+        if (is_array($isModified)) {
             $useMinMax = false;
-            if (isset($ismodified['min'])) {
-                $this->addUsingAlias(PriceUpdateCheckLogEntryTableMap::COL_ISMODIFIED, $ismodified['min'], Criteria::GREATER_EQUAL);
+            if (isset($isModified['min'])) {
+                $this->addUsingAlias(PriceUpdateCheckLogEntryTableMap::COL_IS_MODIFIED, $isModified['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($ismodified['max'])) {
-                $this->addUsingAlias(PriceUpdateCheckLogEntryTableMap::COL_ISMODIFIED, $ismodified['max'], Criteria::LESS_EQUAL);
+            if (isset($isModified['max'])) {
+                $this->addUsingAlias(PriceUpdateCheckLogEntryTableMap::COL_IS_MODIFIED, $isModified['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -375,7 +375,7 @@ abstract class PriceUpdateCheckLogEntryQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(PriceUpdateCheckLogEntryTableMap::COL_ISMODIFIED, $ismodified, $comparison);
+        return $this->addUsingAlias(PriceUpdateCheckLogEntryTableMap::COL_IS_MODIFIED, $isModified, $comparison);
     }
 
     /**

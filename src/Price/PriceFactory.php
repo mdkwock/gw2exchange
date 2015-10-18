@@ -6,17 +6,21 @@ use GW2Exchange\Database\PriceQuery;
 use GW2Exchange\Signature\Price\PriceFactoryInterface;
 use GW2Exchange\Signature\Price\PriceParserInterface;
 
+use GW2Exchange\Log\PriceLogger;
+
 /**
  * This class creates the Price objects
  */
 class PriceFactory implements PriceFactoryInterface
 {
+  private $priceLogger;
 
   /**
    * constructor, supplies the factory with the classes it needs to create items
    */
-  public function __construct()
+  public function __construct(PriceLogger $priceLogger)
   {
+    $this->priceLogger = $priceLogger;
   }
 
   /** 
@@ -28,6 +32,7 @@ class PriceFactory implements PriceFactoryInterface
   {
     $price = PriceQuery::create()->filterByItemId($arr['ItemId'])->findOneOrCreate();
     $price->setAllFromArray($arr);
+    $price->setPriceLogger($this->priceLogger);
     return $price;
   }
 }

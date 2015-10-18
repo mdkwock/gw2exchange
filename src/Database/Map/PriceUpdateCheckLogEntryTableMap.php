@@ -82,9 +82,9 @@ class PriceUpdateCheckLogEntryTableMap extends TableMap
     const COL_PRICE_HISTORY_ID = 'price_update_check_log_entry.price_history_id';
 
     /**
-     * the column name for the isModified field
+     * the column name for the is_modified field
      */
-    const COL_ISMODIFIED = 'price_update_check_log_entry.isModified';
+    const COL_IS_MODIFIED = 'price_update_check_log_entry.is_modified';
 
     /**
      * the column name for the created_at field
@@ -103,10 +103,10 @@ class PriceUpdateCheckLogEntryTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'PriceHistoryId', 'Ismodified', 'CreatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'priceHistoryId', 'ismodified', 'createdAt', ),
-        self::TYPE_COLNAME       => array(PriceUpdateCheckLogEntryTableMap::COL_ID, PriceUpdateCheckLogEntryTableMap::COL_PRICE_HISTORY_ID, PriceUpdateCheckLogEntryTableMap::COL_ISMODIFIED, PriceUpdateCheckLogEntryTableMap::COL_CREATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'price_history_id', 'isModified', 'created_at', ),
+        self::TYPE_PHPNAME       => array('Id', 'PriceHistoryId', 'IsModified', 'CreatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'priceHistoryId', 'isModified', 'createdAt', ),
+        self::TYPE_COLNAME       => array(PriceUpdateCheckLogEntryTableMap::COL_ID, PriceUpdateCheckLogEntryTableMap::COL_PRICE_HISTORY_ID, PriceUpdateCheckLogEntryTableMap::COL_IS_MODIFIED, PriceUpdateCheckLogEntryTableMap::COL_CREATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'price_history_id', 'is_modified', 'created_at', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
@@ -117,10 +117,10 @@ class PriceUpdateCheckLogEntryTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'PriceHistoryId' => 1, 'Ismodified' => 2, 'CreatedAt' => 3, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'priceHistoryId' => 1, 'ismodified' => 2, 'createdAt' => 3, ),
-        self::TYPE_COLNAME       => array(PriceUpdateCheckLogEntryTableMap::COL_ID => 0, PriceUpdateCheckLogEntryTableMap::COL_PRICE_HISTORY_ID => 1, PriceUpdateCheckLogEntryTableMap::COL_ISMODIFIED => 2, PriceUpdateCheckLogEntryTableMap::COL_CREATED_AT => 3, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'price_history_id' => 1, 'isModified' => 2, 'created_at' => 3, ),
+        self::TYPE_PHPNAME       => array('Id' => 0, 'PriceHistoryId' => 1, 'IsModified' => 2, 'CreatedAt' => 3, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'priceHistoryId' => 1, 'isModified' => 2, 'createdAt' => 3, ),
+        self::TYPE_COLNAME       => array(PriceUpdateCheckLogEntryTableMap::COL_ID => 0, PriceUpdateCheckLogEntryTableMap::COL_PRICE_HISTORY_ID => 1, PriceUpdateCheckLogEntryTableMap::COL_IS_MODIFIED => 2, PriceUpdateCheckLogEntryTableMap::COL_CREATED_AT => 3, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'price_history_id' => 1, 'is_modified' => 2, 'created_at' => 3, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
@@ -143,7 +143,7 @@ class PriceUpdateCheckLogEntryTableMap extends TableMap
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addForeignKey('price_history_id', 'PriceHistoryId', 'INTEGER', 'price_history', 'id', true, null, null);
-        $this->addColumn('isModified', 'Ismodified', 'INTEGER', true, null, null);
+        $this->addColumn('is_modified', 'IsModified', 'INTEGER', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
 
@@ -317,12 +317,12 @@ class PriceUpdateCheckLogEntryTableMap extends TableMap
         if (null === $alias) {
             $criteria->addSelectColumn(PriceUpdateCheckLogEntryTableMap::COL_ID);
             $criteria->addSelectColumn(PriceUpdateCheckLogEntryTableMap::COL_PRICE_HISTORY_ID);
-            $criteria->addSelectColumn(PriceUpdateCheckLogEntryTableMap::COL_ISMODIFIED);
+            $criteria->addSelectColumn(PriceUpdateCheckLogEntryTableMap::COL_IS_MODIFIED);
             $criteria->addSelectColumn(PriceUpdateCheckLogEntryTableMap::COL_CREATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.price_history_id');
-            $criteria->addSelectColumn($alias . '.isModified');
+            $criteria->addSelectColumn($alias . '.is_modified');
             $criteria->addSelectColumn($alias . '.created_at');
         }
     }
