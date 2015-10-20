@@ -77,13 +77,13 @@ abstract class PriceRequestLogEntry implements ActiveRecordInterface
 
     /**
      * The value for the cache_hit field.
-     * @var        int
+     * @var        boolean
      */
     protected $cache_hit;
 
     /**
      * The value for the cache_correct field.
-     * @var        int
+     * @var        boolean
      */
     protected $cache_correct;
 
@@ -346,7 +346,7 @@ abstract class PriceRequestLogEntry implements ActiveRecordInterface
     /**
      * Get the [cache_hit] column value.
      *
-     * @return int
+     * @return boolean
      */
     public function getCacheHit()
     {
@@ -354,13 +354,33 @@ abstract class PriceRequestLogEntry implements ActiveRecordInterface
     }
 
     /**
+     * Get the [cache_hit] column value.
+     *
+     * @return boolean
+     */
+    public function isCacheHit()
+    {
+        return $this->getCacheHit();
+    }
+
+    /**
      * Get the [cache_correct] column value.
      *
-     * @return int
+     * @return boolean
      */
     public function getCacheCorrect()
     {
         return $this->cache_correct;
+    }
+
+    /**
+     * Get the [cache_correct] column value.
+     *
+     * @return boolean
+     */
+    public function isCacheCorrect()
+    {
+        return $this->getCacheCorrect();
     }
 
     /**
@@ -428,15 +448,23 @@ abstract class PriceRequestLogEntry implements ActiveRecordInterface
     } // setPriceHistoryId()
 
     /**
-     * Set the value of [cache_hit] column.
+     * Sets the value of the [cache_hit] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
      *
-     * @param int $v new value
+     * @param  boolean|integer|string $v The new value
      * @return $this|\GW2Exchange\Database\PriceRequestLogEntry The current object (for fluent API support)
      */
     public function setCacheHit($v)
     {
         if ($v !== null) {
-            $v = (int) $v;
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
         }
 
         if ($this->cache_hit !== $v) {
@@ -448,15 +476,23 @@ abstract class PriceRequestLogEntry implements ActiveRecordInterface
     } // setCacheHit()
 
     /**
-     * Set the value of [cache_correct] column.
+     * Sets the value of the [cache_correct] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
      *
-     * @param int $v new value
+     * @param  boolean|integer|string $v The new value
      * @return $this|\GW2Exchange\Database\PriceRequestLogEntry The current object (for fluent API support)
      */
     public function setCacheCorrect($v)
     {
         if ($v !== null) {
-            $v = (int) $v;
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
         }
 
         if ($this->cache_correct !== $v) {
@@ -530,10 +566,10 @@ abstract class PriceRequestLogEntry implements ActiveRecordInterface
             $this->price_history_id = (null !== $col) ? (int) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : PriceRequestLogEntryTableMap::translateFieldName('CacheHit', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->cache_hit = (null !== $col) ? (int) $col : null;
+            $this->cache_hit = (null !== $col) ? (boolean) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : PriceRequestLogEntryTableMap::translateFieldName('CacheCorrect', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->cache_correct = (null !== $col) ? (int) $col : null;
+            $this->cache_correct = (null !== $col) ? (boolean) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : PriceRequestLogEntryTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
@@ -799,10 +835,10 @@ abstract class PriceRequestLogEntry implements ActiveRecordInterface
                         $stmt->bindValue($identifier, $this->price_history_id, PDO::PARAM_INT);
                         break;
                     case 'cache_hit':
-                        $stmt->bindValue($identifier, $this->cache_hit, PDO::PARAM_INT);
+                        $stmt->bindValue($identifier, (int) $this->cache_hit, PDO::PARAM_INT);
                         break;
                     case 'cache_correct':
-                        $stmt->bindValue($identifier, $this->cache_correct, PDO::PARAM_INT);
+                        $stmt->bindValue($identifier, (int) $this->cache_correct, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1023,7 +1059,6 @@ abstract class PriceRequestLogEntry implements ActiveRecordInterface
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
         $keys = PriceRequestLogEntryTableMap::getFieldNames($keyType);
-
         if (array_key_exists($keys[0], $arr)) {
             $this->setId($arr[$keys[0]]);
         }

@@ -28,8 +28,8 @@ class PriceLogger
   public function logPriceRequest($priceHistory,$cacheHit=false,$cacheCorrect=null){
     $entry = new PriceRequestLogEntry();
     $entry->fromArray(array(
-      'cacheHit'=>$cacheHit,
-      'cacheCorrect'=>$cacheCorrect
+      'CacheHit'=>$cacheHit,
+      'CacheCorrect'=>$cacheCorrect
     ));
     $priceHistory->addPriceRequestLogEntry($entry);
   }
@@ -37,13 +37,13 @@ class PriceLogger
   /**
    * records when this item gets checked for updates
    * @param  PriceHistory  $priceHistory  the price history of the item we are looking at
-   * @param  boolean $isModified          has the price changed so we created a new object
+   * @param  boolean $isDifferent          has the price changed so we created a new object
    * @return [type]                [description]
    */
-  public function logPriceUpdateCheck($priceHistory, $isModified=true){
+  public function logPriceUpdateCheck($priceHistory, $isDifferent=true){
     $entry = new PriceUpdateCheckLogEntry();
     $entry->fromArray(array(
-      'IsModified'=>$isModified
+      'IsDifferent'=>$isDifferent
     ));
     $priceHistory->addPriceUpdateCheckLogEntry($entry);
   }

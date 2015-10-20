@@ -57,8 +57,8 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildPriceRequestLogEntry findOneById(int $id) Return the first ChildPriceRequestLogEntry filtered by the id column
  * @method     ChildPriceRequestLogEntry findOneByPriceHistoryId(int $price_history_id) Return the first ChildPriceRequestLogEntry filtered by the price_history_id column
- * @method     ChildPriceRequestLogEntry findOneByCacheHit(int $cache_hit) Return the first ChildPriceRequestLogEntry filtered by the cache_hit column
- * @method     ChildPriceRequestLogEntry findOneByCacheCorrect(int $cache_correct) Return the first ChildPriceRequestLogEntry filtered by the cache_correct column
+ * @method     ChildPriceRequestLogEntry findOneByCacheHit(boolean $cache_hit) Return the first ChildPriceRequestLogEntry filtered by the cache_hit column
+ * @method     ChildPriceRequestLogEntry findOneByCacheCorrect(boolean $cache_correct) Return the first ChildPriceRequestLogEntry filtered by the cache_correct column
  * @method     ChildPriceRequestLogEntry findOneByCreatedAt(string $created_at) Return the first ChildPriceRequestLogEntry filtered by the created_at column *
 
  * @method     ChildPriceRequestLogEntry requirePk($key, ConnectionInterface $con = null) Return the ChildPriceRequestLogEntry by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -66,15 +66,15 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildPriceRequestLogEntry requireOneById(int $id) Return the first ChildPriceRequestLogEntry filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPriceRequestLogEntry requireOneByPriceHistoryId(int $price_history_id) Return the first ChildPriceRequestLogEntry filtered by the price_history_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildPriceRequestLogEntry requireOneByCacheHit(int $cache_hit) Return the first ChildPriceRequestLogEntry filtered by the cache_hit column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildPriceRequestLogEntry requireOneByCacheCorrect(int $cache_correct) Return the first ChildPriceRequestLogEntry filtered by the cache_correct column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPriceRequestLogEntry requireOneByCacheHit(boolean $cache_hit) Return the first ChildPriceRequestLogEntry filtered by the cache_hit column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildPriceRequestLogEntry requireOneByCacheCorrect(boolean $cache_correct) Return the first ChildPriceRequestLogEntry filtered by the cache_correct column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildPriceRequestLogEntry requireOneByCreatedAt(string $created_at) Return the first ChildPriceRequestLogEntry filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildPriceRequestLogEntry[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildPriceRequestLogEntry objects based on current ModelCriteria
  * @method     ChildPriceRequestLogEntry[]|ObjectCollection findById(int $id) Return ChildPriceRequestLogEntry objects filtered by the id column
  * @method     ChildPriceRequestLogEntry[]|ObjectCollection findByPriceHistoryId(int $price_history_id) Return ChildPriceRequestLogEntry objects filtered by the price_history_id column
- * @method     ChildPriceRequestLogEntry[]|ObjectCollection findByCacheHit(int $cache_hit) Return ChildPriceRequestLogEntry objects filtered by the cache_hit column
- * @method     ChildPriceRequestLogEntry[]|ObjectCollection findByCacheCorrect(int $cache_correct) Return ChildPriceRequestLogEntry objects filtered by the cache_correct column
+ * @method     ChildPriceRequestLogEntry[]|ObjectCollection findByCacheHit(boolean $cache_hit) Return ChildPriceRequestLogEntry objects filtered by the cache_hit column
+ * @method     ChildPriceRequestLogEntry[]|ObjectCollection findByCacheCorrect(boolean $cache_correct) Return ChildPriceRequestLogEntry objects filtered by the cache_correct column
  * @method     ChildPriceRequestLogEntry[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildPriceRequestLogEntry objects filtered by the created_at column
  * @method     ChildPriceRequestLogEntry[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
@@ -347,37 +347,23 @@ abstract class PriceRequestLogEntryQuery extends ModelCriteria
      *
      * Example usage:
      * <code>
-     * $query->filterByCacheHit(1234); // WHERE cache_hit = 1234
-     * $query->filterByCacheHit(array(12, 34)); // WHERE cache_hit IN (12, 34)
-     * $query->filterByCacheHit(array('min' => 12)); // WHERE cache_hit > 12
+     * $query->filterByCacheHit(true); // WHERE cache_hit = true
+     * $query->filterByCacheHit('yes'); // WHERE cache_hit = true
      * </code>
      *
-     * @param     mixed $cacheHit The value to use as filter.
-     *              Use scalar values for equality.
-     *              Use array values for in_array() equivalent.
-     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     boolean|string $cacheHit The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildPriceRequestLogEntryQuery The current query, for fluid interface
      */
     public function filterByCacheHit($cacheHit = null, $comparison = null)
     {
-        if (is_array($cacheHit)) {
-            $useMinMax = false;
-            if (isset($cacheHit['min'])) {
-                $this->addUsingAlias(PriceRequestLogEntryTableMap::COL_CACHE_HIT, $cacheHit['min'], Criteria::GREATER_EQUAL);
-                $useMinMax = true;
-            }
-            if (isset($cacheHit['max'])) {
-                $this->addUsingAlias(PriceRequestLogEntryTableMap::COL_CACHE_HIT, $cacheHit['max'], Criteria::LESS_EQUAL);
-                $useMinMax = true;
-            }
-            if ($useMinMax) {
-                return $this;
-            }
-            if (null === $comparison) {
-                $comparison = Criteria::IN;
-            }
+        if (is_string($cacheHit)) {
+            $cacheHit = in_array(strtolower($cacheHit), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
         }
 
         return $this->addUsingAlias(PriceRequestLogEntryTableMap::COL_CACHE_HIT, $cacheHit, $comparison);
@@ -388,37 +374,23 @@ abstract class PriceRequestLogEntryQuery extends ModelCriteria
      *
      * Example usage:
      * <code>
-     * $query->filterByCacheCorrect(1234); // WHERE cache_correct = 1234
-     * $query->filterByCacheCorrect(array(12, 34)); // WHERE cache_correct IN (12, 34)
-     * $query->filterByCacheCorrect(array('min' => 12)); // WHERE cache_correct > 12
+     * $query->filterByCacheCorrect(true); // WHERE cache_correct = true
+     * $query->filterByCacheCorrect('yes'); // WHERE cache_correct = true
      * </code>
      *
-     * @param     mixed $cacheCorrect The value to use as filter.
-     *              Use scalar values for equality.
-     *              Use array values for in_array() equivalent.
-     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     boolean|string $cacheCorrect The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildPriceRequestLogEntryQuery The current query, for fluid interface
      */
     public function filterByCacheCorrect($cacheCorrect = null, $comparison = null)
     {
-        if (is_array($cacheCorrect)) {
-            $useMinMax = false;
-            if (isset($cacheCorrect['min'])) {
-                $this->addUsingAlias(PriceRequestLogEntryTableMap::COL_CACHE_CORRECT, $cacheCorrect['min'], Criteria::GREATER_EQUAL);
-                $useMinMax = true;
-            }
-            if (isset($cacheCorrect['max'])) {
-                $this->addUsingAlias(PriceRequestLogEntryTableMap::COL_CACHE_CORRECT, $cacheCorrect['max'], Criteria::LESS_EQUAL);
-                $useMinMax = true;
-            }
-            if ($useMinMax) {
-                return $this;
-            }
-            if (null === $comparison) {
-                $comparison = Criteria::IN;
-            }
+        if (is_string($cacheCorrect)) {
+            $cacheCorrect = in_array(strtolower($cacheCorrect), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
         }
 
         return $this->addUsingAlias(PriceRequestLogEntryTableMap::COL_CACHE_CORRECT, $cacheCorrect, $comparison);

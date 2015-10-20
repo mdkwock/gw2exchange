@@ -99,6 +99,7 @@ class PriceStorage
           //if the cache is expired it does not hit the cache
           $cacheHit = false;
         }
+        //dd($cacheHit);
         $this->priceLogger->logPriceRequest($priceHistory,$cacheHit,$cacheCorrect);
         //save the price history because we are not actually saving anything otherwise
         $priceHistory->save();

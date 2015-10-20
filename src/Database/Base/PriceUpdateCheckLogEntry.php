@@ -76,10 +76,10 @@ abstract class PriceUpdateCheckLogEntry implements ActiveRecordInterface
     protected $price_history_id;
 
     /**
-     * The value for the is_modified field.
-     * @var        int
+     * The value for the is_different field.
+     * @var        boolean
      */
-    protected $is_modified;
+    protected $is_different;
 
     /**
      * The value for the created_at field.
@@ -338,13 +338,23 @@ abstract class PriceUpdateCheckLogEntry implements ActiveRecordInterface
     }
 
     /**
-     * Get the [is_modified] column value.
+     * Get the [is_different] column value.
      *
-     * @return int
+     * @return boolean
      */
-    public function getIsModified()
+    public function getIsDifferent()
     {
-        return $this->is_modified;
+        return $this->is_different;
+    }
+
+    /**
+     * Get the [is_different] column value.
+     *
+     * @return boolean
+     */
+    public function isDifferent()
+    {
+        return $this->getIsDifferent();
     }
 
     /**
@@ -412,24 +422,32 @@ abstract class PriceUpdateCheckLogEntry implements ActiveRecordInterface
     } // setPriceHistoryId()
 
     /**
-     * Set the value of [is_modified] column.
+     * Sets the value of the [is_different] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
      *
-     * @param int $v new value
+     * @param  boolean|integer|string $v The new value
      * @return $this|\GW2Exchange\Database\PriceUpdateCheckLogEntry The current object (for fluent API support)
      */
-    public function setIsModified($v)
+    public function setIsDifferent($v)
     {
         if ($v !== null) {
-            $v = (int) $v;
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
         }
 
-        if ($this->is_modified !== $v) {
-            $this->is_modified = $v;
-            $this->modifiedColumns[PriceUpdateCheckLogEntryTableMap::COL_IS_MODIFIED] = true;
+        if ($this->is_different !== $v) {
+            $this->is_different = $v;
+            $this->modifiedColumns[PriceUpdateCheckLogEntryTableMap::COL_IS_DIFFERENT] = true;
         }
 
         return $this;
-    } // setIsModified()
+    } // setIsDifferent()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
@@ -493,8 +511,8 @@ abstract class PriceUpdateCheckLogEntry implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : PriceUpdateCheckLogEntryTableMap::translateFieldName('PriceHistoryId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->price_history_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : PriceUpdateCheckLogEntryTableMap::translateFieldName('IsModified', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->is_modified = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : PriceUpdateCheckLogEntryTableMap::translateFieldName('IsDifferent', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->is_different = (null !== $col) ? (boolean) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : PriceUpdateCheckLogEntryTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
@@ -733,8 +751,8 @@ abstract class PriceUpdateCheckLogEntry implements ActiveRecordInterface
         if ($this->isColumnModified(PriceUpdateCheckLogEntryTableMap::COL_PRICE_HISTORY_ID)) {
             $modifiedColumns[':p' . $index++]  = 'price_history_id';
         }
-        if ($this->isColumnModified(PriceUpdateCheckLogEntryTableMap::COL_IS_MODIFIED)) {
-            $modifiedColumns[':p' . $index++]  = 'is_modified';
+        if ($this->isColumnModified(PriceUpdateCheckLogEntryTableMap::COL_IS_DIFFERENT)) {
+            $modifiedColumns[':p' . $index++]  = 'is_different';
         }
         if ($this->isColumnModified(PriceUpdateCheckLogEntryTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
@@ -756,8 +774,8 @@ abstract class PriceUpdateCheckLogEntry implements ActiveRecordInterface
                     case 'price_history_id':
                         $stmt->bindValue($identifier, $this->price_history_id, PDO::PARAM_INT);
                         break;
-                    case 'is_modified':
-                        $stmt->bindValue($identifier, $this->is_modified, PDO::PARAM_INT);
+                    case 'is_different':
+                        $stmt->bindValue($identifier, (int) $this->is_different, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -831,7 +849,7 @@ abstract class PriceUpdateCheckLogEntry implements ActiveRecordInterface
                 return $this->getPriceHistoryId();
                 break;
             case 2:
-                return $this->getIsModified();
+                return $this->getIsDifferent();
                 break;
             case 3:
                 return $this->getCreatedAt();
@@ -868,7 +886,7 @@ abstract class PriceUpdateCheckLogEntry implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getPriceHistoryId(),
-            $keys[2] => $this->getIsModified(),
+            $keys[2] => $this->getIsDifferent(),
             $keys[3] => $this->getCreatedAt(),
         );
 
@@ -941,7 +959,7 @@ abstract class PriceUpdateCheckLogEntry implements ActiveRecordInterface
                 $this->setPriceHistoryId($value);
                 break;
             case 2:
-                $this->setIsModified($value);
+                $this->setIsDifferent($value);
                 break;
             case 3:
                 $this->setCreatedAt($value);
@@ -971,6 +989,7 @@ abstract class PriceUpdateCheckLogEntry implements ActiveRecordInterface
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
         $keys = PriceUpdateCheckLogEntryTableMap::getFieldNames($keyType);
+
         if (array_key_exists($keys[0], $arr)) {
             $this->setId($arr[$keys[0]]);
         }
@@ -978,7 +997,7 @@ abstract class PriceUpdateCheckLogEntry implements ActiveRecordInterface
             $this->setPriceHistoryId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setIsModified($arr[$keys[2]]);
+            $this->setIsDifferent($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
             $this->setCreatedAt($arr[$keys[3]]);
@@ -1030,8 +1049,8 @@ abstract class PriceUpdateCheckLogEntry implements ActiveRecordInterface
         if ($this->isColumnModified(PriceUpdateCheckLogEntryTableMap::COL_PRICE_HISTORY_ID)) {
             $criteria->add(PriceUpdateCheckLogEntryTableMap::COL_PRICE_HISTORY_ID, $this->price_history_id);
         }
-        if ($this->isColumnModified(PriceUpdateCheckLogEntryTableMap::COL_IS_MODIFIED)) {
-            $criteria->add(PriceUpdateCheckLogEntryTableMap::COL_IS_MODIFIED, $this->is_modified);
+        if ($this->isColumnModified(PriceUpdateCheckLogEntryTableMap::COL_IS_DIFFERENT)) {
+            $criteria->add(PriceUpdateCheckLogEntryTableMap::COL_IS_DIFFERENT, $this->is_different);
         }
         if ($this->isColumnModified(PriceUpdateCheckLogEntryTableMap::COL_CREATED_AT)) {
             $criteria->add(PriceUpdateCheckLogEntryTableMap::COL_CREATED_AT, $this->created_at);
@@ -1123,7 +1142,7 @@ abstract class PriceUpdateCheckLogEntry implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setPriceHistoryId($this->getPriceHistoryId());
-        $copyObj->setIsModified($this->getIsModified());
+        $copyObj->setIsDifferent($this->getIsDifferent());
         $copyObj->setCreatedAt($this->getCreatedAt());
         if ($makeNew) {
             $copyObj->setNew(true);
@@ -1216,7 +1235,7 @@ abstract class PriceUpdateCheckLogEntry implements ActiveRecordInterface
         }
         $this->id = null;
         $this->price_history_id = null;
-        $this->is_modified = null;
+        $this->is_different = null;
         $this->created_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();

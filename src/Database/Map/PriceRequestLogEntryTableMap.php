@@ -148,8 +148,8 @@ class PriceRequestLogEntryTableMap extends TableMap
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addForeignKey('price_history_id', 'PriceHistoryId', 'INTEGER', 'price_history', 'id', true, null, null);
-        $this->addColumn('cache_hit', 'CacheHit', 'INTEGER', true, null, null);
-        $this->addColumn('cache_correct', 'CacheCorrect', 'INTEGER', false, null, null);
+        $this->addColumn('cache_hit', 'CacheHit', 'BOOLEAN', true, 1, null);
+        $this->addColumn('cache_correct', 'CacheCorrect', 'BOOLEAN', false, 1, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
 
