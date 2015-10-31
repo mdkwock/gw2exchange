@@ -70,7 +70,7 @@ class ItemSearch
         'rarity'=>$item->getItemInfo()->getRarity(),
         'buy'=>$price->getBuyPrice(),
         'sell'=>$price->getSellPrice(),
-        'maxBuy'=>$price->getMaxBuy(),
+        'minBuy'=>$price->getMinBuy(),
         'maxSell'=>$price->getMaxSell(),
         'supply'=>$price->getSellQty(),
         'demand'=>$price->getBuyQty(),
