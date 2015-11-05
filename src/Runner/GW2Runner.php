@@ -74,6 +74,5 @@ class GW2Runner extends Runner
     $this->beforeLoop();
     $this->checkAndCycleLog();
     $this->workJobOnce();
-    dd('hi');
   }
 }

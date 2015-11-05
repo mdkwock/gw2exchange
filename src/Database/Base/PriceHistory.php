@@ -11,8 +11,10 @@ use GW2Exchange\Database\Price as ChildPrice;
 use GW2Exchange\Database\PriceHistory as ChildPriceHistory;
 use GW2Exchange\Database\PriceHistoryQuery as ChildPriceHistoryQuery;
 use GW2Exchange\Database\PriceQuery as ChildPriceQuery;
-use GW2Exchange\Database\RequestsLog as ChildRequestsLog;
-use GW2Exchange\Database\RequestsLogQuery as ChildRequestsLogQuery;
+use GW2Exchange\Database\PriceRequestLogEntry as ChildPriceRequestLogEntry;
+use GW2Exchange\Database\PriceRequestLogEntryQuery as ChildPriceRequestLogEntryQuery;
+use GW2Exchange\Database\PriceUpdateCheckLogEntry as ChildPriceUpdateCheckLogEntry;
+use GW2Exchange\Database\PriceUpdateCheckLogEntryQuery as ChildPriceUpdateCheckLogEntryQuery;
 use GW2Exchange\Database\Map\PriceHistoryTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
@@ -140,10 +142,16 @@ abstract class PriceHistory implements ActiveRecordInterface
     protected $aPrice;
 
     /**
-     * @var        ObjectCollection|ChildRequestsLog[] Collection to store aggregation of ChildRequestsLog objects.
+     * @var        ObjectCollection|ChildPriceRequestLogEntry[] Collection to store aggregation of ChildPriceRequestLogEntry objects.
      */
-    protected $collRequestsLogs;
-    protected $collRequestsLogsPartial;
+    protected $collPriceRequestLogEntries;
+    protected $collPriceRequestLogEntriesPartial;
+
+    /**
+     * @var        ObjectCollection|ChildPriceUpdateCheckLogEntry[] Collection to store aggregation of ChildPriceUpdateCheckLogEntry objects.
+     */
+    protected $collPriceUpdateCheckLogEntries;
+    protected $collPriceUpdateCheckLogEntriesPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -155,9 +163,15 @@ abstract class PriceHistory implements ActiveRecordInterface
 
     /**
      * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildRequestsLog[]
+     * @var ObjectCollection|ChildPriceRequestLogEntry[]
      */
-    protected $requestsLogsScheduledForDeletion = null;
+    protected $priceRequestLogEntriesScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildPriceUpdateCheckLogEntry[]
+     */
+    protected $priceUpdateCheckLogEntriesScheduledForDeletion = null;
 
     /**
      * Initializes internal state of GW2Exchange\Database\Base\PriceHistory object.
@@ -839,7 +853,9 @@ abstract class PriceHistory implements ActiveRecordInterface
 
             $this->aItem = null;
             $this->aPrice = null;
-            $this->collRequestsLogs = null;
+            $this->collPriceRequestLogEntries = null;
+
+            $this->collPriceUpdateCheckLogEntries = null;
 
         } // if (deep)
     }
@@ -975,17 +991,34 @@ abstract class PriceHistory implements ActiveRecordInterface
                 $this->resetModified();
             }
 
-            if ($this->requestsLogsScheduledForDeletion !== null) {
-                if (!$this->requestsLogsScheduledForDeletion->isEmpty()) {
-                    \GW2Exchange\Database\RequestsLogQuery::create()
-                        ->filterByPrimaryKeys($this->requestsLogsScheduledForDeletion->getPrimaryKeys(false))
+            if ($this->priceRequestLogEntriesScheduledForDeletion !== null) {
+                if (!$this->priceRequestLogEntriesScheduledForDeletion->isEmpty()) {
+                    \GW2Exchange\Database\PriceRequestLogEntryQuery::create()
+                        ->filterByPrimaryKeys($this->priceRequestLogEntriesScheduledForDeletion->getPrimaryKeys(false))
                         ->delete($con);
-                    $this->requestsLogsScheduledForDeletion = null;
+                    $this->priceRequestLogEntriesScheduledForDeletion = null;
                 }
             }
 
-            if ($this->collRequestsLogs !== null) {
-                foreach ($this->collRequestsLogs as $referrerFK) {
+            if ($this->collPriceRequestLogEntries !== null) {
+                foreach ($this->collPriceRequestLogEntries as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->priceUpdateCheckLogEntriesScheduledForDeletion !== null) {
+                if (!$this->priceUpdateCheckLogEntriesScheduledForDeletion->isEmpty()) {
+                    \GW2Exchange\Database\PriceUpdateCheckLogEntryQuery::create()
+                        ->filterByPrimaryKeys($this->priceUpdateCheckLogEntriesScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->priceUpdateCheckLogEntriesScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collPriceUpdateCheckLogEntries !== null) {
+                foreach ($this->collPriceUpdateCheckLogEntries as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1266,20 +1299,35 @@ abstract class PriceHistory implements ActiveRecordInterface
 
                 $result[$key] = $this->aPrice->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
-            if (null !== $this->collRequestsLogs) {
+            if (null !== $this->collPriceRequestLogEntries) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'requestsLogs';
+                        $key = 'priceRequestLogEntries';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'requests_logs';
+                        $key = 'price_request_log_entries';
                         break;
                     default:
-                        $key = 'RequestsLogs';
+                        $key = 'PriceRequestLogEntries';
                 }
 
-                $result[$key] = $this->collRequestsLogs->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+                $result[$key] = $this->collPriceRequestLogEntries->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collPriceUpdateCheckLogEntries) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'priceUpdateCheckLogEntries';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'price_update_check_log_entries';
+                        break;
+                    default:
+                        $key = 'PriceUpdateCheckLogEntries';
+                }
+
+                $result[$key] = $this->collPriceUpdateCheckLogEntries->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1573,9 +1621,15 @@ abstract class PriceHistory implements ActiveRecordInterface
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
 
-            foreach ($this->getRequestsLogs() as $relObj) {
+            foreach ($this->getPriceRequestLogEntries() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addRequestsLog($relObj->copy($deepCopy));
+                    $copyObj->addPriceRequestLogEntry($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getPriceUpdateCheckLogEntries() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addPriceUpdateCheckLogEntry($relObj->copy($deepCopy));
                 }
             }
 
@@ -1722,37 +1776,40 @@ abstract class PriceHistory implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
-        if ('RequestsLog' == $relationName) {
-            return $this->initRequestsLogs();
+        if ('PriceRequestLogEntry' == $relationName) {
+            return $this->initPriceRequestLogEntries();
+        }
+        if ('PriceUpdateCheckLogEntry' == $relationName) {
+            return $this->initPriceUpdateCheckLogEntries();
         }
     }
 
     /**
-     * Clears out the collRequestsLogs collection
+     * Clears out the collPriceRequestLogEntries collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
      * them to be refetched by subsequent calls to accessor method.
      *
      * @return void
-     * @see        addRequestsLogs()
+     * @see        addPriceRequestLogEntries()
      */
-    public function clearRequestsLogs()
+    public function clearPriceRequestLogEntries()
     {
-        $this->collRequestsLogs = null; // important to set this to NULL since that means it is uninitialized
+        $this->collPriceRequestLogEntries = null; // important to set this to NULL since that means it is uninitialized
     }
 
     /**
-     * Reset is the collRequestsLogs collection loaded partially.
+     * Reset is the collPriceRequestLogEntries collection loaded partially.
      */
-    public function resetPartialRequestsLogs($v = true)
+    public function resetPartialPriceRequestLogEntries($v = true)
     {
-        $this->collRequestsLogsPartial = $v;
+        $this->collPriceRequestLogEntriesPartial = $v;
     }
 
     /**
-     * Initializes the collRequestsLogs collection.
+     * Initializes the collPriceRequestLogEntries collection.
      *
-     * By default this just sets the collRequestsLogs collection to an empty array (like clearcollRequestsLogs());
+     * By default this just sets the collPriceRequestLogEntries collection to an empty array (like clearcollPriceRequestLogEntries());
      * however, you may wish to override this method in your stub class to provide setting appropriate
      * to your application -- for example, setting the initial array to the values stored in database.
      *
@@ -1761,17 +1818,17 @@ abstract class PriceHistory implements ActiveRecordInterface
      *
      * @return void
      */
-    public function initRequestsLogs($overrideExisting = true)
+    public function initPriceRequestLogEntries($overrideExisting = true)
     {
-        if (null !== $this->collRequestsLogs && !$overrideExisting) {
+        if (null !== $this->collPriceRequestLogEntries && !$overrideExisting) {
             return;
         }
-        $this->collRequestsLogs = new ObjectCollection();
-        $this->collRequestsLogs->setModel('\GW2Exchange\Database\RequestsLog');
+        $this->collPriceRequestLogEntries = new ObjectCollection();
+        $this->collPriceRequestLogEntries->setModel('\GW2Exchange\Database\PriceRequestLogEntry');
     }
 
     /**
-     * Gets an array of ChildRequestsLog objects which contain a foreign key that references this object.
+     * Gets an array of ChildPriceRequestLogEntry objects which contain a foreign key that references this object.
      *
      * If the $criteria is not null, it is used to always fetch the results from the database.
      * Otherwise the results are fetched from the database the first time, then cached.
@@ -1781,108 +1838,108 @@ abstract class PriceHistory implements ActiveRecordInterface
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
      * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildRequestsLog[] List of ChildRequestsLog objects
+     * @return ObjectCollection|ChildPriceRequestLogEntry[] List of ChildPriceRequestLogEntry objects
      * @throws PropelException
      */
-    public function getRequestsLogs(Criteria $criteria = null, ConnectionInterface $con = null)
+    public function getPriceRequestLogEntries(Criteria $criteria = null, ConnectionInterface $con = null)
     {
-        $partial = $this->collRequestsLogsPartial && !$this->isNew();
-        if (null === $this->collRequestsLogs || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collRequestsLogs) {
+        $partial = $this->collPriceRequestLogEntriesPartial && !$this->isNew();
+        if (null === $this->collPriceRequestLogEntries || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collPriceRequestLogEntries) {
                 // return empty collection
-                $this->initRequestsLogs();
+                $this->initPriceRequestLogEntries();
             } else {
-                $collRequestsLogs = ChildRequestsLogQuery::create(null, $criteria)
+                $collPriceRequestLogEntries = ChildPriceRequestLogEntryQuery::create(null, $criteria)
                     ->filterByPriceHistory($this)
                     ->find($con);
 
                 if (null !== $criteria) {
-                    if (false !== $this->collRequestsLogsPartial && count($collRequestsLogs)) {
-                        $this->initRequestsLogs(false);
+                    if (false !== $this->collPriceRequestLogEntriesPartial && count($collPriceRequestLogEntries)) {
+                        $this->initPriceRequestLogEntries(false);
 
-                        foreach ($collRequestsLogs as $obj) {
-                            if (false == $this->collRequestsLogs->contains($obj)) {
-                                $this->collRequestsLogs->append($obj);
+                        foreach ($collPriceRequestLogEntries as $obj) {
+                            if (false == $this->collPriceRequestLogEntries->contains($obj)) {
+                                $this->collPriceRequestLogEntries->append($obj);
                             }
                         }
 
-                        $this->collRequestsLogsPartial = true;
+                        $this->collPriceRequestLogEntriesPartial = true;
                     }
 
-                    return $collRequestsLogs;
+                    return $collPriceRequestLogEntries;
                 }
 
-                if ($partial && $this->collRequestsLogs) {
-                    foreach ($this->collRequestsLogs as $obj) {
+                if ($partial && $this->collPriceRequestLogEntries) {
+                    foreach ($this->collPriceRequestLogEntries as $obj) {
                         if ($obj->isNew()) {
-                            $collRequestsLogs[] = $obj;
+                            $collPriceRequestLogEntries[] = $obj;
                         }
                     }
                 }
 
-                $this->collRequestsLogs = $collRequestsLogs;
-                $this->collRequestsLogsPartial = false;
+                $this->collPriceRequestLogEntries = $collPriceRequestLogEntries;
+                $this->collPriceRequestLogEntriesPartial = false;
             }
         }
 
-        return $this->collRequestsLogs;
+        return $this->collPriceRequestLogEntries;
     }
 
     /**
-     * Sets a collection of ChildRequestsLog objects related by a one-to-many relationship
+     * Sets a collection of ChildPriceRequestLogEntry objects related by a one-to-many relationship
      * to the current object.
      * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
      * and new objects from the given Propel collection.
      *
-     * @param      Collection $requestsLogs A Propel collection.
+     * @param      Collection $priceRequestLogEntries A Propel collection.
      * @param      ConnectionInterface $con Optional connection object
      * @return $this|ChildPriceHistory The current object (for fluent API support)
      */
-    public function setRequestsLogs(Collection $requestsLogs, ConnectionInterface $con = null)
+    public function setPriceRequestLogEntries(Collection $priceRequestLogEntries, ConnectionInterface $con = null)
     {
-        /** @var ChildRequestsLog[] $requestsLogsToDelete */
-        $requestsLogsToDelete = $this->getRequestsLogs(new Criteria(), $con)->diff($requestsLogs);
+        /** @var ChildPriceRequestLogEntry[] $priceRequestLogEntriesToDelete */
+        $priceRequestLogEntriesToDelete = $this->getPriceRequestLogEntries(new Criteria(), $con)->diff($priceRequestLogEntries);
 
 
-        $this->requestsLogsScheduledForDeletion = $requestsLogsToDelete;
+        $this->priceRequestLogEntriesScheduledForDeletion = $priceRequestLogEntriesToDelete;
 
-        foreach ($requestsLogsToDelete as $requestsLogRemoved) {
-            $requestsLogRemoved->setPriceHistory(null);
+        foreach ($priceRequestLogEntriesToDelete as $priceRequestLogEntryRemoved) {
+            $priceRequestLogEntryRemoved->setPriceHistory(null);
         }
 
-        $this->collRequestsLogs = null;
-        foreach ($requestsLogs as $requestsLog) {
-            $this->addRequestsLog($requestsLog);
+        $this->collPriceRequestLogEntries = null;
+        foreach ($priceRequestLogEntries as $priceRequestLogEntry) {
+            $this->addPriceRequestLogEntry($priceRequestLogEntry);
         }
 
-        $this->collRequestsLogs = $requestsLogs;
-        $this->collRequestsLogsPartial = false;
+        $this->collPriceRequestLogEntries = $priceRequestLogEntries;
+        $this->collPriceRequestLogEntriesPartial = false;
 
         return $this;
     }
 
     /**
-     * Returns the number of related RequestsLog objects.
+     * Returns the number of related PriceRequestLogEntry objects.
      *
      * @param      Criteria $criteria
      * @param      boolean $distinct
      * @param      ConnectionInterface $con
-     * @return int             Count of related RequestsLog objects.
+     * @return int             Count of related PriceRequestLogEntry objects.
      * @throws PropelException
      */
-    public function countRequestsLogs(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function countPriceRequestLogEntries(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
     {
-        $partial = $this->collRequestsLogsPartial && !$this->isNew();
-        if (null === $this->collRequestsLogs || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collRequestsLogs) {
+        $partial = $this->collPriceRequestLogEntriesPartial && !$this->isNew();
+        if (null === $this->collPriceRequestLogEntries || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collPriceRequestLogEntries) {
                 return 0;
             }
 
             if ($partial && !$criteria) {
-                return count($this->getRequestsLogs());
+                return count($this->getPriceRequestLogEntries());
             }
 
-            $query = ChildRequestsLogQuery::create(null, $criteria);
+            $query = ChildPriceRequestLogEntryQuery::create(null, $criteria);
             if ($distinct) {
                 $query->distinct();
             }
@@ -1892,54 +1949,272 @@ abstract class PriceHistory implements ActiveRecordInterface
                 ->count($con);
         }
 
-        return count($this->collRequestsLogs);
+        return count($this->collPriceRequestLogEntries);
     }
 
     /**
-     * Method called to associate a ChildRequestsLog object to this object
-     * through the ChildRequestsLog foreign key attribute.
+     * Method called to associate a ChildPriceRequestLogEntry object to this object
+     * through the ChildPriceRequestLogEntry foreign key attribute.
      *
-     * @param  ChildRequestsLog $l ChildRequestsLog
+     * @param  ChildPriceRequestLogEntry $l ChildPriceRequestLogEntry
      * @return $this|\GW2Exchange\Database\PriceHistory The current object (for fluent API support)
      */
-    public function addRequestsLog(ChildRequestsLog $l)
+    public function addPriceRequestLogEntry(ChildPriceRequestLogEntry $l)
     {
-        if ($this->collRequestsLogs === null) {
-            $this->initRequestsLogs();
-            $this->collRequestsLogsPartial = true;
+        if ($this->collPriceRequestLogEntries === null) {
+            $this->initPriceRequestLogEntries();
+            $this->collPriceRequestLogEntriesPartial = true;
         }
 
-        if (!$this->collRequestsLogs->contains($l)) {
-            $this->doAddRequestsLog($l);
+        if (!$this->collPriceRequestLogEntries->contains($l)) {
+            $this->doAddPriceRequestLogEntry($l);
         }
 
         return $this;
     }
 
     /**
-     * @param ChildRequestsLog $requestsLog The ChildRequestsLog object to add.
+     * @param ChildPriceRequestLogEntry $priceRequestLogEntry The ChildPriceRequestLogEntry object to add.
      */
-    protected function doAddRequestsLog(ChildRequestsLog $requestsLog)
+    protected function doAddPriceRequestLogEntry(ChildPriceRequestLogEntry $priceRequestLogEntry)
     {
-        $this->collRequestsLogs[]= $requestsLog;
-        $requestsLog->setPriceHistory($this);
+        $this->collPriceRequestLogEntries[]= $priceRequestLogEntry;
+        $priceRequestLogEntry->setPriceHistory($this);
     }
 
     /**
-     * @param  ChildRequestsLog $requestsLog The ChildRequestsLog object to remove.
+     * @param  ChildPriceRequestLogEntry $priceRequestLogEntry The ChildPriceRequestLogEntry object to remove.
      * @return $this|ChildPriceHistory The current object (for fluent API support)
      */
-    public function removeRequestsLog(ChildRequestsLog $requestsLog)
+    public function removePriceRequestLogEntry(ChildPriceRequestLogEntry $priceRequestLogEntry)
     {
-        if ($this->getRequestsLogs()->contains($requestsLog)) {
-            $pos = $this->collRequestsLogs->search($requestsLog);
-            $this->collRequestsLogs->remove($pos);
-            if (null === $this->requestsLogsScheduledForDeletion) {
-                $this->requestsLogsScheduledForDeletion = clone $this->collRequestsLogs;
-                $this->requestsLogsScheduledForDeletion->clear();
+        if ($this->getPriceRequestLogEntries()->contains($priceRequestLogEntry)) {
+            $pos = $this->collPriceRequestLogEntries->search($priceRequestLogEntry);
+            $this->collPriceRequestLogEntries->remove($pos);
+            if (null === $this->priceRequestLogEntriesScheduledForDeletion) {
+                $this->priceRequestLogEntriesScheduledForDeletion = clone $this->collPriceRequestLogEntries;
+                $this->priceRequestLogEntriesScheduledForDeletion->clear();
             }
-            $this->requestsLogsScheduledForDeletion[]= clone $requestsLog;
-            $requestsLog->setPriceHistory(null);
+            $this->priceRequestLogEntriesScheduledForDeletion[]= clone $priceRequestLogEntry;
+            $priceRequestLogEntry->setPriceHistory(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Clears out the collPriceUpdateCheckLogEntries collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addPriceUpdateCheckLogEntries()
+     */
+    public function clearPriceUpdateCheckLogEntries()
+    {
+        $this->collPriceUpdateCheckLogEntries = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collPriceUpdateCheckLogEntries collection loaded partially.
+     */
+    public function resetPartialPriceUpdateCheckLogEntries($v = true)
+    {
+        $this->collPriceUpdateCheckLogEntriesPartial = $v;
+    }
+
+    /**
+     * Initializes the collPriceUpdateCheckLogEntries collection.
+     *
+     * By default this just sets the collPriceUpdateCheckLogEntries collection to an empty array (like clearcollPriceUpdateCheckLogEntries());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initPriceUpdateCheckLogEntries($overrideExisting = true)
+    {
+        if (null !== $this->collPriceUpdateCheckLogEntries && !$overrideExisting) {
+            return;
+        }
+        $this->collPriceUpdateCheckLogEntries = new ObjectCollection();
+        $this->collPriceUpdateCheckLogEntries->setModel('\GW2Exchange\Database\PriceUpdateCheckLogEntry');
+    }
+
+    /**
+     * Gets an array of ChildPriceUpdateCheckLogEntry objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildPriceHistory is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildPriceUpdateCheckLogEntry[] List of ChildPriceUpdateCheckLogEntry objects
+     * @throws PropelException
+     */
+    public function getPriceUpdateCheckLogEntries(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPriceUpdateCheckLogEntriesPartial && !$this->isNew();
+        if (null === $this->collPriceUpdateCheckLogEntries || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collPriceUpdateCheckLogEntries) {
+                // return empty collection
+                $this->initPriceUpdateCheckLogEntries();
+            } else {
+                $collPriceUpdateCheckLogEntries = ChildPriceUpdateCheckLogEntryQuery::create(null, $criteria)
+                    ->filterByPriceHistory($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collPriceUpdateCheckLogEntriesPartial && count($collPriceUpdateCheckLogEntries)) {
+                        $this->initPriceUpdateCheckLogEntries(false);
+
+                        foreach ($collPriceUpdateCheckLogEntries as $obj) {
+                            if (false == $this->collPriceUpdateCheckLogEntries->contains($obj)) {
+                                $this->collPriceUpdateCheckLogEntries->append($obj);
+                            }
+                        }
+
+                        $this->collPriceUpdateCheckLogEntriesPartial = true;
+                    }
+
+                    return $collPriceUpdateCheckLogEntries;
+                }
+
+                if ($partial && $this->collPriceUpdateCheckLogEntries) {
+                    foreach ($this->collPriceUpdateCheckLogEntries as $obj) {
+                        if ($obj->isNew()) {
+                            $collPriceUpdateCheckLogEntries[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collPriceUpdateCheckLogEntries = $collPriceUpdateCheckLogEntries;
+                $this->collPriceUpdateCheckLogEntriesPartial = false;
+            }
+        }
+
+        return $this->collPriceUpdateCheckLogEntries;
+    }
+
+    /**
+     * Sets a collection of ChildPriceUpdateCheckLogEntry objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $priceUpdateCheckLogEntries A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildPriceHistory The current object (for fluent API support)
+     */
+    public function setPriceUpdateCheckLogEntries(Collection $priceUpdateCheckLogEntries, ConnectionInterface $con = null)
+    {
+        /** @var ChildPriceUpdateCheckLogEntry[] $priceUpdateCheckLogEntriesToDelete */
+        $priceUpdateCheckLogEntriesToDelete = $this->getPriceUpdateCheckLogEntries(new Criteria(), $con)->diff($priceUpdateCheckLogEntries);
+
+
+        $this->priceUpdateCheckLogEntriesScheduledForDeletion = $priceUpdateCheckLogEntriesToDelete;
+
+        foreach ($priceUpdateCheckLogEntriesToDelete as $priceUpdateCheckLogEntryRemoved) {
+            $priceUpdateCheckLogEntryRemoved->setPriceHistory(null);
+        }
+
+        $this->collPriceUpdateCheckLogEntries = null;
+        foreach ($priceUpdateCheckLogEntries as $priceUpdateCheckLogEntry) {
+            $this->addPriceUpdateCheckLogEntry($priceUpdateCheckLogEntry);
+        }
+
+        $this->collPriceUpdateCheckLogEntries = $priceUpdateCheckLogEntries;
+        $this->collPriceUpdateCheckLogEntriesPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related PriceUpdateCheckLogEntry objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related PriceUpdateCheckLogEntry objects.
+     * @throws PropelException
+     */
+    public function countPriceUpdateCheckLogEntries(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collPriceUpdateCheckLogEntriesPartial && !$this->isNew();
+        if (null === $this->collPriceUpdateCheckLogEntries || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collPriceUpdateCheckLogEntries) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getPriceUpdateCheckLogEntries());
+            }
+
+            $query = ChildPriceUpdateCheckLogEntryQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByPriceHistory($this)
+                ->count($con);
+        }
+
+        return count($this->collPriceUpdateCheckLogEntries);
+    }
+
+    /**
+     * Method called to associate a ChildPriceUpdateCheckLogEntry object to this object
+     * through the ChildPriceUpdateCheckLogEntry foreign key attribute.
+     *
+     * @param  ChildPriceUpdateCheckLogEntry $l ChildPriceUpdateCheckLogEntry
+     * @return $this|\GW2Exchange\Database\PriceHistory The current object (for fluent API support)
+     */
+    public function addPriceUpdateCheckLogEntry(ChildPriceUpdateCheckLogEntry $l)
+    {
+        if ($this->collPriceUpdateCheckLogEntries === null) {
+            $this->initPriceUpdateCheckLogEntries();
+            $this->collPriceUpdateCheckLogEntriesPartial = true;
+        }
+
+        if (!$this->collPriceUpdateCheckLogEntries->contains($l)) {
+            $this->doAddPriceUpdateCheckLogEntry($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildPriceUpdateCheckLogEntry $priceUpdateCheckLogEntry The ChildPriceUpdateCheckLogEntry object to add.
+     */
+    protected function doAddPriceUpdateCheckLogEntry(ChildPriceUpdateCheckLogEntry $priceUpdateCheckLogEntry)
+    {
+        $this->collPriceUpdateCheckLogEntries[]= $priceUpdateCheckLogEntry;
+        $priceUpdateCheckLogEntry->setPriceHistory($this);
+    }
+
+    /**
+     * @param  ChildPriceUpdateCheckLogEntry $priceUpdateCheckLogEntry The ChildPriceUpdateCheckLogEntry object to remove.
+     * @return $this|ChildPriceHistory The current object (for fluent API support)
+     */
+    public function removePriceUpdateCheckLogEntry(ChildPriceUpdateCheckLogEntry $priceUpdateCheckLogEntry)
+    {
+        if ($this->getPriceUpdateCheckLogEntries()->contains($priceUpdateCheckLogEntry)) {
+            $pos = $this->collPriceUpdateCheckLogEntries->search($priceUpdateCheckLogEntry);
+            $this->collPriceUpdateCheckLogEntries->remove($pos);
+            if (null === $this->priceUpdateCheckLogEntriesScheduledForDeletion) {
+                $this->priceUpdateCheckLogEntriesScheduledForDeletion = clone $this->collPriceUpdateCheckLogEntries;
+                $this->priceUpdateCheckLogEntriesScheduledForDeletion->clear();
+            }
+            $this->priceUpdateCheckLogEntriesScheduledForDeletion[]= clone $priceUpdateCheckLogEntry;
+            $priceUpdateCheckLogEntry->setPriceHistory(null);
         }
 
         return $this;
@@ -1986,14 +2261,20 @@ abstract class PriceHistory implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
-            if ($this->collRequestsLogs) {
-                foreach ($this->collRequestsLogs as $o) {
+            if ($this->collPriceRequestLogEntries) {
+                foreach ($this->collPriceRequestLogEntries as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collPriceUpdateCheckLogEntries) {
+                foreach ($this->collPriceUpdateCheckLogEntries as $o) {
                     $o->clearAllReferences($deep);
                 }
             }
         } // if ($deep)
 
-        $this->collRequestsLogs = null;
+        $this->collPriceRequestLogEntries = null;
+        $this->collPriceUpdateCheckLogEntries = null;
         $this->aItem = null;
         $this->aPrice = null;
     }

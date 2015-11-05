@@ -70,17 +70,27 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildPriceHistoryQuery rightJoinWithPrice() Adds a RIGHT JOIN clause and with to the query using the Price relation
  * @method     ChildPriceHistoryQuery innerJoinWithPrice() Adds a INNER JOIN clause and with to the query using the Price relation
  *
- * @method     ChildPriceHistoryQuery leftJoinRequestsLog($relationAlias = null) Adds a LEFT JOIN clause to the query using the RequestsLog relation
- * @method     ChildPriceHistoryQuery rightJoinRequestsLog($relationAlias = null) Adds a RIGHT JOIN clause to the query using the RequestsLog relation
- * @method     ChildPriceHistoryQuery innerJoinRequestsLog($relationAlias = null) Adds a INNER JOIN clause to the query using the RequestsLog relation
+ * @method     ChildPriceHistoryQuery leftJoinPriceRequestLogEntry($relationAlias = null) Adds a LEFT JOIN clause to the query using the PriceRequestLogEntry relation
+ * @method     ChildPriceHistoryQuery rightJoinPriceRequestLogEntry($relationAlias = null) Adds a RIGHT JOIN clause to the query using the PriceRequestLogEntry relation
+ * @method     ChildPriceHistoryQuery innerJoinPriceRequestLogEntry($relationAlias = null) Adds a INNER JOIN clause to the query using the PriceRequestLogEntry relation
  *
- * @method     ChildPriceHistoryQuery joinWithRequestsLog($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the RequestsLog relation
+ * @method     ChildPriceHistoryQuery joinWithPriceRequestLogEntry($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the PriceRequestLogEntry relation
  *
- * @method     ChildPriceHistoryQuery leftJoinWithRequestsLog() Adds a LEFT JOIN clause and with to the query using the RequestsLog relation
- * @method     ChildPriceHistoryQuery rightJoinWithRequestsLog() Adds a RIGHT JOIN clause and with to the query using the RequestsLog relation
- * @method     ChildPriceHistoryQuery innerJoinWithRequestsLog() Adds a INNER JOIN clause and with to the query using the RequestsLog relation
+ * @method     ChildPriceHistoryQuery leftJoinWithPriceRequestLogEntry() Adds a LEFT JOIN clause and with to the query using the PriceRequestLogEntry relation
+ * @method     ChildPriceHistoryQuery rightJoinWithPriceRequestLogEntry() Adds a RIGHT JOIN clause and with to the query using the PriceRequestLogEntry relation
+ * @method     ChildPriceHistoryQuery innerJoinWithPriceRequestLogEntry() Adds a INNER JOIN clause and with to the query using the PriceRequestLogEntry relation
  *
- * @method     \GW2Exchange\Database\ItemQuery|\GW2Exchange\Database\PriceQuery|\GW2Exchange\Database\RequestsLogQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildPriceHistoryQuery leftJoinPriceUpdateCheckLogEntry($relationAlias = null) Adds a LEFT JOIN clause to the query using the PriceUpdateCheckLogEntry relation
+ * @method     ChildPriceHistoryQuery rightJoinPriceUpdateCheckLogEntry($relationAlias = null) Adds a RIGHT JOIN clause to the query using the PriceUpdateCheckLogEntry relation
+ * @method     ChildPriceHistoryQuery innerJoinPriceUpdateCheckLogEntry($relationAlias = null) Adds a INNER JOIN clause to the query using the PriceUpdateCheckLogEntry relation
+ *
+ * @method     ChildPriceHistoryQuery joinWithPriceUpdateCheckLogEntry($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the PriceUpdateCheckLogEntry relation
+ *
+ * @method     ChildPriceHistoryQuery leftJoinWithPriceUpdateCheckLogEntry() Adds a LEFT JOIN clause and with to the query using the PriceUpdateCheckLogEntry relation
+ * @method     ChildPriceHistoryQuery rightJoinWithPriceUpdateCheckLogEntry() Adds a RIGHT JOIN clause and with to the query using the PriceUpdateCheckLogEntry relation
+ * @method     ChildPriceHistoryQuery innerJoinWithPriceUpdateCheckLogEntry() Adds a INNER JOIN clause and with to the query using the PriceUpdateCheckLogEntry relation
+ *
+ * @method     \GW2Exchange\Database\ItemQuery|\GW2Exchange\Database\PriceQuery|\GW2Exchange\Database\PriceRequestLogEntryQuery|\GW2Exchange\Database\PriceUpdateCheckLogEntryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildPriceHistory findOne(ConnectionInterface $con = null) Return the first ChildPriceHistory matching the query
  * @method     ChildPriceHistory findOneOrCreate(ConnectionInterface $con = null) Return the first ChildPriceHistory matching the query, or a new ChildPriceHistory object populated from the query conditions when no match is found
@@ -865,40 +875,40 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
     }
 
     /**
-     * Filter the query by a related \GW2Exchange\Database\RequestsLog object
+     * Filter the query by a related \GW2Exchange\Database\PriceRequestLogEntry object
      *
-     * @param \GW2Exchange\Database\RequestsLog|ObjectCollection $requestsLog the related object to use as filter
+     * @param \GW2Exchange\Database\PriceRequestLogEntry|ObjectCollection $priceRequestLogEntry the related object to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return ChildPriceHistoryQuery The current query, for fluid interface
      */
-    public function filterByRequestsLog($requestsLog, $comparison = null)
+    public function filterByPriceRequestLogEntry($priceRequestLogEntry, $comparison = null)
     {
-        if ($requestsLog instanceof \GW2Exchange\Database\RequestsLog) {
+        if ($priceRequestLogEntry instanceof \GW2Exchange\Database\PriceRequestLogEntry) {
             return $this
-                ->addUsingAlias(PriceHistoryTableMap::COL_ID, $requestsLog->getPriceHistoryId(), $comparison);
-        } elseif ($requestsLog instanceof ObjectCollection) {
+                ->addUsingAlias(PriceHistoryTableMap::COL_ID, $priceRequestLogEntry->getPriceHistoryId(), $comparison);
+        } elseif ($priceRequestLogEntry instanceof ObjectCollection) {
             return $this
-                ->useRequestsLogQuery()
-                ->filterByPrimaryKeys($requestsLog->getPrimaryKeys())
+                ->usePriceRequestLogEntryQuery()
+                ->filterByPrimaryKeys($priceRequestLogEntry->getPrimaryKeys())
                 ->endUse();
         } else {
-            throw new PropelException('filterByRequestsLog() only accepts arguments of type \GW2Exchange\Database\RequestsLog or Collection');
+            throw new PropelException('filterByPriceRequestLogEntry() only accepts arguments of type \GW2Exchange\Database\PriceRequestLogEntry or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the RequestsLog relation
+     * Adds a JOIN clause to the query using the PriceRequestLogEntry relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return $this|ChildPriceHistoryQuery The current query, for fluid interface
      */
-    public function joinRequestsLog($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function joinPriceRequestLogEntry($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('RequestsLog');
+        $relationMap = $tableMap->getRelation('PriceRequestLogEntry');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -913,14 +923,14 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'RequestsLog');
+            $this->addJoinObject($join, 'PriceRequestLogEntry');
         }
 
         return $this;
     }
 
     /**
-     * Use the RequestsLog relation RequestsLog object
+     * Use the PriceRequestLogEntry relation PriceRequestLogEntry object
      *
      * @see useQuery()
      *
@@ -928,13 +938,86 @@ protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityN
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \GW2Exchange\Database\RequestsLogQuery A secondary query class using the current class as primary query
+     * @return \GW2Exchange\Database\PriceRequestLogEntryQuery A secondary query class using the current class as primary query
      */
-    public function useRequestsLogQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function usePriceRequestLogEntryQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
-            ->joinRequestsLog($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'RequestsLog', '\GW2Exchange\Database\RequestsLogQuery');
+            ->joinPriceRequestLogEntry($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'PriceRequestLogEntry', '\GW2Exchange\Database\PriceRequestLogEntryQuery');
+    }
+
+    /**
+     * Filter the query by a related \GW2Exchange\Database\PriceUpdateCheckLogEntry object
+     *
+     * @param \GW2Exchange\Database\PriceUpdateCheckLogEntry|ObjectCollection $priceUpdateCheckLogEntry the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildPriceHistoryQuery The current query, for fluid interface
+     */
+    public function filterByPriceUpdateCheckLogEntry($priceUpdateCheckLogEntry, $comparison = null)
+    {
+        if ($priceUpdateCheckLogEntry instanceof \GW2Exchange\Database\PriceUpdateCheckLogEntry) {
+            return $this
+                ->addUsingAlias(PriceHistoryTableMap::COL_ID, $priceUpdateCheckLogEntry->getPriceHistoryId(), $comparison);
+        } elseif ($priceUpdateCheckLogEntry instanceof ObjectCollection) {
+            return $this
+                ->usePriceUpdateCheckLogEntryQuery()
+                ->filterByPrimaryKeys($priceUpdateCheckLogEntry->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByPriceUpdateCheckLogEntry() only accepts arguments of type \GW2Exchange\Database\PriceUpdateCheckLogEntry or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the PriceUpdateCheckLogEntry relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildPriceHistoryQuery The current query, for fluid interface
+     */
+    public function joinPriceUpdateCheckLogEntry($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('PriceUpdateCheckLogEntry');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'PriceUpdateCheckLogEntry');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the PriceUpdateCheckLogEntry relation PriceUpdateCheckLogEntry object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \GW2Exchange\Database\PriceUpdateCheckLogEntryQuery A secondary query class using the current class as primary query
+     */
+    public function usePriceUpdateCheckLogEntryQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinPriceUpdateCheckLogEntry($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'PriceUpdateCheckLogEntry', '\GW2Exchange\Database\PriceUpdateCheckLogEntryQuery');
     }
 
     /**

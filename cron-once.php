@@ -1,8 +1,9 @@
 <?php
+$starttime = time();
 require_once __DIR__ . '/vendor/autoload.php';
-use \PHPQueue\Runner;
 require __DIR__.'/database/generated-conf/config.php';
 require_once __DIR__ . '/queue-config.php';
+use \PHPQueue\Runner;
 
 use Raveren\Kint;
 use GW2Exchange\Connection\GuzzleWebScraper,
@@ -28,7 +29,6 @@ use GW2Exchange\Price\PriceAssembler,
   GW2Exchange\Database\Price;
 
 use PHPQueue\Backend\IronMQ;
-
 $client = new Client();
 $webScraper = new GuzzleWebScraper($client);
 $itemParser = new ItemParser();
@@ -68,4 +68,7 @@ $queue->setDataSource($backend);
 
 $runner = new GW2Runner($queueName,array('logPath'=>__DIR__,'ItemAssembler'=>$itemAssembler, 'PriceAssembler'=>$priceAssembler));
 $runner->runOnce();
-echo "all done";
+
+$endtime = time();
+$runtime = $endtime-$starttime;
+echo "Time: ".date('i:s',$runtime);

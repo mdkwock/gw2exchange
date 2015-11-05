@@ -159,13 +159,24 @@
   </table>
 
   <!-- keep a log of all requests and whether the cached results were used -->
-  <table name="requests_log">
+  <table name="price_request_log_entry">
     <column name="id" type="integer" primaryKey="true" autoIncrement="true" />
-    <column name="url" type="integer" required="true" />
-    <column name="gw2ServerUrl" type="integer" required="true" />
     <column name="price_history_id" type="integer" required="true" />
-    <column name="cache_hit" type="integer" required="true" />
-    <column name="cache_correct" type="integer" />
+    <column name="cache_hit" type="boolean" required="true" />
+    <column name="cache_correct" type="boolean" />
+    <foreign-key foreignTable="price_history">
+      <reference local="price_history_id" foreign="id"/>
+    </foreign-key>
+    <behavior name="timestampable">
+      <parameter name="disable_updated_at" value="true" />
+    </behavior>
+  </table>
+
+  <!-- keep a log of all price update checks -->
+  <table name="price_update_check_log_entry">
+    <column name="id" type="integer" primaryKey="true" autoIncrement="true" />
+    <column name="price_history_id" type="integer" required="true" />
+    <column name="is_different" type="boolean" required="true" />
     <foreign-key foreignTable="price_history">
       <reference local="price_history_id" foreign="id"/>
     </foreign-key>

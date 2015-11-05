@@ -9,6 +9,7 @@ use GW2Exchange\Database\Map\PriceTableMap;
 use GW2Exchange\Signature\Database\DatabaseObjectInterface;
 use Propel\Runtime\Connection\ConnectionInterface;
 use GW2Exchange\Taxes\TaxService;
+use GW2Exchange\Log\PriceLogger;
 /**
  * Skeleton subclass for representing a row from the 'item_summary' table.
  *
@@ -23,6 +24,12 @@ class Price extends BasePrice implements DatabaseObjectInterface
 {
   protected static $tableColumnMap;
   protected $minCacheTime = 4;
+  private $priceLogger;
+
+  public function setPriceLogger(PriceLogger $priceLogger){
+    $this->priceLogger = $priceLogger;
+  }
+
   /**
    * this function is used as a shortcut to the propel table mapping process
    * will return an array of all of the columns that are controlled by this object
@@ -161,7 +168,10 @@ class Price extends BasePrice implements DatabaseObjectInterface
           }
         }
       }
+    }else{
+      $priceHistory = $this->getPriceHistories()->pop();//the most recent price history is the same as the current price
     }
+    $this->priceLogger->logPriceUpdateCheck($priceHistory, $this->isModified());
     return true;//continue with the save
   }
 
@@ -176,8 +186,8 @@ class Price extends BasePrice implements DatabaseObjectInterface
         'buy_qty'=>$this->getBuyQty(),
         'sell_price'=>$this->getSellPrice(),
         'sell_qty'=>$this->getSellQty(),
-        'profit'=>$this->getSellProfit(),
-        'roi'=>$this->getSellRoi(),
+        'profit'=>$this->getProfit(),
+        'roi'=>$this->getRoi(),
       ); 
     }    
     $hash = md5(json_encode($arr));

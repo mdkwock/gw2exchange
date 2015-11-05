@@ -45,7 +45,7 @@ class GW2ServerWorker extends Worker
         $complete = $this->result_data = array($this->getItems($itemIds));
         break;
     }
-    echo "Completed: ".$complete.';';
+    echo "Completed: ".$complete[0].';';
   }
 
   public function getItems($itemIds){
